@@ -24,7 +24,7 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 ## Project Setup
 
 ```sh
-npm install
+npm ci
 ```
 
 ### Compile and Hot-Reload for Development
@@ -49,4 +49,19 @@ npm run test:unit
 
 ```sh
 npm run lint
+```
+
+## Run production build with Docker
+
+```sh
+npm run build
+docker-compose up -d
+```
+
+You can now access the app at http://localhost:6982
+
+### Stop production build with Docker
+
+```sh
+docker-compose down
 ```
