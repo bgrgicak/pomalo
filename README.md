@@ -1,6 +1,6 @@
 # calendar app
 
-This template should help get you started developing with Vue 3 in Vite.
+Open source PWA calendar app.
 
 ## Recommended IDE Setup
 
