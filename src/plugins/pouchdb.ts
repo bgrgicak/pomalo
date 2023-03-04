@@ -1,5 +1,6 @@
-import * as PouchDB from 'pouchdb';
+import constants from '@/utilities/constants';
+import PouchDB from 'pouchdb';
 
-const db = new PouchDB('calendar-app');
+const db = new PouchDB(constants.appSlug);
 
-export default db;
+db.info().then((info: Object) => console.log(info));
