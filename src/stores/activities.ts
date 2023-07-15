@@ -25,9 +25,7 @@ export const useActivityStore = defineStore(
     actions: {
       getAllActivities() {
         getAll().then((response) => {
-          response.rows.forEach((row) => {
-            this.activities.push(row.doc as Activity);
-          });
+          this.activities = response.rows.map(row => row.doc as Activity);
         }).catch((error) => {
           log(error, LogType.Error);
           useNoticeStore().addNotice({
