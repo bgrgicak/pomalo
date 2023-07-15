@@ -8,6 +8,6 @@
       "node",
       "jsdom"
     ],
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
   }
 }

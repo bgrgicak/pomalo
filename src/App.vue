@@ -3,26 +3,43 @@ import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <v-card>
-    <v-layout>
-      <v-app-bar title="Application bar"></v-app-bar>
+  <v-app>
+    <v-system-bar>
+      <v-icon icon="mdi-square"></v-icon>
 
-      <v-navigation-drawer>
-        <v-list>
-          <v-list-item title="Navigation drawer">
-            <RouterLink to="/">Home</RouterLink>
-          </v-list-item>
-          <v-list-item title="Navigation drawer">
-            <RouterLink to="/about">About</RouterLink>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
+      Search
+      <v-spacer></v-spacer>
 
-      <v-main style="min-height: 300px;">
-        <RouterView />
-      </v-main>
-    </v-layout>
-  </v-card>
+      Activity overview
+      <v-icon icon="mdi-circle"></v-icon>
+      Menu
+    </v-system-bar>
+
+    <v-navigation-drawer color="grey-lighten-3" rail>
+      <RouterLink to="/">
+        <v-avatar class="d-block text-center mx-auto mt-4" color="grey-darken-1" size="36"></v-avatar>
+      </RouterLink>
+      <v-divider class="mx-3 my-5"></v-divider>
+      <RouterLink to="/tasks">
+        <v-avatar class="d-block text-center mx-auto mt-4" color="grey-darken-1" size="36"></v-avatar>
+      </RouterLink>
+      <v-divider class="mx-3 my-5"></v-divider>
+    </v-navigation-drawer>
+
+    <v-navigation-drawer width="244">
+      <v-sheet color="grey-lighten-5" height="128" width="100%">
+        Task search
+      </v-sheet>
+    </v-navigation-drawer>
+
+    <v-main>
+      <RouterView />
+    </v-main>
+
+    <v-navigation-drawer location="right">
+      Activity details
+    </v-navigation-drawer>
+  </v-app>
 </template>
 
 <style scoped></style>
