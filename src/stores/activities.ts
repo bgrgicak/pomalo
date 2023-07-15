@@ -1,6 +1,10 @@
 import { defineStore } from "pinia";
 import type Activity from "@/types/activity";
 import { getAll, add, update, remove } from "@/database/activities";
+import { useNoticeStore } from "./notices";
+import { NoticeType } from "@/types/notice";
+import __ from "@/utilities/translations";
+import log, { LogType } from "@/utilities/logs";
 
 interface ActivityState {
   activities: Activity[]
@@ -24,7 +28,11 @@ export const useActivityStore = defineStore(
             this.activities.push(row.doc as Activity);
           });
         }).catch((error) => {
-          console.log(error);
+          log(error, LogType.Error);
+          useNoticeStore().addNotice({
+            title: __("Unable to get activities. Please try again."),
+            type: NoticeType.Error,
+          });
         });
         return this.activities;
       },
@@ -32,12 +40,20 @@ export const useActivityStore = defineStore(
         add(activity).then(() => {
           this.activities.push(activity);
         }).catch(error => {
-          console.log(error);
+          log(error, LogType.Error);
+          useNoticeStore().addNotice({
+            title: __("Unable to add activity. Please try again."),
+            type: NoticeType.Error,
+          });
         });
       },
       updateActivity(activity: Activity) {
-        update(activity).catch((err) => {
-          console.log(err);
+        update(activity).catch((error) => {
+          log(error, LogType.Error);
+          useNoticeStore().addNotice({
+            title: __("Unable to update activity. Please try again."),
+            type: NoticeType.Error,
+          });
         });
       },
       removeActivity(activityId: string) {
@@ -46,8 +62,12 @@ export const useActivityStore = defineStore(
           if (activityIndex !== -1) {
             this.activities.splice(activityIndex, 1);
           }
-        }).catch(err => {
-          console.log(err);
+        }).catch(error => {
+          log(error, LogType.Error);
+          useNoticeStore().addNotice({
+            title: __("Unable to remove activity. Please try again."),
+            type: NoticeType.Error,
+          });
         });
       }
     }

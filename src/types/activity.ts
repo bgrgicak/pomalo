@@ -16,7 +16,11 @@ export interface ActivityInvite {
     status: string;
 }
 
-export type ActivityType = 'task' | 'event' | 'project';
+export enum ActivityType {
+    Task = 'task',
+    Event = 'event',
+    Project = 'project',
+}
 
 export default interface Activity {
     _id?: string;
