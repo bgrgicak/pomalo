@@ -1,4 +1,4 @@
-import constants from '@/utilities/constants';
+import constants from '@/configuration/constants';
 import PouchDB from 'pouchdb';
 
 const database = new PouchDB(constants.appSlug);

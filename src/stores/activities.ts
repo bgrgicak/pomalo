@@ -4,7 +4,8 @@ import { getAll, add, update, remove } from "@/database/activities";
 import { useNoticeStore } from "./notices";
 import { NoticeType } from "@/types/notice";
 import __ from "@/utilities/translations";
-import log, { LogType } from "@/utilities/logs";
+import log from "@/utilities/logs";
+import { LogType } from "@/types/log";
 
 interface ActivityState {
   activities: Activity[]

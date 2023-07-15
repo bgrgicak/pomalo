@@ -6,7 +6,7 @@ import router from "./router";
 
 import vuetify from "./plugins/vuetify";
 
-import "./assets/main.scss";
+import "./styles/main.scss";
 
 const app = createApp(App);
 

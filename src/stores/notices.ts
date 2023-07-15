@@ -5,6 +5,7 @@ interface NoticeState {
     notices: Notice[]
 }
 
+// TODO Show notices in the UI
 export const useNoticeStore = defineStore(
     "notices",
     {
