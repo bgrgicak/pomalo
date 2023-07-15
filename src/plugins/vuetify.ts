@@ -24,7 +24,6 @@ const theme: ThemeDefinition = {
 }
 
 export default createVuetify({
-    blueprint: md3,
     theme: {
         defaultTheme: 'theme',
         themes: {
