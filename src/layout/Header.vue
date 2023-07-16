@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { headerMenu } from '@/configuration/routes';
-import HeaderSearch from '@/components/HeaderSearch.vue';
+import HeaderSearch from '@/components/header-search/HeaderSearch.vue';
 </script>
 <template>
     <v-toolbar density="compact">

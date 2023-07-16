@@ -3,12 +3,12 @@
         "editor.defaultFormatter": "Vue.volar"
     },
     "html.format.wrapAttributes": "force-aligned",
-    // foce semi-colon
+    // force semi-colon
     "javascript.format.semicolons": "insert",
     "typescript.format.semicolons": "insert",
-    // foce single quote
-    "javascript.format.quoteStyle": "single",
-    "typescript.format.quoteStyle": "single",
+    // force single quote
+    "prettier.singleQuote": true,
+    "prettier.jsxSingleQuote": true,
     // force space before function parenthesis
     "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
     "typescript.format.insertSpaceBeforeFunctionParenthesis": true,

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue';
+import SearchResults from './SearchResults.vue';
 
 const searchVisible = ref(false);
 const searchRef = ref(null);
@@ -9,12 +10,12 @@ const showSearch = async () => {
     searchVisible.value = true;
     await nextTick();
     if (null !== searchRef.value) {
-        (searchRef.value as any).focus();
+        (searchRef.value as HTMLInputElement).focus();
     }
 };
 const hideSearch = () => {
-    searchVisible.value = false;
-    searchText.value = '';
+    // searchVisible.value = false;
+    // searchText.value = '';
 };
 </script>
 <template>
@@ -25,10 +26,12 @@ const hideSearch = () => {
                   single-line
                   hide-details
                   ref="searchRef"
-                  v-modal="searchText"
+                  v-model="searchText"
                   v-if="searchVisible"
                   @blur="hideSearch" />
     <v-btn icon="mdi-magnify"
            @click="showSearch"
            v-if="!searchVisible" />
+    <SearchResults v-if="searchVisible"
+                   :searchText="searchText" />
 </template>

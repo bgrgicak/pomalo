@@ -23,7 +23,7 @@ export const useActivityStore = defineStore(
       activityCount: (state) => state.activities.length,
     },
     actions: {
-      getAllActivities() {
+      getAllActivities(): Activity[] {
         getAll().then((response) => {
           this.activities = response.rows.map(row => row.doc as Activity);
         }).catch((error) => {
