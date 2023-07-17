@@ -11,7 +11,7 @@ export interface ActivitySchedule {
     reoccurrence: ScheduleReoccurrence;
 }
 
-export interface ActivityInvite {
+export interface ActivityMembers {
     email: string;
     status: string;
 }
@@ -25,10 +25,10 @@ export enum ActivityType {
 export default interface Activity {
     _id?: string;
     _rev?: string;
-    name: string;
+    title: string;
     description?: string;
     type?: ActivityType;
-    invites?: ActivityInvite[];
+    members?: ActivityMembers[];
     schedules?: ActivitySchedule[];
     completed?: boolean;
 }

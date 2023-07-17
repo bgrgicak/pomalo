@@ -1,0 +1,60 @@
+<script setup lang="ts">
+import { useLayoutStore } from '@/stores/layout';
+import { nextTick, ref } from 'vue';
+import SearchResults from './SearchResults.vue';
+
+const searchVisible = ref(false);
+const searchRef = ref(null);
+const searchText = ref('');
+
+const layoutStore = useLayoutStore();
+
+const showSearch = async () => {
+    searchVisible.value = true;
+    await nextTick();
+    if (null !== searchRef.value) {
+        (searchRef.value as HTMLInputElement).focus();
+    }
+};
+const hideSearch = () => {
+    // searchVisible.value = false;
+    // searchText.value = '';
+};
+const showLeftSidebar = () => {
+    layoutStore.showLeftSidebar();
+    console.log(layoutStore.isLeftSidebarVisible);
+};
+</script>
+<template>
+    <div class="header-search">
+        <v-text-field density="compact"
+                    variant="solo"
+                    label="Search"
+                    append-inner-icon="mdi-magnify"
+                    single-line
+                    hide-details
+                    ref="searchRef"
+                    v-model="searchText"
+                    v-if="searchVisible"
+                    @blur="hideSearch"
+                    @click:append-inner="showLeftSidebar"
+                    class="header-search__input"/>
+        <v-btn icon="mdi-magnify"
+            @click="showSearch"
+            v-if="!searchVisible" />
+        <SearchResults class="header-search__results" v-if="searchVisible"
+                    :searchText="searchText" />
+    </div>
+</template>
+<style scoped lang="scss">
+$form-width: 300px;
+.header-search__input {
+    width: $form-width;
+    position: relative;
+}
+.header-search__results {
+    z-index: 100;
+    position: fixed;
+    width: $form-width;
+}
+</style>

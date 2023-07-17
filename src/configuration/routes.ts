@@ -1,21 +1,29 @@
+import type Route from "@/types/router";
 import { MenuType } from "@/types/router";
 import __ from "@/utilities/translations";
 
-const routes = [
+const routes: Route[] = [
     {
         path: "/",
         name: __("Calendar"),
-        component: () => import(/* webpackChunkName: "settings" */ "../views/CalendarView.vue"),
+        component: () => import("../views/CalendarView.vue"),
         icon: "mdi-calendar",
         menu: [
             MenuType.Main,
         ],
     },
     {
+        path: "/task/:_id",
+        name: __("Task"),
+        icon: "mdi-format-list-bulleted",
+        component: () => import("../views/ActivityView.vue"),
+        menu: [],
+    },
+    {
         path: "/tasks",
         name: __("Tasks"),
         icon: "mdi-format-list-bulleted",
-        component: () => import(/* webpackChunkName: "settings" */ "../views/TaskListView.vue"),
+        component: () => import("../views/TaskListView.vue"),
         menu: [
             MenuType.Main,
         ],
@@ -24,7 +32,7 @@ const routes = [
         path: "/sign-in",
         name: __("Sign in"),
         icon: "mdi-login",
-        component: () => import(/* webpackChunkName: "settings" */ "../views/SignInView.vue"),
+        component: () => import("../views/SignInView.vue"),
         menu: [
             MenuType.Header,
         ],
@@ -33,11 +41,11 @@ const routes = [
         path: "/settings",
         name: __("Settings"),
         icon: "mdi-cog",
-        component: () => import(/* webpackChunkName: "settings" */ "../views/SettingsView.vue"),
+        component: () => import("../views/SettingsView.vue"),
         menu: [
             MenuType.Header,
         ],
-    },
+    }
 ];
 
 const mainMenu = routes.filter((route) => route.menu.includes(MenuType.Main));

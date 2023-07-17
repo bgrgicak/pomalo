@@ -1,6 +1,8 @@
+// DEPRECATED, DON'T USE THIS FILE
+
 import { defineStore } from "pinia";
 import type Activity from "@/types/activity";
-import { getAll, add, update, remove } from "@/database/activities";
+import { getTasks, add, update, remove } from "@/database/activities";
 import { useNoticeStore } from "./notices";
 import { NoticeType } from "@/types/notice";
 import __ from "@/utilities/translations";
@@ -19,13 +21,10 @@ export const useActivityStore = defineStore(
         activities: [],
       };
     },
-    getters: {
-      activityCount: (state) => state.activities.length,
-    },
     actions: {
-      getAllActivities(): Activity[] {
-        getAll().then((response) => {
-          this.activities = response.rows.map(row => row.doc as Activity);
+      getTasks(): Activity[] {
+        getTasks().then((response) => {
+          this.activities = response.docs as Activity[];
         }).catch((error) => {
           log(error, LogType.Error);
           useNoticeStore().addNotice({

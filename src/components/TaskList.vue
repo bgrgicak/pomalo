@@ -1,33 +1,77 @@
-<script setup>
-import { useActivityStore } from '../stores/activities'
-const store = useActivityStore()
+<script setup lang="ts">
+import { add, getTasks } from '@/database/activities';
+import { useLayoutStore } from '@/stores/layout';
+import type Activity from '@/types/activity';
+import { ActivityType } from '@/types/activity';
+import { ref, type Ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-store.getAllActivities()
+const tasks: Ref<Activity[]> = ref([]);
+const newTask: Ref<Activity> = ref({
+  title: '',
+  type: ActivityType.Task,
+});
 
-const addActivity = () => {
-  store.addActivity({
-    _id: Math.random().toString(),
-    title: 'New Activity',
-    description: 'This is a new activity',
-    type: 'task',
-    completed: false
-  })
-}
+const layoutStore = useLayoutStore();
+
+const router = useRouter();
+
+getTasks().then((response) => {
+  tasks.value = response.docs as Activity[];
+});
+
+const addTask = () => {
+  newTask.value._id = new Date().toISOString();
+  console.log(newTask.value);
+  add(newTask.value).then(() => {
+    tasks.value.push(newTask.value);
+    newTask.value = {
+      title: '',
+      type: ActivityType.Task,
+    };
+  });
+};
+
+const showActivitySidebar = (activity: Activity) => {
+  layoutStore.showRightSidebar( activity );
+};
+const openActivityPage = (activity: Activity) => {
+  layoutStore.hideRightSidebar();
+  router.push(`/task/${activity._id}/`);
+};
 </script>
 
 <template>
-  <header>
-    <h1>Welcome to the Vue 3 Composition API</h1>
-    <p>Counter: {{ store.activityCount }}</p>
-    <button @click="addActivity">Add Activity</button>
-  </header>
-  <article>
-    <ul>
-      <li v-for="activity in store.activities" :key="activity._id">
-        <input type="text" v-model="activity.title" />
-        <button @click="store.updateActivity(activity)">Update</button>
-        <button @click="store.removeActivity(activity._id)">Remove</button>
-      </li>
-    </ul>
-  </article>
+  <v-table class="task-list">
+    <thead>
+      <tr>
+        <th class="text-left">
+          Task
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="item in tasks"
+          :key="item._id">
+        <td @click="() => showActivitySidebar(item)"
+            @dblclick="() => openActivityPage(item)"
+            class="task-list__link">
+          {{ item.title }}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <v-text-field v-model="newTask.title"
+                        placeholder="Add a task"
+                        variant="plain"
+                        @keyup.enter="addTask" />
+        </td>
+      </tr>
+    </tbody>
+  </v-table>
 </template>
+<style scoped lang="scss">
+.task-list {
+  cursor: pointer;
+}
+</style>

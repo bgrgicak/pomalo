@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { useLayoutStore } from "@/stores/layout";
 
-const showLeftSidebar = ref(false);
+const layoutStore = useLayoutStore();
 </script>
 <template>
-    <v-navigation-drawer width="244" v-if="showLeftSidebar">
+    <v-navigation-drawer width="244" v-if="layoutStore.isLeftSidebarVisible">
         <v-sheet color="grey-lighten-5" height="128" width="100%">
             Task search
         </v-sheet>
