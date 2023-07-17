@@ -23,9 +23,10 @@ export enum ActivityType {
 }
 
 export default interface Activity {
-    _id?: string;
+    _id: string;
     _rev?: string;
     title: string;
+    created: Date;
     description?: string;
     type?: ActivityType;
     members?: ActivityMembers[];

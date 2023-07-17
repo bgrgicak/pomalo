@@ -6,17 +6,25 @@ import { mainMenu } from '@/configuration/routes';
                          rail
                          class="navigation">
         <template v-for="item in mainMenu">
-            <RouterLink :to="item.path">
-                <v-avatar class="d-block text-center mx-auto mt-4"
-                          color="grey-darken-1"
-                          size="36"></v-avatar>
+            <RouterLink :to="item.path" class="navigation-item">
+                <v-icon :icon="item.icon" size="36"/>
             </RouterLink>
             <v-divider class="mx-3 my-5"></v-divider>
     </template>
 </v-navigation-drawer></template>
 <style scoped lang="scss">
     @import '@/styles/variables.scss';
+    $navigation-icon-height: 36px;
     .navigation {
         top: $header-height !important;
+        width: $navigation-width;
+    }
+    .navigation-item {
+        width: $navigation-width;
+        display: block;
+        .v-icon {
+            margin: calc($navigation-width - $navigation-icon-height) auto;
+            display: block;
+        }
     }
 </style>

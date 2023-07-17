@@ -40,5 +40,4 @@ database.createIndex({
     log(error, LogType.Error);
   });
 
-
 export default database;

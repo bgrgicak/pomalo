@@ -11,7 +11,6 @@ export const getTasks = async () => {
         selector: {
           type: ActivityType.Task
         },
-        sort: ['_id'],
       });
 };
 

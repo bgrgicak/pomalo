@@ -45,15 +45,19 @@ const showLeftSidebar = () => {
                     @hideSearch="hideSearch" />
     </div>
 </template>
-<style scoped lang="scss">
+<style lang="scss">
+@import '@/styles/variables.scss';
 $form-width: 300px;
 .header-search__input {
     width: $form-width;
     position: relative;
 }
 .header-search__results {
-    z-index: 100;
+    z-index: $search-results-z-index;
     position: fixed;
     width: $form-width;
+    .v-list-item--link {
+        cursor: unset;
+    }
 }
 </style>

@@ -8,7 +8,7 @@ const activity = computed(() => layoutStore.currentActivity);
 </script>
 <template>
     <v-navigation-drawer location="right" v-if="layoutStore.isRightSidebarVisible" class="right-sidebar">
-        <ActivityDetails :activity="activity"/>
+        <ActivityDetails :activity="activity" small="true"/>
     </v-navigation-drawer>
 </template>
 <style scoped lang="scss">

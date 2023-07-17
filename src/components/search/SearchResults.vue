@@ -6,7 +6,6 @@ import ActivityTitle from '@/components/activity/ActivityTitle.vue';
 
 const props = defineProps(['searchText']);
 const searchResults: Ref<Activity[]> = ref([]);
-console.log(props);
 
 watch(() => props.searchText, async (searchText: string) => {
     if (searchText.length < 3) {
