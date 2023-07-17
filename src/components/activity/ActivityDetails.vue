@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type Activity from '@/types/activity';
 import { ref, watch } from 'vue';
 
 const props = defineProps(['activity']);
 const activity = ref(props.activity);
-watch(() => props.activity, (newActivity: Activity) => {
+watch(() => props.activity, (newActivity) => {
     if (newActivity._id === activity.value._id) return;
     activity.value = newActivity;
 });

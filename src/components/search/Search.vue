@@ -17,16 +17,15 @@ const showSearch = async () => {
     }
 };
 const hideSearch = () => {
-    // searchVisible.value = false;
-    // searchText.value = '';
+    searchVisible.value = false;
+    searchText.value = '';
 };
 const showLeftSidebar = () => {
     layoutStore.showLeftSidebar();
-    console.log(layoutStore.isLeftSidebarVisible);
 };
 </script>
 <template>
-    <div class="header-search">
+    <div class="header-search" v-click-outside="hideSearch">
         <v-text-field density="compact"
                     variant="solo"
                     label="Search"
@@ -36,14 +35,14 @@ const showLeftSidebar = () => {
                     ref="searchRef"
                     v-model="searchText"
                     v-if="searchVisible"
-                    @blur="hideSearch"
                     @click:append-inner="showLeftSidebar"
                     class="header-search__input"/>
         <v-btn icon="mdi-magnify"
             @click="showSearch"
             v-if="!searchVisible" />
         <SearchResults class="header-search__results" v-if="searchVisible"
-                    :searchText="searchText" />
+                    :searchText="searchText"
+                    @hideSearch="hideSearch" />
     </div>
 </template>
 <style scoped lang="scss">

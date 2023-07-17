@@ -2,9 +2,11 @@
 import { getTasks } from '@/database/activities';
 import type Activity from '@/types/activity';
 import { ref, watch, type Ref } from 'vue';
+import ActivityTitle from '@/components/activity/ActivityTitle.vue';
 
 const props = defineProps(['searchText']);
 const searchResults: Ref<Activity[]> = ref([]);
+console.log(props);
 
 watch(() => props.searchText, async (searchText: string) => {
     if (searchText.length < 3) {
@@ -20,9 +22,12 @@ watch(() => props.searchText, async (searchText: string) => {
 <template>
     <v-card class="search-results" v-if="searchResults.length">
         <v-list>
-            <v-list-item v-for="result in searchResults"
-                        :key="result._id">
-                <v-list-item-title>{{ result.title }}</v-list-item-title>
+            <v-list-item v-for="activity in searchResults"
+                        :key="activity._id"
+                        @click="$emit('hideSearch')">
+                <v-list-item-title>
+                    <ActivityTitle :activity="activity"/>
+                </v-list-item-title>
             </v-list-item>
         </v-list>
     </v-card>

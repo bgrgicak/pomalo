@@ -3,7 +3,7 @@ import { headerMenu } from '@/configuration/routes';
 import Search from '@/components/search/Search.vue';
 </script>
 <template>
-    <v-toolbar density="compact">
+    <v-toolbar density="compact" class="header">
         <v-btn icon="mdi-square"
                to="/" />
         <v-spacer></v-spacer>
@@ -27,3 +27,11 @@ import Search from '@/components/search/Search.vue';
             </v-list>
     </v-menu>
 </v-toolbar></template>
+<style scoped lang="scss">
+    @import '@/styles/variables.scss';
+    .header {
+        height: $header-height;
+        position: relative;
+        z-index: 10000;
+    }
+</style>

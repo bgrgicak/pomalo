@@ -4,7 +4,7 @@ import { mainMenu } from '@/configuration/routes';
 <template>
     <v-navigation-drawer color="grey-lighten-3"
                          rail
-                         style="top: 48px;">
+                         class="navigation">
         <template v-for="item in mainMenu">
             <RouterLink :to="item.path">
                 <v-avatar class="d-block text-center mx-auto mt-4"
@@ -14,3 +14,9 @@ import { mainMenu } from '@/configuration/routes';
             <v-divider class="mx-3 my-5"></v-divider>
     </template>
 </v-navigation-drawer></template>
+<style scoped lang="scss">
+    @import '@/styles/variables.scss';
+    .navigation {
+        top: $header-height !important;
+    }
+</style>
