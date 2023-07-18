@@ -5,6 +5,13 @@ import __ from "@/utilities/translations";
 const routes: Route[] = [
     {
         path: "/",
+        name: __("Dashboard"),
+        component: () => import("../views/DashboardView.vue"),
+        icon: "mdi-view-dashboard",
+        menu: [],
+    },
+    {
+        path: "/calendar",
         name: __("Calendar"),
         component: () => import("../views/CalendarView.vue"),
         icon: "mdi-calendar",

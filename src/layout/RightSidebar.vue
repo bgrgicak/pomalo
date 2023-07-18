@@ -12,7 +12,7 @@ const activity = computed(() => layoutStore.currentActivity);
     </v-navigation-drawer>
 </template>
 <style scoped lang="scss">
-    @import '@/styles/variables.scss';
+    @import '@/assets/styles/variables.scss';
     .right-sidebar {
         top: $header-height !important;
     }

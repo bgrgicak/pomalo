@@ -22,6 +22,11 @@ export enum ActivityType {
     Project = 'project',
 }
 
+export interface ActivityState {
+    activity: Activity;
+    isEditing: boolean;
+}
+
 export default interface Activity {
     _id: string;
     _rev?: string;
@@ -31,5 +36,5 @@ export default interface Activity {
     type?: ActivityType;
     members?: ActivityMembers[];
     schedules?: ActivitySchedule[];
-    completed?: boolean;
+    completedDate?: Date;
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { mainMenu } from '@/configuration/routes';
+import { mainMenu } from '@/router/routes';
 </script>
 <template>
     <v-navigation-drawer color="grey-lighten-3"
@@ -13,7 +13,7 @@ import { mainMenu } from '@/configuration/routes';
     </template>
 </v-navigation-drawer></template>
 <style scoped lang="scss">
-    @import '@/styles/variables.scss';
+    @import '@/assets/styles/variables.scss';
     $navigation-icon-height: 36px;
     .navigation {
         top: $header-height !important;

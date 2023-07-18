@@ -2,11 +2,11 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 
 import App from "./App.vue";
-import router from "./router";
+import router from "./router/router";
 
 import vuetify from "./plugins/vuetify";
 
-import "./styles/main.scss";
+import "./assets/styles/main.scss";
 
 const app = createApp(App);
 

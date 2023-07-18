@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { get } from '@/database/activities';
 import type Activity from '@/types/activity';
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ActivityDetails from '@/components/activity/ActivityDetails.vue';
+import { get } from '@/model/activities';
 
 const route = useRoute();
 const activity = ref<Activity|null>(null);

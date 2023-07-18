@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { headerMenu } from '@/configuration/routes';
+import { headerMenu } from '@/router/routes';
 import Search from '@/components/search/Search.vue';
 </script>
 <template>
@@ -28,7 +28,7 @@ import Search from '@/components/search/Search.vue';
     </v-menu>
 </v-toolbar></template>
 <style scoped lang="scss">
-    @import '@/styles/variables.scss';
+    @import '@/assets/styles/variables.scss';
     .header {
         height: $header-height;
         position: relative;

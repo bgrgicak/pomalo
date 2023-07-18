@@ -1,24 +1,34 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { update } from '@/database/activities';
+import { ref, watch, type Ref } from 'vue';
+import type { ActivityState } from '@/types/activity';
+import type Activity from '@/types/activity';
+import { update, updateCompletedDate } from '@/model/activities';
+import __ from '@/utilities/translations';
 
 const props = defineProps(['activity', 'small']);
-const state = ref({
-    activity: props.activity,
-    unsavedChanges: false,
+const state: Ref<ActivityState> = ref({
+    activity: props.activity as Activity,
+    isEditing: false,
 });
+
 watch(() => props.activity, (newActivity) => {
     if (newActivity._id === state.value.activity._id) return;
-    state.value.activity = newActivity;
+    if (state.value.isEditing) {
+        if (!confirm(__('You have unsaved changes. Are you sure you want to continue?'))) {
+            return;
+        }
+    }
+    state.value.activity = Object.assign({}, newActivity);
+    state.value.isEditing = true;
 });
 
 const onChange = () => {
-    state.value.unsavedChanges = true;
+    state.value.isEditing = true;
 };
 
 const updateActivity = () => {
     update(state.value.activity).then(() => {
-        state.value.unsavedChanges = false;
+        state.value.isEditing = false;
     })
 };
 
@@ -26,12 +36,6 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
     if (event.key === 'Enter' && event.metaKey) {
         updateActivity();
     }
-};
-
-const updateCompleted = () => {
-    const updateActivity = Object.assign({}, props.activity);
-    updateActivity.completed = state.value.activity.completed;
-    update(updateActivity);
 };
 </script>
 <template>
@@ -43,22 +47,24 @@ const updateCompleted = () => {
                     sm="12"
                 >
                     <v-text-field
-                        label="Title"
+                        :label="__('Title')"
                         @keyup="onChange"
                         v-model="state.activity.title"
                         class="activity-title"/>
                     <v-row>
                         <v-col cols="12">
                             <v-textarea
-                                label="Description"
+                                :label="__('Description')"
                                 @keyup="onChange"
                                 v-model="state.activity.description"
                                 rows="5"/>
                         </v-col>
                     </v-row>
-                    <v-footer density="compact" class="activity-details__footer" v-if="state.unsavedChanges">
+                    <v-footer density="compact" class="activity-details__footer" v-if="state.isEditing">
                         <v-spacer/>
-                        <v-btn color="primary" @click="updateActivity">Save</v-btn>
+                        <v-btn color="primary" @click="updateActivity">
+                            {{ __('Save') }}
+                        </v-btn>
                     </v-footer>
                 </v-col>
                 <v-col
@@ -69,9 +75,9 @@ const updateCompleted = () => {
                 >
                     <v-switch
                         color="success"
-                        v-model="state.activity.completed"
-                        @change="updateCompleted"
-                        label="Completed"
+                        :model-value="!!state.activity.completedDate"
+                        @change="() => updateCompletedDate( props.activity )"
+                        :label="__('Completed')"
                     />
                 </v-col>
             </v-row>
@@ -79,7 +85,7 @@ const updateCompleted = () => {
     </v-card>
 </template>
 <style scoped lang="scss">
-@import '@/styles/variables.scss';
+@import '@/assets/styles/variables.scss';
 .activity-details {
     height: calc(100vh - $header-height);
     position: relative;

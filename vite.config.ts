@@ -12,7 +12,7 @@ import rollupNodePolyFill from 'rollup-plugin-node-polyfills'
 export default defineConfig({
   plugins: [
     vue(),
-    vuetify({ styles: { configFile: 'src/styles/vuetify-settings.scss' } }),
+    vuetify({ styles: { configFile: 'src/assets/styles/vuetify-settings.scss' } }),
     VitePWA({
       injectRegister: 'auto',
       workbox: {

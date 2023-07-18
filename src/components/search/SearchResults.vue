@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getTasks } from '@/database/activities';
+import { find, openActivityPage } from '@/model/activities';
 import type Activity from '@/types/activity';
 import { ref, watch, type Ref } from 'vue';
 import ActivityTitle from '@/components/activity/ActivityTitle.vue';
@@ -12,10 +12,21 @@ watch(() => props.searchText, async (searchText: string) => {
         searchResults.value = [];
         return;
     }
-    getTasks().then((response) => {
-        searchResults.value = response.docs as Activity[];
+    find({
+        selector: {
+            title: {
+                $regex: searchText,
+            },
+        },
+    }).then((response) => {
+        searchResults.value = response;
     });
 });
+
+const openActivity = (activity: Activity, emit: Function) => {
+    openActivityPage(activity);
+    emit('hideSearch');
+};
 
 </script>
 <template>
@@ -23,7 +34,7 @@ watch(() => props.searchText, async (searchText: string) => {
         <v-list>
             <v-list-item v-for="activity in searchResults"
                         :key="activity._id"
-                        @click="$emit('hideSearch')">
+                        @click="() => openActivity(activity, $emit)">
                 <v-list-item-title>
                     <ActivityTitle :activity="activity"/>
                 </v-list-item-title>

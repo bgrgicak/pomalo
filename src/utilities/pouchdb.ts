@@ -1,4 +1,4 @@
-import constants from '@/configuration/constants';
+import constants from '@/utilities/constants';
 import { LogType } from '@/types/log';
 import log from '@/utilities/logs';
 import PouchDB from 'pouchdb';
