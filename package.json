@@ -3,19 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
     "build": "run-p type-check build-only",
-    "preview": "vite preview",
     "test:unit": "vitest",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "build-only": "vite build",
+    "dev": "vite",
+    "format": "prettier --write src/",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false"
   },
   "dependencies": {
     "pinia": "^2.0.32",
     "pouchdb": "^8.0.1",
     "pouchdb-find": "^8.0.1",
+    "register-service-worker": "^1.7.2",
     "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
@@ -29,6 +30,7 @@
     "@types/node": "^18.14.2",
     "@types/pouchdb": "^6.4.0",
     "@vitejs/plugin-vue": "^4.0.0",
+    "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vue/eslint-config-typescript": "^11.0.2",
     "@vue/test-utils": "^2.3.0",

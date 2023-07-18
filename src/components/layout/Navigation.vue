@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { mainMenu } from '@/router/routes';
 </script>
 <template>
