@@ -15,7 +15,7 @@ watch(() => props.searchText, async (searchText: string) => {
     find({
         selector: {
             title: {
-                $regex: searchText,
+                $regex: new RegExp(searchText, 'gi'),
             },
         },
     }).then((response) => {
