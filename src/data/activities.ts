@@ -3,13 +3,13 @@ import type { ActivityType } from "@/types/activity";
 import Router from '@/router/router';
 import database from "../helper/pouchdb";
 
-export const find = async (request?: PouchDB.Find.FindRequest<{}> | undefined) => {
+export const find = async (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[]> => {
     return database.find(request).then((result) => {
         return result.docs as Activity[];
     });
 };
 
-export const get = async (documentId: string) => {
+export const get = async (documentId: string): Promise<Activity> => {
     return database.get(documentId);
 };
 
@@ -26,7 +26,7 @@ export const update = (document: Activity) => {
             ...updatedDocument,
             _rev: document._rev,
         });
-    })
+    });
 };
 
 export const remove = (documentId: string) => {
@@ -42,14 +42,14 @@ export const emptyActivity = (type: ActivityType): Activity => {
         type,
         created: new Date(),
     };
-}
+};
 
 export const openActivityPage = async (activity: Activity) => {
     return Router.push(`/${activity.type}/${activity._id}/`);
-  };
+};
 
-export const updateCompletedDate = (activity: Activity) => {
+export const updateCompletedDate = (activity: Activity): Activity => {
     const updateActivity = Object.assign({}, activity) as Activity;
     updateActivity.completedDate = updateActivity.completedDate ? undefined : new Date();
-    update(updateActivity);
+    return updateActivity;
 };

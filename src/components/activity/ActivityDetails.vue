@@ -29,7 +29,7 @@ const onChange = () => {
 const updateActivity = () => {
     update(state.value.activity).then(() => {
         state.value.isEditing = false;
-    })
+    });
 };
 
 const updateOnCommandEnter = (event: KeyboardEvent) => {
@@ -37,48 +37,51 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
         updateActivity();
     }
 };
+const updateCompleted = () => {
+    const updatedActivity = updateCompletedDate(props.activity);
+    update(
+        updatedActivity
+    ).then(() => {
+        state.value.activity.completedDate = updatedActivity.completedDate;
+    });
+};
 </script>
 <template>
-    <v-card class="activity-details pa-4" @keydown="updateOnCommandEnter">
+    <v-card class="activity-details pa-4"
+            @keydown="updateOnCommandEnter">
         <v-container>
             <v-row no-gutters>
-                <v-col
-                    :md="props.small ? '12' : '9'"
-                    sm="12"
-                >
-                    <v-text-field
-                        :label="__('Title')"
-                        @keyup="onChange"
-                        v-model="state.activity.title"
-                        class="activity-title"/>
+                <v-col :md="props.small ? '12' : '9'"
+                       sm="12">
+                    <v-text-field :label="__('Title')"
+                                  @keyup="onChange"
+                                  v-model="state.activity.title"
+                                  class="activity-title" />
                     <v-row>
                         <v-col cols="12">
-                            <v-textarea
-                                :label="__('Description')"
-                                @keyup="onChange"
-                                v-model="state.activity.description"
-                                rows="5"/>
+                            <v-textarea :label="__('Description')"
+                                        @keyup="onChange"
+                                        v-model="state.activity.description"
+                                        rows="5" />
                         </v-col>
                     </v-row>
-                    <v-footer density="compact" class="activity-details__footer" v-if="state.isEditing">
-                        <v-spacer/>
-                        <v-btn color="primary" @click="updateActivity">
+                    <v-footer density="compact"
+                              class="activity-details__footer"
+                              v-if="state.isEditing">
+                        <v-spacer />
+                        <v-btn color="primary"
+                               @click="updateActivity">
                             {{ __('Save') }}
                         </v-btn>
                     </v-footer>
                 </v-col>
-                <v-col
-                    :md="props.small ? '12' : '2'"
-                    :offset="props.small ? '0' : '1'"
-                    sm="12"
-                    
-                >
-                    <v-switch
-                        color="success"
-                        :model-value="!!state.activity.completedDate"
-                        @change="() => updateCompletedDate( props.activity )"
-                        :label="__('Completed')"
-                    />
+                <v-col :md="props.small ? '12' : '2'"
+                       :offset="props.small ? '0' : '1'"
+                       sm="12">
+                    <v-switch color="success"
+                              :model-value="!!state.activity.completedDate"
+                              @change="updateCompleted"
+                              :label="__('Completed')" />
                 </v-col>
             </v-row>
         </v-container>
@@ -86,6 +89,7 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
 </template>
 <style scoped lang="scss">
 @import '@/assets/styles/variables.scss';
+
 .activity-details {
     height: calc(100vh - $header-height);
     position: relative;
@@ -94,8 +98,9 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
         max-width: 100%;
     }
 }
-.activity-title {
-}
+
+.activity-title {}
+
 .activity-details__footer {
     position: absolute;
     bottom: 0;
