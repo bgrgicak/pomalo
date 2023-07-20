@@ -2,8 +2,8 @@
 import { ref, watch, type Ref } from 'vue';
 import type { ActivityState } from '@/types/activity';
 import type Activity from '@/types/activity';
-import { update, updateCompletedDate } from '@/model/activities';
-import __ from '@/utilities/translations';
+import { update, updateCompletedDate } from '@/data/activities';
+import __ from '@/helper/translations';
 
 const props = defineProps(['activity', 'small']);
 const state: Ref<ActivityState> = ref({

@@ -1,7 +1,7 @@
 import type Activity from "@/types/activity";
 import type { ActivityType } from "@/types/activity";
 import Router from '@/router/router';
-import database from "../utilities/pouchdb";
+import database from "../helper/pouchdb";
 
 export const find = async (request?: PouchDB.Find.FindRequest<{}> | undefined) => {
     return database.find(request).then((result) => {

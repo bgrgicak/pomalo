@@ -1,6 +1,6 @@
 import type Route from "@/types/router";
 import { MenuType } from "@/types/router";
-import __ from "@/utilities/translations";
+import __ from "@/helper/translations";
 
 const routes: Route[] = [
     {

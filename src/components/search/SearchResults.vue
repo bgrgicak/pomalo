@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { find, openActivityPage } from '@/model/activities';
+import { find, openActivityPage } from '@/data/activities';
 import type Activity from '@/types/activity';
 import { ref, watch, type Ref } from 'vue';
 import ActivityTitle from '@/components/activity/ActivityTitle.vue';

@@ -1,6 +1,6 @@
-import constants from '@/utilities/constants';
+import constants from '@/helper/constants';
 import { LogType } from '@/types/log';
-import log from '@/utilities/logs';
+import log from '@/helper/logs';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 

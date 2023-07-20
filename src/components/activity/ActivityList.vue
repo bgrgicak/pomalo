@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { add, find, remove, emptyActivity, openActivityPage } from '@/model/activities';
+import { add, find, remove, emptyActivity, openActivityPage } from '@/data/activities';
 import { useLayoutStore } from '@/stores/layout';
 import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
 import { ref, type Ref } from 'vue';
-import __ from '@/utilities/translations';
+import __ from '@/helper/translations';
 
 const props = defineProps(['type']);
 
