@@ -14,7 +14,7 @@ if (!type) {
   throw new Error('ActivityList requires a type prop');
 }
 
-const newActivity = ref(emptyActivity(type));
+const newActivity: Ref<Activity> = ref(emptyActivity(type));
 
 const layoutStore = useLayoutStore();
 const activityStore = useActivityStore();
@@ -45,6 +45,7 @@ const openActivity = (activity: Activity) => {
 };
 
 const closeActivity = (activity: Activity) => {
+  if (!confirm(__('Are you sure you want to close this ') + activity.type + '?')) return;
   activityStore.remove(activity._id);
 };
 </script>

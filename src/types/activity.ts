@@ -1,14 +1,22 @@
-export type ScheduleFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
+export type EventFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
-export interface ScheduleReoccurrence {
-    frequency: ScheduleFrequency;
+export enum Importance {
+    NotImportant = 1,
+    SomeWhatImportant = 3,
+    Important = 5,
+    VeryImportant = 7,
+    ExtremelyImportant = 9,
+}
+
+export interface EventReoccurrence {
+    frequency: EventFrequency;
     interval: number;
 }
 
-export interface ActivitySchedule {
+export interface ActivityEvent {
     start: Date;
     end: Date;
-    reoccurrence: ScheduleReoccurrence;
+    reoccurrence: EventReoccurrence;
 }
 
 export interface ActivityMembers {
@@ -35,6 +43,9 @@ export default interface Activity {
     description?: string;
     type?: ActivityType;
     members?: ActivityMembers[];
-    schedules?: ActivitySchedule[];
+    events?: ActivityEvent[];
     completedDate?: Date;
+    dueDate?: Date;
+    importance?: Importance;
+    estimatedTime?: number;
 }

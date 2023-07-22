@@ -29,9 +29,21 @@ export const update = (document: Activity) => {
     });
 };
 
+export const updateField = (documentId: string, key: string, value: any) => {
+    return get(documentId).then((document: any) => {
+        const newDocument = JSON.parse(JSON.stringify(document));
+        newDocument[key] = value;
+        console.log(newDocument);
+        return database.put({
+            ...newDocument,
+            _rev: newDocument._rev,
+        });
+    });
+};
+
 export const remove = (documentId: string) => {
-    return database.get(documentId).then((document) => {
-        return database.remove(document);
+    return get(documentId).then((document) => {
+        return database.remove(document as any);
     });
 };
 

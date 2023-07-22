@@ -29,24 +29,25 @@ export const useActivityStore = defineStore(
   "activities",
   () => {
     let activities: Ref<ActivityMap> = ref({});
+
     database.changes({
       since: 'now',
       live: true,
       include_docs: true
     }).on('change', (change) => {
-      if (activities.value[change.id]) {
-        if (change.deleted) {
-          delete activities.value[change.id];
-        } else if (activities.value[change.id]) {
-          activities.value[change.id] = change.doc as Activity;
-        }
+      if (change.deleted && activities.value[change.id]) {
+        delete activities.value[change.id];
+      } else {
+        activities.value[change.id] = change.doc as Activity;
       }
     }).catch((error) => {
       log(error);
     });
+
     const list = computed((): Activity[] => {
       return Object.values(activities.value);
     });
+
     const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
       return dataFind(request).then((response: Activity[]) => {
         activities.value = mapActivities(response);
@@ -81,6 +82,7 @@ export const useActivityStore = defineStore(
         log(error, LogType.Error);
       });
     };
+
     return {
       activities,
       list,
