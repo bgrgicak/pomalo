@@ -6,6 +6,7 @@ import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
 import { ref, type Ref } from 'vue';
 import __ from '@/helper/translations';
+import ActivityClose from './ActivityClose.vue';
 
 const props = defineProps(['type']);
 const type = props.type as ActivityType;
@@ -68,10 +69,8 @@ const closeActivity = (activity: Activity) => {
                      variant="plain"></v-btn>
             </template>
             <v-list>
-              <v-list-item @click="() => closeActivity(item)">
-                <v-list-item-title>
-                  {{ __('Close') }}
-                </v-list-item-title>
+              <v-list-item>
+                <ActivityClose :activity="item" />
               </v-list-item>
             </v-list>
           </v-menu>
