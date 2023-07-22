@@ -4,7 +4,7 @@ import { computed } from 'vue';
 
 const props = defineProps(['value', 'label']);
 
-const emit = defineEmits(['onChange']);
+const emit = defineEmits(['change']);
 
 const systemDateFormat = getSystemDateFormat();
 
@@ -15,15 +15,15 @@ const value = computed(() => {
     return toLocaleDateString(new Date(props.value));
 });
 
-const modelValueChanged = (newValue: string) => {
+const onChange = (newValue: string) => {
     const date = newValue ? new Date(newValue) : undefined;
-    emit('onChange', date);
+    emit('change', date);
 };
 </script>
 <template>
     <v-text-field :label="label"
                   :value="value"
-                  @update:modelValue="modelValueChanged"
+                  @update:modelValue="onChange"
                   type="date"
                   :pattern="systemDateFormat" />
 </template>

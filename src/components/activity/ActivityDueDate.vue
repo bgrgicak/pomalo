@@ -5,7 +5,7 @@ import DatePicker from '@/components/ui/DatePicker.vue';
 
 
 const props = defineProps(['activity']);
-const emit = defineEmits(['onChange']);
+const emit = defineEmits(['change']);
 
 const onChange = (value: string | undefined) => {
     const newValue = value ? new Date(value) : undefined;
@@ -14,12 +14,12 @@ const onChange = (value: string | undefined) => {
         'dueDate',
         newValue,
     ).then(() => {
-        emit('onChange', newValue);
+        emit('change', newValue);
     });
 };
 </script>
 <template>
-    <DatePicker :label="__('Due Date')"
+    <DatePicker :label="__('When is it due?')"
                 :value="props.activity.dueDate"
-                @onChange="onChange" />
+                @change="onChange" />
 </template>

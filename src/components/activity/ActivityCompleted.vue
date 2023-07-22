@@ -3,7 +3,7 @@ import { updateField } from '@/data/activities';
 import __ from '@/helper/translations';
 
 const props = defineProps(['activity']);
-const emit = defineEmits(['onChange']);
+const emit = defineEmits(['change']);
 
 const onChange = (event: any) => {
     const newValue = event.target.checked ? new Date() : undefined;
@@ -12,7 +12,7 @@ const onChange = (event: any) => {
         'completedDate',
         newValue,
     ).then(() => {
-        emit('onChange', newValue);
+        emit('change', newValue);
     });
 };
 </script>

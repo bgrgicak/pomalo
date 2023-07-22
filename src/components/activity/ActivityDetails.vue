@@ -8,6 +8,7 @@ import { openActivityPage } from '@/data/activities';
 import ActivityClose from './ActivityClose.vue';
 import ActivityCompleted from './ActivityCompleted.vue';
 import ActivityDueDate from './ActivityDueDate.vue';
+import ActivityImportance from './ActivityImportance.vue';
 
 const props = defineProps(['activity', 'small']);
 const state: Ref<ActivityState> = ref({
@@ -79,10 +80,12 @@ const onFieldChange = (key: string, value: any) => {
                        :offset="props.small ? '0' : '1'"
                        sm="12">
                     <ActivityCompleted :activity="state.activity"
-                                       @onChange="(value: any) => onFieldChange('completedDate', value)" />
+                                       @change="(value: any) => onFieldChange('completedDate', value)" />
 
                     <ActivityDueDate :activity="state.activity"
-                                     @onChange="(value: any) => onFieldChange('dueDate', value)" />
+                                     @change="(value: any) => onFieldChange('dueDate', value)" />
+                    <ActivityImportance :activity="state.activity"
+                                        @change="(value: any) => onFieldChange('importance', value)" />
                     <v-divider />
                     <ActivityClose :activity="state.activity"
                                    class=" mt-4" />
