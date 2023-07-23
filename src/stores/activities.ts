@@ -6,6 +6,7 @@ import {
   get as dataGet,
   update as dataUpdate,
   remove as dataRemove,
+  updateField as dataUpdateField,
 } from "@/data/activities";
 import __ from "@/helper/translations";
 import log from "@/helper/logs";
@@ -77,6 +78,11 @@ export const useActivityStore = defineStore(
         log(error, LogType.Error);
       });
     };
+    const updateField = (activityId: string, field: string, value: any) => {
+      return dataUpdateField(activityId, field, value).catch((error) => {
+        log(error, LogType.Error);
+      });
+    };
     const remove = (activityId: string) => {
       return dataRemove(activityId).catch(error => {
         log(error, LogType.Error);
@@ -90,6 +96,7 @@ export const useActivityStore = defineStore(
       add,
       get,
       update,
+      updateField,
       remove,
     };
   }

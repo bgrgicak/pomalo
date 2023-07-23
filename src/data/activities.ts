@@ -45,22 +45,3 @@ export const remove = (documentId: string) => {
         return database.remove(document as any);
     });
 };
-
-export const emptyActivity = (type: ActivityType): Activity => {
-    return {
-        _id: '',
-        title: '',
-        type,
-        created: new Date(),
-    };
-};
-
-export const openActivityPage = async (activity: Activity) => {
-    return Router.push(`/${activity.type}/${activity._id}/`);
-};
-
-export const updateCompletedDate = (activity: Activity): Activity => {
-    const updateActivity = Object.assign({}, activity) as Activity;
-    updateActivity.completedDate = updateActivity.completedDate ? undefined : new Date();
-    return updateActivity;
-};

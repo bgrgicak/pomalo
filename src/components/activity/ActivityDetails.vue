@@ -2,9 +2,9 @@
 import { ref, watch, type Ref } from 'vue';
 import type { ActivityState } from '@/types/activity';
 import type Activity from '@/types/activity';
-import { update } from '@/data/activities';
+import { useActivityStore } from '@/stores/activities';
 import __ from '@/helper/translations';
-import { openActivityPage } from '@/data/activities';
+import { openActivityPage } from '@/helper/activities';
 import ActivityClose from './ActivityClose.vue';
 import ActivityCompleted from './ActivityCompleted.vue';
 import ActivityDueDate from './ActivityDueDate.vue';
@@ -18,6 +18,7 @@ const state: Ref<ActivityState> = ref({
     isEditing: false,
 });
 
+const activityStore = useActivityStore();
 
 watch(() => props.activity, (newActivity) => {
     if (newActivity._id === state.value.activity._id) return;
@@ -36,7 +37,7 @@ const onChange = () => {
 };
 
 const updateActivity = () => {
-    update(state.value.activity).then(() => {
+    activityStore.update(state.value.activity).then(() => {
         state.value.isEditing = false;
     });
 };

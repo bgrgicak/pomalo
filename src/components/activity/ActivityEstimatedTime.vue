@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { updateField } from '@/data/activities';
+import { useActivityStore } from '@/stores/activities';
 import __ from '@/helper/translations';
 import { settings } from '@/data/settings';
 import constants from '@/helper/constants';
@@ -7,9 +7,11 @@ import constants from '@/helper/constants';
 const props = defineProps(['activity']);
 const emit = defineEmits(['change']);
 
+const activityStore = useActivityStore();
+
 const onChange = (value: string | undefined) => {
     const newValue = value ? parseInt(value) : undefined;
-    updateField(
+    activityStore.updateField(
         props.activity._id,
         'estimatedTime',
         newValue,

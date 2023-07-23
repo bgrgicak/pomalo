@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useActivityStore } from '@/stores/activities';
-import { emptyActivity, openActivityPage } from '@/data/activities';
+import { emptyActivity, openActivityPage } from '@/helper/activities';
 import { useLayoutStore } from '@/stores/layout';
 import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';

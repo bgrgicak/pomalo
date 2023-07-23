@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { updateField } from '@/data/activities';
+import { useActivityStore } from '@/stores/activities';
 import __ from '@/helper/translations';
 
 const props = defineProps(['activity']);
 const emit = defineEmits(['change']);
 
+const activityStore = useActivityStore();
+
 const onChange = (event: any) => {
     const newValue = event.target.checked ? new Date() : undefined;
-    updateField(
+    activityStore.updateField(
         props.activity._id,
         'completedDate',
         newValue,
