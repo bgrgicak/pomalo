@@ -44,22 +44,25 @@ const openActivity = (activity: Activity) => {
     }
   );
 };
-
-const closeActivity = (activity: Activity) => {
-  if (!confirm(__('Are you sure you want to close this ') + activity.type + '?')) return;
-  activityStore.remove(activity._id);
-};
 </script>
 
 <template>
   <v-table class="activity-list">
     <tbody>
+      <tr>
+        <td>{{ __('Title') }}</td>
+        <td>{{ __('Due Date') }}</td>
+        <td></td>
+      </tr>
       <tr v-for="item in activityStore.list"
           :key="item._id">
         <td @click="() => showActivitySidebar(item)"
             @dblclick="() => openActivity(item)"
             :class="['activity-list__item', 'activity-list__link', item.completedDate ? 'activity-list__link--completed' : '']">
           {{ item.title }}
+        </td>
+        <td class="activity-list__item">
+          {{ item.dueDate ? new Date(item.dueDate).toLocaleDateString() : '' }}
         </td>
         <td class="activity-list__item activity-list__item--actions">
           <v-menu>
