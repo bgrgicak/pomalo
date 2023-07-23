@@ -6,17 +6,9 @@ import { LogType } from "@/types/log";
 import database from "@/helper/pouchdb";
 import { computed, ref, type Ref } from "vue";
 
-interface ActivityMap {
+export interface ActivityMap {
   [key: string]: Activity;
 }
-
-export const mapActivities = (activities: Activity[]): ActivityMap => {
-  const activityMap: ActivityMap = {};
-  activities.forEach((activity: Activity) => {
-    activityMap[activity._id as string] = activity;
-  });
-  return activityMap;
-};
 
 export const useActivityStore = defineStore(
   "activities",
@@ -37,16 +29,14 @@ export const useActivityStore = defineStore(
       log(error);
     });
 
-    const list = computed((): Activity[] => {
-      return Object.values(activities.value);
-    });
-
     const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
       return database.find(request).then((result) => {
         return result.docs as Activity[];
       }).then((response: Activity[]) => {
-        activities.value = mapActivities(response);
-        return list.value;
+        response.forEach((activity: Activity) => {
+          activities.value[activity._id as string] = activity;
+        });
+        return response;
       }).catch((error) => {
         log(error, LogType.Error);
       });
@@ -102,7 +92,6 @@ export const useActivityStore = defineStore(
 
     return {
       activities,
-      list,
       find,
       add,
       get,

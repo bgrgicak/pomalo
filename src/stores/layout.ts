@@ -16,19 +16,19 @@ export const useLayoutStore = defineStore(
             isRightSidebarVisible: (state) => state.rightSidebarVisibility && undefined !== state.currentActivity,
         },
         actions: {
-            showLeftSidebar() {
+            showLeftSidebar () {
                 this.leftSidebarVisibility = true;
             },
-            hideLeftSidebar() {
+            hideLeftSidebar () {
                 this.leftSidebarVisibility = false;
             },
-            showRightSidebar(activity?: Activity) {
+            showRightSidebar (activity?: Activity) {
                 this.rightSidebarVisibility = true;
                 if (activity) {
-                    this.currentActivity = activity;
+                    this.currentActivity = Object.assign(activity);
                 }
             },
-            hideRightSidebar() {
+            hideRightSidebar () {
                 this.rightSidebarVisibility = false;
                 this.currentActivity = undefined;
             }

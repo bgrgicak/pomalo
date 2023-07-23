@@ -14,7 +14,7 @@ import constants from '@/helper/constants';
 
 const props = defineProps(['activity', 'small']);
 const state: Ref<ActivityState> = ref({
-    activity: props.activity as Activity,
+    activity: Object.assign({}, props.activity) as Activity,
     isEditing: false,
 });
 

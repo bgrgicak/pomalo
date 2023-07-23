@@ -7,6 +7,7 @@ import type { ActivityType } from '@/types/activity';
 import { ref, type Ref } from 'vue';
 import __ from '@/helper/translations';
 import ActivityClose from './ActivityClose.vue';
+import { useActivityListStore } from '@/stores/activity-list';
 
 const props = defineProps(['type']);
 const type = props.type as ActivityType;
@@ -19,8 +20,9 @@ const newActivity: Ref<Activity> = ref(emptyActivity(type));
 
 const layoutStore = useLayoutStore();
 const activityStore = useActivityStore();
+const activityListStore = useActivityListStore();
 
-activityStore.find(
+activityListStore.find(
   {
     selector: {
       type
@@ -56,7 +58,7 @@ const openActivity = (activity: Activity) => {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in activityStore.list"
+      <tr v-for="item in activityListStore.list"
           :key="item._id">
         <td @click="() => showActivitySidebar(item)"
             @dblclick="() => openActivity(item)"
