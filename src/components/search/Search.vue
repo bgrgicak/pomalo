@@ -2,6 +2,7 @@
 import { useLayoutStore } from '@/stores/layout';
 import { nextTick, ref } from 'vue';
 import SearchResults from './SearchResults.vue';
+import constants from '@/helper/constants';
 
 const searchVisible = ref(false);
 const searchRef = ref(null);
@@ -25,37 +26,43 @@ const showLeftSidebar = () => {
 };
 </script>
 <template>
-    <div class="header-search" v-click-outside="hideSearch">
+    <div class="header-search"
+         v-click-outside="hideSearch">
         <v-text-field density="compact"
-                    variant="solo"
-                    label="Search"
-                    append-inner-icon="mdi-magnify"
-                    single-line
-                    hide-details
-                    ref="searchRef"
-                    v-model="searchText"
-                    v-if="searchVisible"
-                    @click:append-inner="showLeftSidebar"
-                    class="header-search__input"/>
+                      variant="solo"
+                      label="Search"
+                      append-inner-icon="mdi-magnify"
+                      single-line
+                      hide-details
+                      ref="searchRef"
+                      v-model="searchText"
+                      v-if="searchVisible"
+                      @click:append-inner="showLeftSidebar"
+                      class="header-search__input" />
         <v-btn icon="mdi-magnify"
-            @click="showSearch"
-            v-if="!searchVisible" />
-        <SearchResults class="header-search__results" v-if="searchVisible"
-                    :searchText="searchText"
-                    @hideSearch="hideSearch" />
+               @click="showSearch"
+               v-if="!searchVisible"
+               :color="constants.colors.icons" />
+        <SearchResults class="header-search__results"
+                       v-if="searchVisible"
+                       :searchText="searchText"
+                       @hideSearch="hideSearch" />
     </div>
 </template>
 <style lang="scss">
 @import '@/assets/styles/variables.scss';
 $form-width: 300px;
+
 .header-search__input {
     width: $form-width;
     position: relative;
 }
+
 .header-search__results {
     z-index: $search-results-z-index;
     position: fixed;
     width: $form-width;
+
     .v-list-item--link {
         cursor: unset;
     }

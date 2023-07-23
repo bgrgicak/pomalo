@@ -4,7 +4,7 @@ export type EventFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
 
 export enum Importance {
     NotImportant = 1,
-    SomeWhatImportant = 3,
+    SomewhatImportant = 3,
     Important = 5,
     VeryImportant = 7,
     ExtremelyImportant = 9,
@@ -13,24 +13,19 @@ export enum Importance {
 export const ImportanceLabels: Object = {
     [Importance.NotImportant]: {
         label: __('Not Important'),
-        color: 'gray',
     },
-    [Importance.SomeWhatImportant]: {
+    [Importance.SomewhatImportant]: {
         label: __('Somewhat Important'),
-        color: 'blue',
         default: true,
     },
     [Importance.Important]: {
         label: __('Important'),
-        color: 'green',
     },
     [Importance.VeryImportant]: {
         label: __('Very Important'),
-        color: 'yellow',
     },
     [Importance.ExtremelyImportant]: {
         label: __('Extremely Important'),
-        color: 'red',
     },
 };
 

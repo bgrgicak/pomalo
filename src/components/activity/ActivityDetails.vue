@@ -9,6 +9,8 @@ import ActivityClose from './ActivityClose.vue';
 import ActivityCompleted from './ActivityCompleted.vue';
 import ActivityDueDate from './ActivityDueDate.vue';
 import ActivityImportance from './ActivityImportance.vue';
+import ActivityEstimatedTime from './ActivityEstimatedTime.vue';
+import constants from '@/helper/constants';
 
 const props = defineProps(['activity', 'small']);
 const state: Ref<ActivityState> = ref({
@@ -55,7 +57,7 @@ const onFieldChange = (key: string, value: any) => {
         <v-container>
             <v-row no-gutters>
                 <v-col :md="props.small ? '12' : '9'"
-                       sm="12">
+                       cols="12">
                     <v-text-field @keyup="onChange"
                                   v-model="state.activity.title"
                                   class="activity-title"
@@ -64,12 +66,13 @@ const onFieldChange = (key: string, value: any) => {
                         <v-col cols="12">
                             <v-textarea @keyup="onChange"
                                         v-model="state.activity.description"
-                                        rows="5" />
+                                        rows="5"
+                                        variant="outlined" />
                         </v-col>
                     </v-row>
                     <v-row v-if="state.isEditing">
                         <v-col cols="12">
-                            <v-btn color="primary"
+                            <v-btn :color="constants.colors.primary"
                                    @click="updateActivity">
                                 {{ __('Save') }}
                             </v-btn>
@@ -77,13 +80,15 @@ const onFieldChange = (key: string, value: any) => {
                     </v-row>
                 </v-col>
                 <v-col :md="props.small ? '12' : '2'"
-                       :offset="props.small ? '0' : '1'"
-                       sm="12">
+                       :offset-md="props.small ? '0' : '1'"
+                       cols="12">
                     <ActivityCompleted :activity="state.activity"
                                        @change="(value: any) => onFieldChange('completedDate', value)" />
-
+                    <v-divider />
                     <ActivityDueDate :activity="state.activity"
                                      @change="(value: any) => onFieldChange('dueDate', value)" />
+                    <ActivityEstimatedTime :activity="state.activity"
+                                           @change="(value: any) => onFieldChange('estimatedTime', value)" />
                     <ActivityImportance :activity="state.activity"
                                         @change="(value: any) => onFieldChange('importance', value)" />
                     <v-divider />

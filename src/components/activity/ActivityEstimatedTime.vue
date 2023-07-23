@@ -1,0 +1,32 @@
+<script setup lang="ts">
+import { updateField } from '@/data/activities';
+import __ from '@/helper/translations';
+import { settings } from '@/data/settings';
+import constants from '@/helper/constants';
+
+const props = defineProps(['activity']);
+const emit = defineEmits(['change']);
+
+const onChange = (value: string | undefined) => {
+    const newValue = value ? parseInt(value) : undefined;
+    updateField(
+        props.activity._id,
+        'estimatedTime',
+        newValue,
+    ).then(() => {
+        emit('change', newValue);
+    });
+};
+</script>
+<template>
+    <v-text-field :label="__('How many hours?')"
+                  :model-value="props.activity.estimatedTime"
+                  @update:modelValue="onChange"
+                  variant="outlined"
+                  type="number" />
+    <v-alert v-if="props.activity.estimatedTime > settings.recommendedMaxHoursPerTask"
+             :color="constants.colors.primary"
+             variant="outlined"
+             class="mb-8"
+             :text="__('It\'s recommended to split large tasks into smaller ones.')" />
+</template>

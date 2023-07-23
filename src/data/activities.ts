@@ -33,7 +33,6 @@ export const updateField = (documentId: string, key: string, value: any) => {
     return get(documentId).then((document: any) => {
         const newDocument = JSON.parse(JSON.stringify(document));
         newDocument[key] = value;
-        console.log(newDocument);
         return database.put({
             ...newDocument,
             _rev: newDocument._rev,

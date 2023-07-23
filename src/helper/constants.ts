@@ -1,4 +1,8 @@
 export default {
-    appTitle: 'Calendar app',
+    appName: 'Calendar app',
     appSlug: 'calendar-app',
+    colors: {
+        primary: 'blue',
+        'icons': 'blue-grey-darken-4',
+    },
 };
