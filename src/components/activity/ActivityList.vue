@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useActivityStore } from '@/stores/activities';
 import { emptyActivity, openActivityPage } from '@/helper/activities';
 import { useLayoutStore } from '@/stores/layout';
 import type Activity from '@/types/activity';
@@ -19,7 +18,6 @@ if (!type) {
 const newActivity: Ref<Activity> = ref(emptyActivity(type));
 
 const layoutStore = useLayoutStore();
-const activityStore = useActivityStore();
 const activityListStore = useActivityListStore();
 
 activityListStore.find(
@@ -31,7 +29,7 @@ activityListStore.find(
 );
 
 const addActivity = () => {
-  activityStore.add(newActivity.value as Activity).then(() => {
+  activityListStore.add(newActivity.value as Activity).then(() => {
     newActivity.value = emptyActivity(type);
   });
 };

@@ -15,9 +15,11 @@ export const useActivityListStore = defineStore(
     });
 
     watch(() => activityStore.activities, (updatedActivities: ActivityMap) => {
-      activities.value = activities.value.map((activity) => {
-        return updatedActivities[activity._id as string];
-      });
+      activities.value = activities.value
+        .filter((activity) => updatedActivities[activity._id as string])
+        .map((activity) => {
+          return updatedActivities[activity._id as string];
+        });
     }, { deep: true });
 
     const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
@@ -27,9 +29,19 @@ export const useActivityListStore = defineStore(
       });
     };
 
+    const add = (activity: Activity) => {
+      return activityStore.add(activity).then((response: any) => {
+        const newActivity = JSON.parse(JSON.stringify(activity));
+        newActivity._id = response.id;
+        activities.value.push(newActivity);
+        return newActivity;
+      });
+    };
+
     return {
       list,
-      find
+      find,
+      add,
     };
   }
 );

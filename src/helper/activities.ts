@@ -4,7 +4,6 @@ import Router from '@/router/router';
 
 export const emptyActivity = (type: ActivityType): Activity => {
     return {
-        _id: '',
         title: '',
         type,
         created: new Date(),

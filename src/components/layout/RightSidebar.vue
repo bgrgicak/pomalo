@@ -14,15 +14,35 @@ const hide = () => {
                          v-if="layoutStore.isRightSidebarVisible"
                          class="right-sidebar">
         <div v-click-outside="hide">
+            <v-btn icon="mdi-close"
+                   variant="plain"
+                   size="56"
+                   class="right-sidebar__close mr-2"
+                   @click="hide" />
             <ActivityDetails :activity="activity"
                              small="true" />
         </div>
     </v-navigation-drawer>
 </template>
-<style scoped lang="scss">
+<style lang="scss">
 @import '@/assets/styles/variables.scss';
 
 .right-sidebar {
     top: $header-height !important;
+
+    .v-navigation-drawer__content {
+        .v-card {
+            padding-top: 0 !important;
+
+            .v-container {
+                padding-top: 0 !important;
+            }
+        }
+    }
+}
+
+.right-sidebar__close {
+    margin-left: auto;
+    display: block;
 }
 </style>

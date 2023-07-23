@@ -57,7 +57,7 @@ export interface ActivityState {
 }
 
 export default interface Activity {
-    _id: string;
+    _id?: string;
     _rev?: string;
     title: string;
     created: Date;

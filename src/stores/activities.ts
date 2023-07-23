@@ -54,8 +54,7 @@ export const useActivityStore = defineStore(
     };
     const add = (activity: Activity) => {
       const newDocument = JSON.parse(JSON.stringify(activity));
-      newDocument._id = newDocument._id || newDocument.title.toLowerCase().replace(/ /g, '-');
-      return database.put(newDocument).catch(error => {
+      return database.post(newDocument).catch(error => {
         log(error, LogType.Error);
       });
     };
