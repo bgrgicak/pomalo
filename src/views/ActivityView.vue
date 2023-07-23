@@ -10,13 +10,15 @@ const activityStore = useActivityStore();
 const route = useRoute();
 const activityId = ref(route.params._id as string);
 
-if (activityId) {
+if (activityId.value) {
    activityStore.get(activityId.value);
 }
 
 watch(() => route.params._id, (newId) => {
    activityId.value = newId as string;
-   activityStore.get(activityId.value);
+   if (activityId.value) {
+      activityStore.get(activityId.value);
+   }
 });
 </script>
 <template>

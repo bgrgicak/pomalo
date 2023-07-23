@@ -35,7 +35,7 @@ const addActivity = () => {
 };
 
 const showActivitySidebar = (activity: Activity) => {
-  layoutStore.showRightSidebar(activity);
+  layoutStore.showRightSidebar(activity._id);
 };
 const openActivity = (activity: Activity) => {
   openActivityPage(activity).then(

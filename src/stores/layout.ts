@@ -8,12 +8,12 @@ export const useLayoutStore = defineStore(
             return {
                 leftSidebarVisibility: false,
                 rightSidebarVisibility: false,
-                currentActivity: undefined as Activity | undefined,
+                currentActivityId: undefined as string | undefined,
             };
         },
         getters: {
             isLeftSidebarVisible: (state) => state.leftSidebarVisibility,
-            isRightSidebarVisible: (state) => state.rightSidebarVisibility && undefined !== state.currentActivity,
+            isRightSidebarVisible: (state) => state.rightSidebarVisibility && undefined !== state.currentActivityId,
         },
         actions: {
             showLeftSidebar () {
@@ -22,15 +22,15 @@ export const useLayoutStore = defineStore(
             hideLeftSidebar () {
                 this.leftSidebarVisibility = false;
             },
-            showRightSidebar (activity?: Activity) {
+            showRightSidebar (activityId: string | undefined = undefined) {
                 this.rightSidebarVisibility = true;
-                if (activity) {
-                    this.currentActivity = Object.assign(activity);
+                if (activityId) {
+                    this.currentActivityId = activityId;
                 }
             },
             hideRightSidebar () {
                 this.rightSidebarVisibility = false;
-                this.currentActivity = undefined;
+                this.currentActivityId = undefined;
             }
         }
     },

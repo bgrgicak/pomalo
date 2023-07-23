@@ -14,7 +14,7 @@ import constants from '@/helper/constants';
 
 const props = defineProps(['activity', 'small']);
 const state: Ref<ActivityState> = ref({
-    activity: Object.assign({}, props.activity) as Activity,
+    activity: structuredClone({ ...props.activity }) as Activity,
     isEditing: false,
 });
 
@@ -28,7 +28,7 @@ watch(() => props.activity, (newActivity) => {
             return;
         }
     }
-    state.value.activity = Object.assign({}, newActivity);
+    state.value.activity = structuredClone({ ...newActivity });
     state.value.isEditing = false;
 });
 

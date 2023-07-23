@@ -2,26 +2,39 @@
 import { useLayoutStore } from '@/stores/layout';
 import ActivityDetails from '@/components/activity/ActivityDetails.vue';
 import { computed } from 'vue';
+import { useActivityStore } from '@/stores/activities';
+import { watch } from 'vue';
+import { useRoute } from 'vue-router';
 
 const layoutStore = useLayoutStore();
-const activity = computed(() => layoutStore.currentActivity);
+const activityStore = useActivityStore();
+
+const route = useRoute();
+
+const activityId = computed(() => layoutStore.currentActivityId as string);
+const activity = computed(() => activityStore.activities[activityId.value]);
+
+if (activityId.value) {
+    activityStore.get(activityId.value);
+}
+
 const hide = () => {
     layoutStore.hideRightSidebar();
 };
+
+watch(route, hide);
 </script>
 <template>
     <v-navigation-drawer location="right"
                          v-if="layoutStore.isRightSidebarVisible"
                          class="right-sidebar">
-        <div v-click-outside="hide">
-            <v-btn icon="mdi-close"
-                   variant="plain"
-                   size="56"
-                   class="right-sidebar__close mr-2"
-                   @click="hide" />
-            <ActivityDetails :activity="activity"
-                             small="true" />
-        </div>
+        <v-btn icon="mdi-close"
+               variant="plain"
+               size="56"
+               class="right-sidebar__close mr-2"
+               @click="hide" />
+        <ActivityDetails :activity="activity"
+                         small="true" />
     </v-navigation-drawer>
 </template>
 <style lang="scss">

@@ -53,13 +53,13 @@ export const useActivityStore = defineStore(
       });
     };
     const add = (activity: Activity) => {
-      const newDocument = JSON.parse(JSON.stringify(activity));
+      const newDocument = structuredClone({ ...activity });
       return database.post(newDocument).catch(error => {
         log(error, LogType.Error);
       });
     };
     const update = (activity: Activity) => {
-      const updatedDocument = JSON.parse(JSON.stringify(activity));
+      const updatedDocument = structuredClone({ ...activity });
       return database.get(updatedDocument._id as string).then((document) => {
         return database.put({
           ...updatedDocument,
@@ -71,7 +71,7 @@ export const useActivityStore = defineStore(
     };
     const updateField = (activityId: string, field: string, value: any) => {
       return get(activityId).then((document: any) => {
-        const newDocument = JSON.parse(JSON.stringify(document));
+        const newDocument = structuredClone({ ...document });
         newDocument[field] = value;
         return database.put({
           ...newDocument,

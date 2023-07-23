@@ -15,7 +15,7 @@ export const openActivityPage = async (activity: Activity) => {
 };
 
 export const updateCompletedDate = (activity: Activity): Activity => {
-    const updateActivity = Object.assign({}, activity) as Activity;
+    const updateActivity = structuredClone(activity) as Activity;
     updateActivity.completedDate = updateActivity.completedDate ? undefined : new Date();
     return updateActivity;
 };
