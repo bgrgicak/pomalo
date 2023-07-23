@@ -1,13 +1,5 @@
 import { defineStore } from "pinia";
 import type Activity from "@/types/activity";
-import {
-  find as dataFind,
-  add as dataAdd,
-  get as dataGet,
-  update as dataUpdate,
-  remove as dataRemove,
-  updateField as dataUpdateField,
-} from "@/data/activities";
 import __ from "@/helper/translations";
 import log from "@/helper/logs";
 import { LogType } from "@/types/log";
@@ -50,7 +42,9 @@ export const useActivityStore = defineStore(
     });
 
     const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
-      return dataFind(request).then((response: Activity[]) => {
+      return database.find(request).then((result) => {
+        return result.docs as Activity[];
+      }).then((response: Activity[]) => {
         activities.value = mapActivities(response);
         return list.value;
       }).catch((error) => {
@@ -61,30 +55,47 @@ export const useActivityStore = defineStore(
       if (activities.value[activityId]) {
         return Promise.resolve(activities.value[activityId]);
       }
-      return dataGet(activityId).then((response: Activity) => {
-        activities.value[activityId] = response;
-        return response;
+      return database.get(activityId).then((response) => {
+        activities.value[activityId] = response as Activity;
+        return activities.value[activityId];
       }).catch((error) => {
         log(error, LogType.Error);
       });
     };
     const add = (activity: Activity) => {
-      return dataAdd(activity).catch(error => {
+      const newDocument = JSON.parse(JSON.stringify(activity));
+      newDocument._id = newDocument._id || newDocument.title.toLowerCase().replace(/ /g, '-');
+      return database.put(newDocument).catch(error => {
         log(error, LogType.Error);
       });
     };
     const update = (activity: Activity) => {
-      return dataUpdate(activity).catch((error) => {
+      const updatedDocument = JSON.parse(JSON.stringify(activity));
+      return database.get(updatedDocument._id as string).then((document) => {
+        return database.put({
+          ...updatedDocument,
+          _rev: document._rev,
+        });
+      }).catch((error) => {
         log(error, LogType.Error);
       });
     };
     const updateField = (activityId: string, field: string, value: any) => {
-      return dataUpdateField(activityId, field, value).catch((error) => {
-        log(error, LogType.Error);
+      return get(activityId).then((document: any) => {
+        const newDocument = JSON.parse(JSON.stringify(document));
+        newDocument[field] = value;
+        return database.put({
+          ...newDocument,
+          _rev: newDocument._rev,
+        }).catch((error) => {
+          log(error, LogType.Error);
+        });
       });
     };
     const remove = (activityId: string) => {
-      return dataRemove(activityId).catch(error => {
+      return get(activityId).then((document) => {
+        return database.remove(document as any);
+      }).catch(error => {
         log(error, LogType.Error);
       });
     };

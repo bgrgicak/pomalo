@@ -6,7 +6,7 @@ import constants from '@/helper/constants';
 <template>
     <v-toolbar density="compact"
                class="header">
-        <v-btn prepend-icon="mdi-timer-check-outline"
+        <v-btn prepend-icon="mdi-timeline-clock-outline"
                :color="constants.colors.icons"
                to="/">
             {{ constants.appName }}

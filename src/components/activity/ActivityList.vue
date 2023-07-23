@@ -48,12 +48,14 @@ const openActivity = (activity: Activity) => {
 
 <template>
   <v-table class="activity-list">
-    <tbody>
+    <thead>
       <tr>
-        <td>{{ __('Title') }}</td>
-        <td>{{ __('Due Date') }}</td>
-        <td></td>
+        <th>{{ __('Title') }}</th>
+        <th>{{ __('Due Date') }}</th>
+        <th></th>
       </tr>
+    </thead>
+    <tbody>
       <tr v-for="item in activityStore.list"
           :key="item._id">
         <td @click="() => showActivitySidebar(item)"

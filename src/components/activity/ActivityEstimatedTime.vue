@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useActivityStore } from '@/stores/activities';
 import __ from '@/helper/translations';
-import { settings } from '@/data/settings';
+import { settings } from '@/helper/settings';
 import constants from '@/helper/constants';
 
 const props = defineProps(['activity']);
