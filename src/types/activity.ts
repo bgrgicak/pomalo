@@ -36,8 +36,8 @@ export interface EventReoccurrence {
 
 export interface ActivityEvent {
     start: Date;
-    end: Date;
-    reoccurrence: EventReoccurrence;
+    end?: Date;
+    reoccurrence?: EventReoccurrence;
 }
 
 export interface ActivityMembers {

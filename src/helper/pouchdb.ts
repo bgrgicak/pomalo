@@ -7,7 +7,7 @@ import PouchDBFind from 'pouchdb-find';
 const database = new PouchDB(constants.appSlug);
 PouchDB.plugin(PouchDBFind);
 
-PouchDB.replicate(constants.appSlug, 'http://localhost:5984/' + constants.appSlug, { live: true });
+// PouchDB.replicate(constants.appSlug, 'http://localhost:5984/' + constants.appSlug, { live: true });
 
 database.createIndex({
   index: {
@@ -33,8 +33,8 @@ database.createIndex({
 
 database.createIndex({
   index: {
-    fields: ['schedules'],
-    name: 'schedules-index',
+    fields: ['events[].start', 'events[].end'],
+    name: 'events-index',
   }
 }).then(result => {
   log(result, LogType.Debug);
