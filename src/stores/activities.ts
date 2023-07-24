@@ -54,7 +54,7 @@ export const useActivityStore = defineStore(
     };
     const add = (activity: Activity) => {
       const newDocument = structuredClone({ ...activity });
-      return database.post(newDocument).catch(error => {
+      return database.put(newDocument).catch(error => {
         log(error, LogType.Error);
       });
     };

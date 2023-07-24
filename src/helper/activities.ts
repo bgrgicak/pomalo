@@ -2,8 +2,17 @@ import type Activity from "@/types/activity";
 import type { ActivityType } from "@/types/activity";
 import Router from '@/router/router';
 
+export const newActivityId = (type: string): string => {
+    return [
+        type,
+        0, // if user isn't logged in, use 0
+        new Date().toJSON() + Math.random(),
+    ].join('');
+};
+
 export const emptyActivity = (type: ActivityType): Activity => {
     return {
+        _id: newActivityId(type),
         title: '',
         type,
         created: new Date(),

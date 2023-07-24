@@ -13,7 +13,7 @@ import Timer from '@/components/timer/Timer.vue';
             <v-icon :icon="constants.icons.logo"
                     class="header__logo-icon"
                     :size="36" />
-            {{ constants.appName }}
+            {{ constants.appTitle }}
         </v-btn>
         <v-spacer></v-spacer>
 

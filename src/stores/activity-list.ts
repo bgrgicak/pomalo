@@ -6,16 +6,16 @@ import { useActivityStore, type ActivityMap } from "./activities";
 export const useActivityListStore = defineStore(
   "activity-list",
   () => {
-    const activities: Ref<Activity[]> = ref([]);
+    const activityList: Ref<Activity[]> = ref([]);
 
     const activityStore = useActivityStore();
 
     const list = computed((): Activity[] => {
-      return activities.value;
+      return activityList.value;
     });
 
     watch(() => activityStore.activities, (updatedActivities: ActivityMap) => {
-      activities.value = activities.value
+      activityList.value = activityList.value
         .filter((activity) => updatedActivities[activity._id as string])
         .map((activity) => {
           return updatedActivities[activity._id as string];
@@ -24,7 +24,7 @@ export const useActivityListStore = defineStore(
 
     const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
       return activityStore.find(request).then((response) => {
-        activities.value = response as Activity[];
+        activityList.value = response as Activity[];
         return response;
       });
     };
@@ -33,7 +33,7 @@ export const useActivityListStore = defineStore(
       return activityStore.add(activity).then((response: any) => {
         const newActivity = structuredClone({ ...activity });
         newActivity._id = response.id;
-        activities.value.push(newActivity);
+        activityList.value.push(newActivity);
         return newActivity;
       });
     };

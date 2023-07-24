@@ -29,6 +29,9 @@ activityListStore.find(
 );
 
 const addActivity = () => {
+  if (!newActivity.value.title) {
+    return;
+  }
   activityListStore.add(newActivity.value as Activity).then(() => {
     newActivity.value = emptyActivity(type);
   });

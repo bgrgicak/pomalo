@@ -4,10 +4,22 @@ import log from '@/helper/logs';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 
-const database = new PouchDB(constants.appSlug);
+const database = new PouchDB(constants.databaseName);
 PouchDB.plugin(PouchDBFind);
 
-// PouchDB.replicate(constants.appSlug, 'http://localhost:5984/' + constants.appSlug, { live: true });
+if (constants.databaseRemotePath) {
+  try {
+    const remoteDatabase = new PouchDB(constants.databaseRemotePath);
+    database.sync(
+      remoteDatabase,
+      {
+        live: true
+      }
+    );
+  } catch (error: any) {
+    log(error.message, LogType.Error);
+  }
+}
 
 database.createIndex({
   index: {
