@@ -1,6 +1,6 @@
-# calendar app
+# Pomalo
 
-Open source PWA calendar app.
+Time management app.
 
 ## Recommended IDE Setup
 
@@ -51,6 +51,14 @@ npm run test:unit
 npm run lint
 ```
 
+### Local Pouch server for development
+
+Install by following the [PouchDB Server](https://pouchdb.com/guides/setup-couchdb.html) instructions.
+
+Run with:
+
+```pouchdb-server --port 5984```
+ 
 ## Run production build with Docker
 
 ```sh

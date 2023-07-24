@@ -7,37 +7,39 @@ import PouchDBFind from 'pouchdb-find';
 const database = new PouchDB(constants.appSlug);
 PouchDB.plugin(PouchDBFind);
 
-database.createIndex({
-    index: {
-        fields: ['title'],
-        name: 'search-index',
-    }
-}).then(result => {
-    log(result, LogType.Debug);
-  }).catch(error => {
-    log(error, LogType.Error);
-  });
+PouchDB.replicate(constants.appSlug, 'http://localhost:5984/' + constants.appSlug, { live: true });
 
 database.createIndex({
-    index: {
-        fields: ['type'],
-        name: 'type-index',
-    }
+  index: {
+    fields: ['title'],
+    name: 'search-index',
+  }
 }).then(result => {
-    log(result, LogType.Debug);
-  }).catch(error => {
-    log(error, LogType.Error);
-  });
+  log(result, LogType.Debug);
+}).catch(error => {
+  log(error, LogType.Error);
+});
 
 database.createIndex({
-    index: {
-        fields: ['schedules'],
-        name: 'schedules-index',
-    }
+  index: {
+    fields: ['type'],
+    name: 'type-index',
+  }
 }).then(result => {
-    log(result, LogType.Debug);
-  }).catch(error => {
-    log(error, LogType.Error);
-  });
+  log(result, LogType.Debug);
+}).catch(error => {
+  log(error, LogType.Error);
+});
+
+database.createIndex({
+  index: {
+    fields: ['schedules'],
+    name: 'schedules-index',
+  }
+}).then(result => {
+  log(result, LogType.Debug);
+}).catch(error => {
+  log(error, LogType.Error);
+});
 
 export default database;

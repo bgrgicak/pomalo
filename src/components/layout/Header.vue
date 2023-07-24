@@ -7,9 +7,12 @@ import Timer from '@/components/timer/Timer.vue';
 <template>
     <v-toolbar density="compact"
                class="header">
-        <v-btn prepend-icon="mdi-timeline-clock-outline"
-               :color="constants.colors.icons"
-               to="/">
+        <v-btn :color="constants.colors.icons"
+               to="/"
+               class="header__Logo">
+            <v-icon :icon="constants.icons.logo"
+                    class="header__logo-icon"
+                    :size="36" />
             {{ constants.appName }}
         </v-btn>
         <v-spacer></v-spacer>
@@ -44,5 +47,14 @@ import Timer from '@/components/timer/Timer.vue';
     height: $header-height;
     position: relative;
     z-index: 10000;
+}
+
+.header__Logo {
+    padding-left: 0;
+    font-weight: 600;
+}
+
+.header__logo-icon {
+    margin-right: 10px;
 }
 </style>

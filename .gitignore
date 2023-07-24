@@ -2,3 +2,8 @@ node_modules/
 .DS_Store
 dist/
 dev-dist/
+_replicator/
+_users/
+pouch__all_dbs__/
+pomalo/
+log.txt
