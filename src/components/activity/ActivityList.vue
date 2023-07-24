@@ -86,7 +86,8 @@ const openActivity = (activity: Activity) => {
           <v-text-field v-model="newActivity.title"
                         :placeholder="__('Add a ') + newActivity.type"
                         variant="plain"
-                        @keyup.enter="addActivity" />
+                        @keyup.enter="addActivity"
+                        @change="addActivity" />
         </td>
       </tr>
     </tbody>

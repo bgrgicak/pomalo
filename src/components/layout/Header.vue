@@ -2,6 +2,7 @@
 import { headerMenu } from '@/router/routes';
 import Search from '@/components/search/Search.vue';
 import constants from '@/helper/constants';
+import Timer from '@/components/timer/Timer.vue';
 </script>
 <template>
     <v-toolbar density="compact"
@@ -12,6 +13,8 @@ import constants from '@/helper/constants';
             {{ constants.appName }}
         </v-btn>
         <v-spacer></v-spacer>
+
+        <Timer />
 
         <Search />
 
