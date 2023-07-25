@@ -7,6 +7,7 @@ import { getTimePassed, getUtcTimestamp } from "@/helper/date";
 interface TimerState {
     activity: Activity | undefined;
     time: string;
+    loading: boolean;
 }
 
 export const useTimerStore = defineStore(
@@ -14,26 +15,27 @@ export const useTimerStore = defineStore(
     () => {
         const state: Ref<TimerState> = ref({
             activity: undefined,
-            time: "00:00:00",
+            time: '',
+            loading: true,
         });
 
         const activityStore = useActivityStore();
 
-        const active = computed((): boolean => undefined !== state.value.activity);
+        const active = computed((): boolean => undefined !== state.value.activity && '' !== state.value.time);
 
         const time = computed((): string => state.value.time);
 
-        // TODO destroy
+        const isLoading = computed((): boolean => state.value.loading);
+
         setInterval(() => {
             if (!state.value.activity) {
-                return "00:00:00";
+                return '';
             }
             const currentEvent = state.value.activity.events.find((event) => {
                 return !event.end;
             });
-            console.log(currentEvent);
             if (!currentEvent) {
-                return "00:00:00";
+                return '';
             }
             state.value.time = getTimePassed(currentEvent.start);
         }, 1000);
@@ -71,8 +73,8 @@ export const useTimerStore = defineStore(
             });
         };
 
-        const getCurrent = (): Promise<void | Activity[]> => {
-            const query = {
+        const getCurrentActivity = (): Promise<void | Activity[]> => {
+            return activityStore.find({
                 selector: {
                     events: {
                         $elemMatch: {
@@ -85,24 +87,26 @@ export const useTimerStore = defineStore(
                         }
                     }
                 },
-                // use_index : "events-index",
-            };
-            console.log(query);
-            return activityStore.find(query).then((activities) => {
-                console.log(activities);
+                // use_index: "events-index",
+            }).then((activities) => {
                 if (activities && activities.length > 0) {
                     state.value.activity = activities[0];
                 }
             });
         };
 
+        getCurrentActivity().then(() => {
+            state.value.loading = false;
+        });
+
         return {
             state,
             active,
             time,
+            isLoading,
             start,
             stop,
-            getCurrent,
+            getCurrentActivity,
         };
     },
 );

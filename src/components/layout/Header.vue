@@ -15,11 +15,16 @@ import Timer from '@/components/timer/Timer.vue';
                     :size="36" />
             {{ constants.appTitle }}
         </v-btn>
-        <v-spacer></v-spacer>
+        <v-spacer />
+        <v-divider vertical />
 
         <Timer />
 
+        <v-divider vertical />
+
         <Search />
+
+        <v-divider vertical />
 
         <v-menu>
             <template v-slot:activator="{ props }">
