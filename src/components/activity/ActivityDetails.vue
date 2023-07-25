@@ -12,6 +12,10 @@ import ActivityImportance from './ActivityImportance.vue';
 import ActivityEstimatedTime from './ActivityEstimatedTime.vue';
 import ActivityTimer from './ActivityTimer.vue';
 import constants from '@/helper/constants';
+import { getLocalDate, getUtcTimestamp } from '@/helper/date';
+import { computed } from 'vue';
+import { toLocaleDateString } from '@/helper/date';
+import { getTimePassed } from '@/helper/date';
 
 const props = defineProps(['activity', 'small']);
 const state: Ref<ActivityState> = ref({
@@ -32,6 +36,19 @@ watch(() => props.activity, (newActivity) => {
     state.value.activity = Object.assign({}, newActivity);
     state.value.isEditing = false;
 });
+
+const events = computed(
+    () => state.value.activity.events
+        .filter((event) => event.end)
+        .sort((a, b) => a.start - b.start)
+        .map((event) => {
+            const date = (event.start);
+            return {
+                date: toLocaleDateString(date),
+                duration: getTimePassed(event.start, event.end)
+            };
+        })
+);
 
 const onChange = () => {
     state.value.isEditing = true;
@@ -60,10 +77,15 @@ const onFieldChange = (key: string, value: any) => {
             <v-row no-gutters>
                 <v-col :md="props.small ? '12' : '9'"
                        cols="12">
-                    <v-text-field @keyup="onChange"
-                                  v-model="state.activity.title"
-                                  class="activity-title"
-                                  variant="underlined" />
+
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field @keyup="onChange"
+                                          v-model="state.activity.title"
+                                          class="activity-title"
+                                          variant="underlined" />
+                        </v-col>
+                    </v-row>
                     <v-row>
                         <v-col cols="12">
                             <v-textarea @keyup="onChange"
@@ -78,6 +100,33 @@ const onFieldChange = (key: string, value: any) => {
                                    @click="updateActivity">
                                 {{ __('Save') }}
                             </v-btn>
+                        </v-col>
+                    </v-row>
+                    <v-row v-if="!small">
+                        <v-col cols="12"
+                               class="event-list">
+                            <h2 align="center">
+                                {{ __('Activity log') }}
+                            </h2>
+                            <v-timeline side="end"
+                                        align="start">
+                                <v-timeline-item v-for="event in events"
+                                                 size="small"
+                                                 dot-color="transparent"
+                                                 icon="mdi-timer-outline">
+
+                                    <template v-slot:opposite>
+                                        <v-chip :color="constants.colors.primary"
+                                                small>
+                                            {{ __('Worked for ') }}
+                                            {{ event.duration }}{{ __(' hours') }}
+                                        </v-chip>
+                                    </template>
+                                    <strong>
+                                        {{ event.date }}
+                                    </strong>
+                                </v-timeline-item>
+                            </v-timeline>
                         </v-col>
                     </v-row>
                 </v-col>
@@ -120,4 +169,18 @@ const onFieldChange = (key: string, value: any) => {
 }
 
 .activity-title {}
+
+.event-item {
+    display: flex;
+
+    .v-divider {
+        position: relative;
+        top: calc(50% - 1px);
+    }
+}
+
+.event-item__label {
+    min-width: 200px;
+    text-align: center;
+}
 </style>

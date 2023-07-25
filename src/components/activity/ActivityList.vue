@@ -68,7 +68,7 @@ const openActivity = (activity: Activity) => {
           {{ item.title }}
         </td>
         <td class="activity-list__item">
-          {{ item.dueDate ? toLocaleDateString(getLocalDate(item.dueDate)) : '' }}
+          {{ item.dueDate ? toLocaleDateString(item.dueDate) : '' }}
         </td>
         <td class="activity-list__item activity-list__item--actions">
           <v-menu>

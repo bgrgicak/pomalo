@@ -18,8 +18,11 @@ const prepareDate = (date?: Date | string | number) => {
     return date;
 };
 
+/**
+ * Convert UTC date to local date string
+ */
 export const toLocaleDateString = (date?: Date | string | number) => {
-    date = prepareDate(date);
+    date = getLocalDate(prepareDate(date));
     return date.toLocaleDateString();
 };
 
@@ -45,10 +48,10 @@ export const getLocalDate = (date?: Date | string | number) => {
     return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
 };
 
-export const getTimePassed = (date?: Date | string | number) => {
-    const start = prepareDate(date);
-    const now = new Date();
-    const diff = now.getTime() - start.getTime();
+export const getTimePassed = (start: Date | string | number, end?: Date | string | number) => {
+    start = prepareDate(start);
+    end = end ? prepareDate(end) : new Date();
+    const diff = end.getTime() - start.getTime();
     const hours = Math.floor(diff / 1000 / 60 / 60);
     const minutes = Math.floor((diff / 1000 / 60) % 60);
     const seconds = Math.floor((diff / 1000) % 60);
