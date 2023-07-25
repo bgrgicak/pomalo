@@ -12,7 +12,6 @@ import ActivityImportance from './ActivityImportance.vue';
 import ActivityEstimatedTime from './ActivityEstimatedTime.vue';
 import ActivityTimer from './ActivityTimer.vue';
 import constants from '@/helper/constants';
-import { getLocalDate, getUtcTimestamp } from '@/helper/date';
 import { computed } from 'vue';
 import { toLocaleDateString } from '@/helper/date';
 import { getTimePassed } from '@/helper/date';

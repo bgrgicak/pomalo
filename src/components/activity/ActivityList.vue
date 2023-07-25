@@ -7,7 +7,8 @@ import { ref, type Ref } from 'vue';
 import __ from '@/helper/translations';
 import ActivityClose from './ActivityClose.vue';
 import { useActivityListStore } from '@/stores/activity-list';
-import { getLocalDate, toLocaleDateString } from '@/helper/date';
+import { toLocaleDateString } from '@/helper/date';
+import TimerToggle from '../timer/TimerToggle.vue';
 
 const props = defineProps(['type']);
 const type = props.type as ActivityType;
@@ -71,6 +72,7 @@ const openActivity = (activity: Activity) => {
           {{ item.dueDate ? toLocaleDateString(item.dueDate) : '' }}
         </td>
         <td class="activity-list__item activity-list__item--actions">
+          <TimerToggle :activity="item" />
           <v-menu>
             <template v-slot:activator="{ props }">
               <v-btn icon="mdi-dots-vertical"

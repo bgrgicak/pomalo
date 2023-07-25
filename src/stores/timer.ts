@@ -27,6 +27,13 @@ export const useTimerStore = defineStore(
 
         const isLoading = computed((): boolean => state.value.loading);
 
+        const activityId = computed((): string | undefined => {
+            if (!state.value.activity) {
+                return undefined;
+            }
+            return state.value.activity._id;
+        });
+
         setInterval(() => {
             if (!state.value.activity) {
                 return '';
@@ -54,7 +61,6 @@ export const useTimerStore = defineStore(
             });
         };
         const stop = () => {
-            console.log(state.value.activity);
             if (!state.value.activity) {
                 return;
             }
@@ -104,6 +110,7 @@ export const useTimerStore = defineStore(
             active,
             time,
             isLoading,
+            activityId,
             start,
             stop,
             getCurrentActivity,
