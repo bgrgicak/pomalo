@@ -7,6 +7,7 @@ import { ref, type Ref } from 'vue';
 import __ from '@/helper/translations';
 import ActivityClose from './ActivityClose.vue';
 import { useActivityListStore } from '@/stores/activity-list';
+import { getLocalDate, toLocaleDateString } from '@/helper/date';
 
 const props = defineProps(['type']);
 const type = props.type as ActivityType;
@@ -67,7 +68,7 @@ const openActivity = (activity: Activity) => {
           {{ item.title }}
         </td>
         <td class="activity-list__item">
-          {{ item.dueDate ? new Date(item.dueDate).toLocaleDateString() : '' }}
+          {{ item.dueDate ? toLocaleDateString(getLocalDate(item.dueDate)) : '' }}
         </td>
         <td class="activity-list__item activity-list__item--actions">
           <v-menu>

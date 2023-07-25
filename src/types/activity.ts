@@ -35,8 +35,8 @@ export interface EventReoccurrence {
 }
 
 export interface ActivityEvent {
-    start: Date;
-    end?: Date;
+    start: number;
+    end?: number;
     reoccurrence?: EventReoccurrence;
 }
 
@@ -60,13 +60,13 @@ export default interface Activity {
     _id: string;
     _rev?: string;
     title: string;
-    created: Date;
-    description?: string;
-    type?: ActivityType;
-    members?: ActivityMembers[];
-    events?: ActivityEvent[];
-    completedDate?: Date;
-    dueDate?: Date;
+    created: number;
+    description: string;
+    type: ActivityType;
+    members: ActivityMembers[];
+    events: ActivityEvent[];
+    completedDate?: number;
+    dueDate?: number;
     importance?: Importance;
     estimatedTime?: number;
 }

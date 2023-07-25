@@ -31,7 +31,7 @@ import Timer from '@/components/timer/Timer.vue';
                 <v-list-item v-for="(item, i) in headerMenu"
                              :key="i"
                              :to="item.path">
-                    <template v-slot:prepend>
+                    <template v-slot:append>
                         <v-icon :icon="item.icon"></v-icon>
                     </template>
                     <v-list-item-title>{{ item.name }}</v-list-item-title>

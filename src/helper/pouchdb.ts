@@ -15,7 +15,9 @@ if (constants.databaseRemotePath) {
       {
         live: true
       }
-    );
+    ).on('error', (error: any) => {
+      log(error, LogType.Error);
+    });
   } catch (error: any) {
     log(error.message, LogType.Error);
   }
@@ -45,7 +47,7 @@ database.createIndex({
 
 database.createIndex({
   index: {
-    fields: ['events[].start', 'events[].end'],
+    fields: ['events'],
     name: 'events-index',
   }
 }).then(result => {

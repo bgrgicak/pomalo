@@ -10,6 +10,7 @@ import ActivityCompleted from './ActivityCompleted.vue';
 import ActivityDueDate from './ActivityDueDate.vue';
 import ActivityImportance from './ActivityImportance.vue';
 import ActivityEstimatedTime from './ActivityEstimatedTime.vue';
+import ActivityTimer from './ActivityTimer.vue';
 import constants from '@/helper/constants';
 
 const props = defineProps(['activity', 'small']);
@@ -28,7 +29,7 @@ watch(() => props.activity, (newActivity) => {
             return;
         }
     }
-    state.value.activity = structuredClone({ ...newActivity });
+    state.value.activity = Object.assign({}, newActivity);
     state.value.isEditing = false;
 });
 
@@ -83,6 +84,7 @@ const onFieldChange = (key: string, value: any) => {
                 <v-col :md="props.small ? '12' : '2'"
                        :offset-md="props.small ? '0' : '1'"
                        cols="12">
+                    <ActivityTimer :activity="state.activity" />
                     <ActivityCompleted :activity="state.activity"
                                        @change="(value: any) => onFieldChange('completedDate', value)" />
                     <v-divider />

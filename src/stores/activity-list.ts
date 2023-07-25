@@ -31,7 +31,7 @@ export const useActivityListStore = defineStore(
 
     const add = (activity: Activity) => {
       return activityStore.add(activity).then((response: any) => {
-        const newActivity = structuredClone({ ...activity });
+        const newActivity = Object.assign({}, activity);
         newActivity._id = response.id;
         activityList.value.push(newActivity);
         return newActivity;

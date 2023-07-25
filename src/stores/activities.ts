@@ -5,6 +5,7 @@ import log from "@/helper/logs";
 import { LogType } from "@/types/log";
 import database from "@/helper/pouchdb";
 import { computed, ref, type Ref } from "vue";
+import { addDefaultsToActivity } from "@/helper/activities";
 
 export interface ActivityMap {
   [key: string]: Activity;
@@ -34,7 +35,7 @@ export const useActivityStore = defineStore(
         return result.docs as Activity[];
       }).then((response: Activity[]) => {
         response.forEach((activity: Activity) => {
-          activities.value[activity._id as string] = activity;
+          activities.value[activity._id as string] = addDefaultsToActivity(activity);
         });
         return response;
       }).catch((error) => {
@@ -46,20 +47,20 @@ export const useActivityStore = defineStore(
         return Promise.resolve(activities.value[activityId]);
       }
       return database.get(activityId).then((response) => {
-        activities.value[activityId] = response as Activity;
+        activities.value[activityId] = addDefaultsToActivity(response as Activity);
         return activities.value[activityId];
       }).catch((error) => {
         log(error, LogType.Error);
       });
     };
     const add = (activity: Activity) => {
-      const newDocument = structuredClone({ ...activity });
+      const newDocument = Object.assign({}, activity);
       return database.put(newDocument).catch(error => {
         log(error, LogType.Error);
       });
     };
     const update = (activity: Activity) => {
-      const updatedDocument = structuredClone({ ...activity });
+      const updatedDocument = Object.assign({}, activity);
       return database.get(updatedDocument._id as string).then((document) => {
         return database.put({
           ...updatedDocument,
@@ -71,7 +72,7 @@ export const useActivityStore = defineStore(
     };
     const updateField = (activityId: string, field: string, value: any) => {
       return get(activityId).then((document: any) => {
-        const newDocument = structuredClone({ ...document });
+        const newDocument = Object.assign({}, document);
         newDocument[field] = value;
         return database.put({
           ...newDocument,

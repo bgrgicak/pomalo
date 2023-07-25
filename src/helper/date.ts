@@ -8,7 +8,23 @@ export const getSystemDateFormat = () => {
     return format;
 };
 
-export const toLocaleDateString = (date: Date) => {
+const prepareDate = (date?: Date | string | number) => {
+    if (!date) {
+        return new Date();
+    }
+    if (typeof date === 'string' || typeof date === 'number') {
+        return new Date(date);
+    }
+    return date;
+};
+
+export const toLocaleDateString = (date?: Date | string | number) => {
+    date = prepareDate(date);
+    return date.toLocaleDateString();
+};
+
+export const toInputDateString = (date?: Date | string | number) => {
+    date = prepareDate(date);
     const padTo2Digits = (num: any) => {
         return num.toString().padStart(2, '0');
     };
@@ -17,4 +33,26 @@ export const toLocaleDateString = (date: Date) => {
         padTo2Digits(date.getMonth() + 1),
         padTo2Digits(date.getDate()),
     ].join('-');
+};
+
+export const getUtcTimestamp = (date?: Date | string | number) => {
+    date = prepareDate(date);
+    return Math.floor(date.getTime());
+};
+
+export const getLocalDate = (date?: Date | string | number) => {
+    date = prepareDate(date);
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+};
+
+export const getTimePassed = (date?: Date | string | number) => {
+    const start = prepareDate(date);
+    const now = new Date();
+    const diff = now.getTime() - start.getTime();
+    const hours = Math.floor(diff / 1000 / 60 / 60);
+    const minutes = Math.floor((diff / 1000 / 60) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+    return `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 };

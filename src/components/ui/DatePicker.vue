@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getSystemDateFormat, toLocaleDateString } from '@/helper/date';
+import { getSystemDateFormat, getUtcTimestamp, toInputDateString, getLocalDate } from '@/helper/date';
 import { computed } from 'vue';
 
 const props = defineProps(['value', 'label']);
@@ -12,11 +12,11 @@ const value = computed(() => {
     if (!props.value) {
         return undefined;
     }
-    return toLocaleDateString(new Date(props.value));
+    return toInputDateString(getLocalDate(props.value));
 });
 
 const onChange = (newValue: string) => {
-    const date = newValue ? new Date(newValue) : undefined;
+    const date = newValue ? getUtcTimestamp(newValue) : undefined;
     emit('change', date);
 };
 </script>
