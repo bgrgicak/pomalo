@@ -40,12 +40,12 @@ export const toInputDateString = (date?: Date | string | number) => {
 
 export const getUtcTimestamp = (date?: Date | string | number) => {
     date = prepareDate(date);
-    return Math.floor(date.getTime());
+    return Math.floor(new Date(date.toUTCString()).getTime());
 };
 
 export const getLocalDate = (date?: Date | string | number) => {
     date = prepareDate(date);
-    return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return new Date(date.getTime() - date.getTimezoneOffset());
 };
 
 export const getTimePassed = (start: Date | string | number, end?: Date | string | number) => {
@@ -58,4 +58,14 @@ export const getTimePassed = (start: Date | string | number, end?: Date | string
     return `${hours.toString().padStart(2, "0")}:${minutes
         .toString()
         .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+};
+
+export const getWeekStartAndEnd = (date?: Date | string | number) => {
+    var d = getLocalDate(prepareDate(date));
+    var to = d.setTime(d.getTime() - (d.getDay() ? d.getDay() : 7) * 24 * 60 * 60 * 1000);
+    var from = d.setTime(d.getTime() - 6 * 24 * 60 * 60 * 1000);
+    return {
+        start: new Date(from),
+        end: new Date(to),
+    };
 };

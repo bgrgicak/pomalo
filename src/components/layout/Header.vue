@@ -50,7 +50,7 @@ import Timer from '@/components/timer/Timer.vue';
 
 .header {
     height: $header-height;
-    position: relative;
+    position: fixed;
     z-index: 10000;
 }
 

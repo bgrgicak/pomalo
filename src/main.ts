@@ -8,6 +8,8 @@ import vuetify from "./plugins/vuetify";
 
 import "./assets/styles/main.scss";
 
+import 'vue-cal/dist/vuecal.css';
+
 const app = createApp(App);
 
 app.use(createPinia());

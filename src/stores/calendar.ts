@@ -2,7 +2,7 @@ import type Activity from "@/types/activity";
 import { defineStore } from "pinia";
 import { computed, ref, type Ref } from "vue";
 import { useActivityStore } from "./activities";
-import { getLocalDate } from "@/helper/date";
+import { getLocalDate, getUtcTimestamp } from "@/helper/date";
 import type { ActivityEvent } from "@/types/activity";
 
 interface CalendarEvent {
@@ -10,9 +10,11 @@ interface CalendarEvent {
     title: string;
     start: Date;
     end: Date | undefined;
+    content: string;
+    class: string;
 }
 
-interface CalendarState {
+export interface CalendarState {
     events: CalendarEvent[];
     loading: boolean;
 }
@@ -32,13 +34,15 @@ export const useCalendarStore = defineStore(
         const events = computed((): CalendarEvent[] => state.value.events);
 
         const load = (start: Date, end: Date) => {
-            activityStore.find({
+            const startTime = getUtcTimestamp(start);
+            const endTime = getUtcTimestamp(end);
+            return activityStore.find({
                 selector: {
                     events: {
                         $elemMatch: {
                             start: {
-                                $gte: start.getTime(),
-                                $lte: end.getTime(),
+                                $gte: startTime,
+                                $lte: endTime,
                             },
                         },
                     },
@@ -49,7 +53,7 @@ export const useCalendarStore = defineStore(
                     activities.forEach((activity: Activity) => {
                         activity.events
                             .filter((event: ActivityEvent) => {
-                                return event.start >= start.getTime() && event.start <= end.getTime();
+                                return event.start >= startTime && event.start <= endTime;
                             })
                             .forEach((event) => {
                                 events.push({
@@ -57,11 +61,19 @@ export const useCalendarStore = defineStore(
                                     title: activity.title,
                                     start: getLocalDate(event.start),
                                     end: event.end ? getLocalDate(event.end) : getLocalDate(),
+                                    content: '',
+                                    class: 'calendar-event__' + activity.type,
+                                    //   background: {Boolean} // Optional. (Event type not CSS property)
+                                    //   split: {Number|String} // Optional.
+                                    //   allDay: {Boolean} // Optional.
+                                    //   deletable: false // optional - force undeletable when events are editable.
+                                    //   resizable: false // optional - force unresizable when events are editable.
                                 });
                             });
                     });
+                    state.value.events = events;
+                    return events;
                 }
-                state.value.events = events;
             });
         };
 

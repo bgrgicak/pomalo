@@ -47,7 +47,7 @@ database.createIndex({
 
 database.createIndex({
   index: {
-    fields: ['events'],
+    fields: ['events.start', 'events.end'],
     name: 'events-index',
   }
 }).then(result => {
