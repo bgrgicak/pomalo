@@ -49,6 +49,7 @@ export enum ActivityType {
     Task = 'task',
     Event = 'event',
     Project = 'project',
+    New = 'new', // used for creating new activities
 }
 
 export interface ActivityState {
