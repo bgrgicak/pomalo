@@ -1,20 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, type Ref } from 'vue';
-import type { ActivityState } from '@/types/activity';
+import { ActivityType, type ActivityState } from '@/types/activity';
 import type Activity from '@/types/activity';
 import { useActivityStore } from '@/stores/activities';
 import __ from '@/helper/translations';
 import { openActivityPage } from '@/helper/activities';
-import ActivityClose from './ActivityClose.vue';
-import ActivityCompleted from './ActivityCompleted.vue';
-import ActivityDueDate from './ActivityDueDate.vue';
-import ActivityImportance from './ActivityImportance.vue';
-import ActivityEstimatedTime from './ActivityEstimatedTime.vue';
-import ActivityTimer from './ActivityTimer.vue';
-import constants from '@/helper/constants';
-import { computed } from 'vue';
-import { toLocaleDateString } from '@/helper/date';
-import { getTimePassed } from '@/helper/date';
+import TaskDetails from '../task/TaskDetails.vue';
+import TaskSidebar from '../task/TaskSidebar.vue';
 
 const props = defineProps(['activity', 'small']);
 const state: Ref<ActivityState> = ref({
@@ -36,32 +28,24 @@ watch(() => props.activity, (newActivity) => {
     state.value.isEditing = false;
 });
 
-const events = computed(
-    () => state.value.activity.events
-        .filter((event) => event.end)
-        .sort((a, b) => a.start - b.start)
-        .map((event) => {
-            const date = (event.start);
-            return {
-                date: toLocaleDateString(date),
-                duration: getTimePassed(event.start, event.end)
-            };
-        })
-);
-
-const onChange = () => {
-    state.value.isEditing = true;
+const save = () => {
+    activityStore.update(state.value.activity)
+        .then(() => {
+            state.value.isEditing = false;
+        });
 };
 
-const updateActivity = () => {
-    activityStore.update(state.value.activity).then(() => {
-        state.value.isEditing = false;
-    });
+const onKeyup = (event: KeyboardEvent) => {
+    if ('Meta' === event.key) {
+        // Prevent meta enter save from triggering isEditing
+        return;
+    }
+    state.value.isEditing = true;
 };
 
 const updateOnCommandEnter = (event: KeyboardEvent) => {
     if (event.key === 'Enter' && event.metaKey) {
-        updateActivity();
+        save();
     }
 };
 
@@ -76,75 +60,44 @@ const onFieldChange = (key: string, value: any) => {
             <v-row no-gutters>
                 <v-col :md="props.small ? '12' : '9'"
                        cols="12">
-
                     <v-row>
                         <v-col cols="12">
-                            <v-text-field @keyup="onChange"
+                            <v-text-field @keyup="onKeyup"
                                           v-model="state.activity.title"
                                           class="activity-title"
                                           variant="underlined" />
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col cols="12">
-                            <v-textarea @keyup="onChange"
+                        <v-col cols="12"
+                               class="pb-0">
+                            <v-textarea @keyup="onKeyup"
                                         v-model="state.activity.description"
                                         rows="5"
                                         variant="outlined" />
                         </v-col>
                     </v-row>
-                    <v-row v-if="state.isEditing">
+                    <v-row v-if="state.isEditing"
+                           class="mt-0">
                         <v-col cols="12">
                             <v-btn color="primary"
-                                   @click="updateActivity">
+                                   @click="save">
                                 {{ __('Save') }}
                             </v-btn>
                         </v-col>
                     </v-row>
-                    <v-row v-if="!small">
-                        <v-col cols="12"
-                               class="event-list">
-                            <h2 align="center">
-                                {{ __('Activity log') }}
-                            </h2>
-                            <v-timeline side="end"
-                                        align="start">
-                                <v-timeline-item v-for="event in events"
-                                                 size="small"
-                                                 dot-color="transparent"
-                                                 icon="mdi-timer-outline">
-
-                                    <template v-slot:opposite>
-                                        <v-chip color="primary"
-                                                small>
-                                            {{ __('Worked for ') }}
-                                            {{ event.duration }}{{ __(' hours') }}
-                                        </v-chip>
-                                    </template>
-                                    <strong>
-                                        {{ event.date }}
-                                    </strong>
-                                </v-timeline-item>
-                            </v-timeline>
-                        </v-col>
-                    </v-row>
+                    <TaskDetails v-if="ActivityType.Task === state.activity.type"
+                                 :activity="state.activity"
+                                 :small="props.small"
+                                 class="mt-6" />
                 </v-col>
                 <v-col :md="props.small ? '12' : '2'"
                        :offset-md="props.small ? '0' : '1'"
                        cols="12">
-                    <ActivityTimer :activity="state.activity" />
-                    <ActivityCompleted :activity="state.activity"
-                                       @change="(value: any) => onFieldChange('completedDate', value)" />
-                    <v-divider />
-                    <ActivityDueDate :activity="state.activity"
-                                     @change="(value: any) => onFieldChange('dueDate', value)" />
-                    <ActivityEstimatedTime :activity="state.activity"
-                                           @change="(value: any) => onFieldChange('estimatedTime', value)" />
-                    <ActivityImportance :activity="state.activity"
-                                        @change="(value: any) => onFieldChange('importance', value)" />
-                    <v-divider />
-                    <ActivityClose :activity="state.activity"
-                                   class=" mt-4" />
+                    <TaskSidebar v-if="ActivityType.Task === state.activity.type"
+                                 :activity="state.activity"
+                                 :small="props.small"
+                                 @fieldChange="onFieldChange" />
                 </v-col>
             </v-row>
         </v-container>
@@ -154,7 +107,6 @@ const onFieldChange = (key: string, value: any) => {
 @import '@/assets/styles/variables.scss';
 
 .activity-details {
-    height: calc(100vh - $header-height);
     position: relative;
 
     .v-container {

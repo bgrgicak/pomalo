@@ -12,7 +12,7 @@ export const useLayoutStore = defineStore(
         },
         getters: {
             isLeftSidebarVisible: (state) => state.leftSidebarVisibility,
-            isRightSidebarVisible: (state) => state.rightSidebarVisibility && undefined !== state.currentActivityId,
+            isRightSidebarVisible: (state) => state.rightSidebarVisibility,
         },
         actions: {
             showLeftSidebar () {

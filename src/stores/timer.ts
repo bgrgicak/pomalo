@@ -53,9 +53,13 @@ export const useTimerStore = defineStore(
                 updatedActivity.events.push({
                     start: getUtcTimestamp(),
                 });
-                activityStore.update(updatedActivity).then(() => {
+                activityStore.updateField(
+                    updatedActivity._id,
+                    'events',
+                    updatedActivity.events
+                ).then(() => {
                     if (activity) {
-                        state.value.activity = activity;
+                        state.value.activity = updatedActivity;
                     }
                 });
             });
@@ -73,7 +77,11 @@ export const useTimerStore = defineStore(
                     event.end = getUtcTimestamp();
                     return event;
                 });
-                activityStore.update(updatedActivity).then(() => {
+                activityStore.updateField(
+                    updatedActivity._id,
+                    'events',
+                    updatedActivity.events
+                ).then(() => {
                     state.value.activity = undefined;
                 });
             });
