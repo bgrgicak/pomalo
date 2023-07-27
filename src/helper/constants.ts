@@ -4,7 +4,6 @@ export default {
     databaseName: 'pomalo',
     databaseRemotePath: 'http://localhost:5984/pomalo',
     colors: {
-        primary: 'blue',
         'icons': 'blue-grey-darken-4',
     },
     icons: {

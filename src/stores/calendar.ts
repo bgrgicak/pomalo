@@ -5,7 +5,6 @@ import { useActivityStore } from "./activities";
 import { getLocalDate, getUtcTimestamp } from "@/helper/date";
 import type { ActivityEvent } from "@/types/activity";
 import { useTimerStore } from "./timer";
-import { getActivityTypeColor } from "@/helper/activities";
 
 interface CalendarEvent {
     id: string;

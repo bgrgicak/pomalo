@@ -24,7 +24,7 @@ const stop = () => {
 </script>
 <template v-if="!timerStore.isLoading">
     <v-btn v-if="!isActive"
-           :color="constants.colors.primary"
+           color="primary"
            class="timer-toggle activity-start"
            variant="text"
            @click="start"

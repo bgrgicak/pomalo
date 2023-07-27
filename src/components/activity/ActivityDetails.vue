@@ -95,7 +95,7 @@ const onFieldChange = (key: string, value: any) => {
                     </v-row>
                     <v-row v-if="state.isEditing">
                         <v-col cols="12">
-                            <v-btn :color="constants.colors.primary"
+                            <v-btn color="primary"
                                    @click="updateActivity">
                                 {{ __('Save') }}
                             </v-btn>
@@ -115,7 +115,7 @@ const onFieldChange = (key: string, value: any) => {
                                                  icon="mdi-timer-outline">
 
                                     <template v-slot:opposite>
-                                        <v-chip :color="constants.colors.primary"
+                                        <v-chip color="primary"
                                                 small>
                                             {{ __('Worked for ') }}
                                             {{ event.duration }}{{ __(' hours') }}

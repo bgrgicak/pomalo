@@ -27,7 +27,7 @@ const onChange = (value: string | undefined) => {
                   variant="outlined"
                   type="number" />
     <v-alert v-if="props.activity.estimatedTime > settings.recommendedMaxHoursPerTask"
-             :color="constants.colors.primary"
+             color="primary"
              variant="outlined"
              class="mb-8"
              :text="__('It\'s recommended to split large tasks into smaller ones.')" />

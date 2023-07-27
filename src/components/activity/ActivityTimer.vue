@@ -9,7 +9,7 @@ const timerStore = useTimerStore();
 </script>
 <template v-if="!timerStore.isLoading">
     <v-btn v-if="!timerStore.active"
-           :color="constants.colors.primary"
+           color="primary"
            class="activity-start"
            variant="outlined"
            @click="() => timerStore.start(props.activity._id)"
