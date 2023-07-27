@@ -22,10 +22,6 @@ const eventClick = (event: any) => {
     }
 };
 
-const updateView = (view: any) => {
-    activeView.value = view;
-};
-
 const previous = () => {
     if (!vuecal.value) {
         return;
