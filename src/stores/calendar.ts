@@ -4,6 +4,8 @@ import { computed, ref, type Ref } from "vue";
 import { useActivityStore } from "./activities";
 import { getLocalDate, getUtcTimestamp } from "@/helper/date";
 import type { ActivityEvent } from "@/types/activity";
+import { useTimerStore } from "./timer";
+import { getActivityTypeColor } from "@/helper/activities";
 
 interface CalendarEvent {
     id: string;
@@ -12,6 +14,9 @@ interface CalendarEvent {
     end: Date | undefined;
     content: string;
     class: string;
+    deletable: boolean;
+    resizable: boolean;
+    background: boolean;
 }
 
 export interface CalendarState {
@@ -28,6 +33,7 @@ export const useCalendarStore = defineStore(
         });
 
         const activityStore = useActivityStore();
+        const timerStore = useTimerStore();
 
         const isLoading = computed((): boolean => state.value.loading);
 
@@ -56,6 +62,7 @@ export const useCalendarStore = defineStore(
                                 return event.start >= startTime && event.start <= endTime;
                             })
                             .forEach((event) => {
+                                const isCurrentActivity = timerStore.activityId === activity._id;
                                 events.push({
                                     id: activity._id,
                                     title: activity.title,
@@ -63,11 +70,9 @@ export const useCalendarStore = defineStore(
                                     end: event.end ? getLocalDate(event.end) : getLocalDate(),
                                     content: '',
                                     class: 'calendar-event__' + activity.type,
-                                    //   background: {Boolean} // Optional. (Event type not CSS property)
-                                    //   split: {Number|String} // Optional.
-                                    //   allDay: {Boolean} // Optional.
-                                    //   deletable: false // optional - force undeletable when events are editable.
-                                    //   resizable: false // optional - force unresizable when events are editable.
+                                    deletable: isCurrentActivity,
+                                    resizable: isCurrentActivity,
+                                    background: isCurrentActivity,
                                 });
                             });
                     });
