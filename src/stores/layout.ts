@@ -1,4 +1,3 @@
-import type Activity from "@/types/activity";
 import { defineStore } from "pinia";
 
 export const useLayoutStore = defineStore(

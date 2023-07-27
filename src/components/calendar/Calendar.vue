@@ -16,7 +16,6 @@ const fetchEvents = (options: any) => {
 };
 
 const eventClick = (event: any) => {
-    console.log(event.id);
     if (event.id) {
         layoutStore.showRightSidebar(event.id);
     }
