@@ -4,14 +4,19 @@ import { ref } from 'vue';
 import SearchResults from '../search/SearchResults.vue';
 import { useLayoutStore } from '@/stores/layout';
 import type Activity from '@/types/activity';
+import { openActivityPage } from '@/helper/activities';
 
+const props = defineProps(['openInSidebar']);
 const title = ref('');
 
 const layoutStore = useLayoutStore();
 
 const activityClick = (activity: Activity) => {
-    console.log(activity);
-    layoutStore.showRightSidebar(activity._id);
+    if (props.openInSidebar) {
+        layoutStore.showRightSidebar(activity._id);
+    } else {
+        openActivityPage(activity);
+    }
 };
 
 </script>

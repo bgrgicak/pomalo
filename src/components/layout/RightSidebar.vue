@@ -51,10 +51,13 @@ watch(route, hide);
 
 .right-sidebar {
     top: $header-height !important;
+    height: calc(100vh - #{$header-height}) !important;
+    overflow-y: auto;
 
     .v-navigation-drawer__content {
         .v-card {
             padding-top: 0 !important;
+            height: 100%;
 
             .v-container {
                 padding-top: 0 !important;

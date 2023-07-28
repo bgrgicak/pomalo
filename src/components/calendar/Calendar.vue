@@ -88,7 +88,7 @@ const addEvent = () => {
                        variant="text" />
             </v-col>
         </v-row>
-        <vue-cal style="height: 100vh;"
+        <vue-cal style="height: calc(100vh - 48px - 8px - 80px);"
                  ref="vuecal"
                  :active-view="activeView"
                  :disable-views="['years']"

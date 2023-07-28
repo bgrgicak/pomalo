@@ -6,6 +6,7 @@ import TaskSidebar from '../task/TaskSidebar.vue';
 import { computed } from 'vue';
 import ActivityContent from './ActivityContent.vue';
 import ActivityNew from './ActivityNew.vue';
+import EventSidebar from '@/components/event/EventSidebar.vue';
 
 const props = defineProps(['activity', 'small']);
 
@@ -14,6 +15,9 @@ const isNew = computed(() => {
 });
 const isTask = computed(() => {
     return props.activity && ActivityType.Task === props.activity.type;
+});
+const isEvent = computed(() => {
+    return props.activity && ActivityType.Event === props.activity.type;
 });
 
 const onFieldChange = (key: string, value: any) => {
@@ -26,7 +30,8 @@ const onFieldChange = (key: string, value: any) => {
             <v-row no-gutters>
                 <v-col :md="props.small ? '12' : '9'"
                        cols="12">
-                    <ActivityNew v-if="isNew" />
+                    <ActivityNew v-if="isNew"
+                                 openInSidebar="true" />
                     <ActivityContent v-else
                                      :activity="props.activity" />
                     <TaskDetails v-if="isTask"
@@ -41,6 +46,10 @@ const onFieldChange = (key: string, value: any) => {
                                  :activity="props.activity"
                                  :small="props.small"
                                  @fieldChange="onFieldChange" />
+                    <EventSidebar v-else-if="isEvent"
+                                  :activity="props.activity"
+                                  :small="props.small"
+                                  @fieldChange="onFieldChange" />
                 </v-col>
             </v-row>
         </v-container>

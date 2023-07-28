@@ -80,7 +80,7 @@ const add = (type: ActivityType) => {
                        color="primary"
                        class="search-action--add"
                        @click="() => add(ActivityType.Event)">
-                    {{ __('New event ') + searchText }}
+                    {{ __('Create event ') }}
                 </v-btn>
             </v-list-item>
             <v-list-item>
@@ -88,7 +88,7 @@ const add = (type: ActivityType) => {
                        class="search-action--add"
                        color="primary"
                        @click="() => add(ActivityType.Task)">
-                    {{ __('New task ') + searchText }}
+                    {{ __('Create task ') }}
                 </v-btn>
             </v-list-item>
         </v-list>
