@@ -79,7 +79,7 @@ const add = (type: ActivityType) => {
                 <v-btn variant="text"
                        color="primary"
                        class="search-action--add"
-                       @click="() => add(ActivityType.Task)">
+                       @click="() => add(ActivityType.Event)">
                     {{ __('New event ') + searchText }}
                 </v-btn>
             </v-list-item>

@@ -14,7 +14,8 @@ const closeActivity = (activity: Activity) => {
     if (!confirm(__('Are you sure you want to close this ') + activity.type + '?')) return;
     activityStore.remove(activity._id).then(() => {
         layoutStore.hideRightSidebar();
-        router.push('/' + activity.type + 's');
+        if (router.currentRoute.value.path.startsWith('/task/'))
+            router.push('/' + activity.type + 's');
     });
 };
 </script>
