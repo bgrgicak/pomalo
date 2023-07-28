@@ -27,6 +27,13 @@ const routes: Route[] = [
         menu: [],
     },
     {
+        path: "/event/:_id",
+        name: __("Event"),
+        icon: "mdi-calendar-edit",
+        component: () => import("../views/ActivityView.vue"),
+        menu: [],
+    },
+    {
         path: "/tasks",
         name: __("Tasks"),
         icon: "mdi-format-list-bulleted",
