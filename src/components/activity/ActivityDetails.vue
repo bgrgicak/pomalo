@@ -1,41 +1,23 @@
 <script setup lang="ts">
-import { ref, watch, type Ref } from 'vue';
 import { ActivityType, type ActivityState } from '@/types/activity';
-import type Activity from '@/types/activity';
 import __ from '@/helper/translations';
-import { emptyActivity, openActivityPage } from '@/helper/activities';
 import TaskDetails from '../task/TaskDetails.vue';
 import TaskSidebar from '../task/TaskSidebar.vue';
 import { computed } from 'vue';
 import ActivityContent from './ActivityContent.vue';
+import ActivityNew from './ActivityNew.vue';
 
 const props = defineProps(['activity', 'small']);
-const state: Ref<ActivityState> = ref({
-    activity: props.activity ? (props.activity as Activity) : emptyActivity(ActivityType.New),
-    isEditing: false,
-});
 
-watch(() => props.activity, (newActivity) => {
-    if (newActivity._id === state.value.activity._id) return;
-    if (state.value.isEditing) {
-        if (!confirm(__('You have unsaved changes. Are you sure you want to continue?'))) {
-            openActivityPage(state.value.activity);
-            return;
-        }
-    }
-    state.value.activity = Object.assign({}, newActivity);
-    state.value.isEditing = false;
-});
-
-const isTask = computed(() => {
-    return ActivityType.Task === state.value.activity.type;
-});
 const isNew = computed(() => {
-    return ActivityType.New === state.value.activity.type;
+    return undefined === props.activity;
+});
+const isTask = computed(() => {
+    return props.activity && ActivityType.Task === props.activity.type;
 });
 
 const onFieldChange = (key: string, value: any) => {
-    (state.value.activity as any)[key] = value;
+    (props.activity as any)[key] = value;
 };
 </script>
 <template>
@@ -44,12 +26,11 @@ const onFieldChange = (key: string, value: any) => {
             <v-row no-gutters>
                 <v-col :md="props.small ? '12' : '9'"
                        cols="12">
-                    <ActivityContent v-if="!isNew"
-                                     :activity="state.activity"
-                                     :isEditing="state.isEditing"
-                                     @editingChange="(isEditing: boolean) => state.isEditing = isEditing" />
+                    <ActivityNew v-if="isNew" />
+                    <ActivityContent v-else
+                                     :activity="props.activity" />
                     <TaskDetails v-if="isTask"
-                                 :activity="state.activity"
+                                 :activity="props.activity"
                                  :small="props.small"
                                  class="mt-6" />
                 </v-col>
@@ -57,7 +38,7 @@ const onFieldChange = (key: string, value: any) => {
                        :offset-md="props.small ? '0' : '1'"
                        cols="12">
                     <TaskSidebar v-if="isTask"
-                                 :activity="state.activity"
+                                 :activity="props.activity"
                                  :small="props.small"
                                  @fieldChange="onFieldChange" />
                 </v-col>

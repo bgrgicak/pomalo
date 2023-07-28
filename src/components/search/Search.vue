@@ -62,6 +62,7 @@ $form-width: 300px;
     z-index: $search-results-z-index;
     position: fixed;
     width: $form-width;
+    max-width: 100%;
 
     .v-list-item--link {
         cursor: unset;

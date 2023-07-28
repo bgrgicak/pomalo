@@ -1,13 +1,19 @@
 <script setup lang="ts">
-const { activity } = defineProps(['activity']);
+const props = defineProps(['activity', 'disabled']);
 </script>
 <template>
-    <router-link :to="`/${activity.type}/${activity._id}/`" class="activity-title v-btn v-btn--variant-text">
-        {{ activity.title }}
-    </router-link >
+    <router-link :to="`/${props.activity.type}/${props.activity._id}/`"
+                 :class="{ 'activity-title--disabled': props.disabled }"
+                 class="activity-title v-btn v-btn--variant-text">
+        {{ props.activity.title }}
+    </router-link>
 </template>
 <style scoped lang="scss">
 .activity-title {
     text-transform: unset;
+
+    &.activity-title--disabled {
+        pointer-events: none;
+    }
 }
 </style>

@@ -75,7 +75,7 @@ const addEvent = () => {
                     </v-btn>
                 </v-btn-toggle>
             </v-col>
-            <v-col v-cols="4"
+            <v-col cols="4"
                    align="right">
                 <v-btn icon="mdi-arrow-left"
                        @click="previous"

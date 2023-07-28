@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type Activity from '@/types/activity';
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import ActivityDetails from '@/components/activity/ActivityDetails.vue';

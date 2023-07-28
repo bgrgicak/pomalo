@@ -13,7 +13,7 @@ export default createVuetify({
                     primary: '#2196f3',
                     secondary: '#03a9f4',
                     accent: '#3f51b5',
-                    error: '#ff5722',
+                    error: '#f44336',
                     warning: '#ff9800',
                     info: '#607d8b',
                     success: '#4caf50'

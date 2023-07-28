@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
 import { useTimerStore } from '@/stores/timer';
-import constants from '@/helper/constants';
 import { computed } from 'vue';
 
 const props = defineProps(['activity']);
@@ -15,11 +14,11 @@ const isActive = computed(() => {
 
 const start = () => {
     timerStore.start(props.activity._id);
-    emit('change');
+    emit('change', true, props.activity._id);
 };
 const stop = () => {
     timerStore.stop();
-    emit('change');
+    emit('change', false, props.activity._id);
 };
 </script>
 <template v-if="!timerStore.isLoading">
@@ -33,5 +32,6 @@ const stop = () => {
            class="timer-toggle activity-stop"
            variant="text"
            @click="stop"
+           color="error"
            icon="mdi-stop-circle-outline" />
 </template>

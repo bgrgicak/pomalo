@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import { openActivityPage } from '@/helper/activities';
+import { emptyActivity, openActivityPage } from '@/helper/activities';
 import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
 import { ref, watch, type Ref } from 'vue';
 import ActivityTitle from '@/components/activity/ActivityTitle.vue';
 import TimerToggle from '../timer/TimerToggle.vue';
+import { ActivityType } from '@/types/activity';
+import __ from '@/helper/translations';
+import { useLayoutStore } from '@/stores/layout';
 
-const props = defineProps(['searchText']);
+const props = defineProps(['searchText', 'openInSidebar']);
 const searchResults: Ref<Activity[]> = ref([]);
-const emit = defineEmits(['hideSearch']);
+const emit = defineEmits(['hideSearch', 'click']);
 
 const activityStore = useActivityStore();
+const layoutStore = useLayoutStore();
 
 watch(() => props.searchText, async (searchText: string) => {
     if (searchText.length < 3) {
@@ -33,29 +37,86 @@ const hide = () => {
 };
 
 const openActivity = (activity: Activity) => {
-    openActivityPage(activity);
+    emit('click', activity);
+    if (props.openInSidebar) {
+        layoutStore.showRightSidebar(activity._id);
+    } else {
+        openActivityPage(activity);
+    }
     hide();
+};
+
+const timerToggle = (activity: Activity) => {
+    emit('click', activity);
+    hide();
+};
+
+const add = (type: ActivityType) => {
+    const newActivity = emptyActivity(type);
+    newActivity.title = props.searchText;
+
+    activityStore.add(newActivity).then(() => {
+        openActivity(newActivity);
+    });
 };
 
 </script>
 <template>
     <v-card class="search-results"
-            v-if="searchResults.length">
+            v-if="searchText">
         <v-list>
-            <v-list-item v-for="activity in searchResults"
+            <v-list-item v-if="searchResults.length"
+                         v-for="activity in searchResults"
                          :key="activity._id"
-                         class="search-result">
+                         class="search-result"
+                         @click="() => openActivity(activity)">
                 <ActivityTitle :activity="activity"
-                               @click="() => openActivity(activity)" />
-                <v-spacer />
+                               :disabled="props.openInSidebar" />
                 <TimerToggle :activity="activity"
-                             @change="hide" />
+                             @change="() => timerToggle(activity)" />
+            </v-list-item>
+            <v-list-item>
+                <v-btn variant="text"
+                       color="primary"
+                       class="search-action--add"
+                       @click="() => add(ActivityType.Task)">
+                    {{ __('New event ') + searchText }}
+                </v-btn>
+            </v-list-item>
+            <v-list-item>
+                <v-btn variant="text"
+                       class="search-action--add"
+                       color="primary"
+                       @click="() => add(ActivityType.Task)">
+                    {{ __('New task ') + searchText }}
+                </v-btn>
             </v-list-item>
         </v-list>
     </v-card>
 </template>
-<style>
-.search-result .v-list-item__content {
+<style lang="scss">
+.search-result {
+    .v-list-item__content {
+        display: flex;
+        align-items: center;
+
+        .activity-title {
+            text-align: left;
+            display: inline-block;
+            flex-grow: 1;
+        }
+    }
+}
+
+.search-action--add {
+    width: 100%;
+    padding: 0;
     display: flex;
+
+    .v-btn__content {
+        text-align: left;
+        display: inline-block;
+        flex-grow: 1;
+    }
 }
 </style>

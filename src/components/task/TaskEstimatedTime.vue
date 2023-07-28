@@ -2,7 +2,6 @@
 import { useActivityStore } from '@/stores/activities';
 import __ from '@/helper/translations';
 import { settings } from '@/helper/settings';
-import constants from '@/helper/constants';
 
 const props = defineProps(['activity']);
 const emit = defineEmits(['change']);

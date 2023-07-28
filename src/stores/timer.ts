@@ -27,6 +27,13 @@ export const useTimerStore = defineStore(
 
         const isLoading = computed((): boolean => state.value.loading);
 
+        const title = computed((): string => {
+            if (!state.value.activity) {
+                return '';
+            }
+            return state.value.activity.title;
+        });
+
         const activityId = computed((): string | undefined => {
             if (!state.value.activity) {
                 return undefined;
@@ -47,28 +54,11 @@ export const useTimerStore = defineStore(
             state.value.time = getTimePassed(currentEvent.start);
         }, 1000);
 
-        const start = (activityId: string) => {
-            activityStore.get(activityId).then((activity) => {
-                const updatedActivity = activity as Activity;
-                updatedActivity.events.push({
-                    start: getUtcTimestamp(),
-                });
-                activityStore.updateField(
-                    updatedActivity._id,
-                    'events',
-                    updatedActivity.events
-                ).then(() => {
-                    if (activity) {
-                        state.value.activity = updatedActivity;
-                    }
-                });
-            });
-        };
         const stop = () => {
             if (!state.value.activity) {
-                return;
+                return Promise.resolve();
             }
-            activityStore.get(state.value.activity._id).then((activity) => {
+            return activityStore.get(state.value.activity._id).then((activity) => {
                 const updatedActivity = activity as Activity;
                 updatedActivity.events = updatedActivity.events.map((event) => {
                     if (event.end) {
@@ -77,12 +67,31 @@ export const useTimerStore = defineStore(
                     event.end = getUtcTimestamp();
                     return event;
                 });
-                activityStore.updateField(
+                return activityStore.updateField(
                     updatedActivity._id,
                     'events',
                     updatedActivity.events
                 ).then(() => {
                     state.value.activity = undefined;
+                });
+            });
+        };
+        const start = (activityId: string) => {
+            stop().then(() => {
+                activityStore.get(activityId).then((activity) => {
+                    const updatedActivity = activity as Activity;
+                    updatedActivity.events.push({
+                        start: getUtcTimestamp(),
+                    });
+                    activityStore.updateField(
+                        updatedActivity._id,
+                        'events',
+                        updatedActivity.events
+                    ).then(() => {
+                        if (activity) {
+                            state.value.activity = updatedActivity;
+                        }
+                    });
                 });
             });
         };
@@ -119,6 +128,7 @@ export const useTimerStore = defineStore(
             time,
             isLoading,
             activityId,
+            title,
             start,
             stop,
             getCurrentActivity,
