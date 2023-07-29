@@ -34,7 +34,7 @@ const importance = computed(() => {
 });
 </script>
 <template>
-    <v-select :label="__('How important is it?')"
+    <v-select :label="__('Importance')"
               :items="importanceItems"
               :model-value="importance"
               variant="outlined"

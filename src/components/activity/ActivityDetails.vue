@@ -28,7 +28,7 @@ const onFieldChange = (key: string, value: any) => {
     <v-card class="activity-details pa-4">
         <v-container>
             <v-row no-gutters>
-                <v-col :md="props.small ? '12' : '9'"
+                <v-col :md="props.small ? '12' : '8'"
                        cols="12">
                     <ActivityNew v-if="isNew"
                                  openInSidebar="true" />
@@ -39,7 +39,7 @@ const onFieldChange = (key: string, value: any) => {
                                  :small="props.small"
                                  class="mt-6" />
                 </v-col>
-                <v-col :md="props.small ? '12' : '2'"
+                <v-col :md="props.small ? '12' : '3'"
                        :offset-md="props.small ? '0' : '1'"
                        cols="12">
                     <TaskSidebar v-if="isTask"

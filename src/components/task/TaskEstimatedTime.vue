@@ -20,7 +20,7 @@ const onChange = (value: string | undefined) => {
 };
 </script>
 <template>
-    <v-text-field :label="__('How many hours?')"
+    <v-text-field :label="__('Estimated hours')"
                   :model-value="props.activity.estimatedTime"
                   @update:modelValue="onChange"
                   variant="outlined"
