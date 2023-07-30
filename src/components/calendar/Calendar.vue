@@ -100,6 +100,7 @@ const addEvent = () => {
                  hide-title-bar
                  watch-realtime="true"
                  @ready="fetchEvents"
+                 :show-all-day-events="true"
                  @view-change="fetchEvents">
         </vue-cal>
 
@@ -121,6 +122,16 @@ const addEvent = () => {
 }
 
 .calendar-event__event {
-    background-color: rgb(var(--v-theme-secondary));
+    background-color: rgb(var(--v-theme-primary));
+}
+
+.vuecal__cell--selected,
+.vuecal__cell--today,
+.vuecal__cell--current {
+    background-color: transparent;
+}
+
+.vuecal__heading.today {
+    font-weight: 600;
 }
 </style>
