@@ -3,9 +3,9 @@ import type Activity from "@/types/activity";
 import __ from "@/helper/translations";
 import log from "@/helper/logs";
 import { LogType } from "@/types/log";
-import database from "@/helper/pouchdb";
+import database from "@/data/pouchdb";
 import { computed, ref, type Ref } from "vue";
-import { addDefaultsToActivity } from "@/helper/activities";
+import { addDefaultsToActivity } from "@/data/activities";
 
 export interface ActivityMap {
   [key: string]: Activity;

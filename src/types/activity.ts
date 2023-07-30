@@ -1,7 +1,5 @@
 import __ from "@/helper/translations";
 
-export type EventFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
-
 export enum Importance {
     NotImportant = 1,
     SomewhatImportant = 3,
@@ -29,15 +27,66 @@ export const ImportanceLabels: Object = {
     },
 };
 
-export interface EventReoccurrence {
-    frequency: EventFrequency;
-    interval: number;
+export enum RepeatInterval {
+    NoRepeat = '',
+    Daily = 'daily',
+    Weekly = 'weekly',
+    Monthly = 'monthly',
+    Yearly = 'yearly',
+    Custom = 'custom',
 }
+export const RepeatLabels: Object = {
+    [RepeatInterval.NoRepeat]: {
+        label: __('Don\'t Repeat'),
+        default: true,
+    },
+    [RepeatInterval.Daily]: {
+        label: __('Daily'),
+    },
+    [RepeatInterval.Weekly]: {
+        label: __('Weekly'),
+    },
+    [RepeatInterval.Monthly]: {
+        label: __('Monthly'),
+    },
+    [RepeatInterval.Yearly]: {
+        label: __('Yearly'),
+    },
+    [RepeatInterval.Custom]: {
+        label: __('Custom'),
+    },
+};
+export enum FrequencyInterval {
+    Daily = 'daily',
+    Weekly = 'weekly',
+    Monthly = 'monthly',
+    Yearly = 'yearly',
+}
+export const FrequencyLabels: Object = {
+    [RepeatInterval.Daily]: {
+        label: __('Daily'),
+    },
+    [RepeatInterval.Weekly]: {
+        label: __('Weekly'),
+    },
+    [RepeatInterval.Monthly]: {
+        label: __('Monthly'),
+    },
+    [RepeatInterval.Yearly]: {
+        label: __('Yearly'),
+    },
+};
 
 export interface ActivityEvent {
     start: number;
     end?: number;
-    reoccurrence?: EventReoccurrence;
+    allDay?: boolean;
+    repeat?: RepeatInterval;
+    repeatEnd?: number;
+    // TODO refactor
+    repeatFrequency?: FrequencyInterval;
+    repeatInterval?: number;
+    repeatDaysOfWeek?: number[];
 }
 
 export interface ActivityMembers {
@@ -64,8 +113,10 @@ export default interface Activity {
     created: number;
     description: string;
     type: ActivityType;
+
     members: ActivityMembers[];
     events: ActivityEvent[];
+
     completedDate?: number;
     dueDate?: number;
     importance?: Importance;

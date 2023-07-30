@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import SearchResults from '../search/SearchResults.vue';
 import { useLayoutStore } from '@/stores/layout';
 import type Activity from '@/types/activity';
-import { openActivityPage } from '@/helper/activities';
+import { openActivityPage } from '@/data/activities';
 
 const props = defineProps(['openInSidebar']);
 const title = ref('');

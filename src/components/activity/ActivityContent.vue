@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { openActivityPage } from '@/helper/activities';
+import { openActivityPage } from '@/data/activities';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
 import type { ActivityState } from '@/types/activity';

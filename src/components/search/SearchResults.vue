@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { emptyActivity, openActivityPage } from '@/helper/activities';
+import { emptyActivity, openActivityPage } from '@/data/activities';
 import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
 import { ref, watch, type Ref } from 'vue';

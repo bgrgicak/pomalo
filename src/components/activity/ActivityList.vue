@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { emptyActivity, openActivityPage } from '@/helper/activities';
+import { emptyActivity, openActivityPage } from '@/data/activities';
 import { useLayoutStore } from '@/stores/layout';
 import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
