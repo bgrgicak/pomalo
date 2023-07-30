@@ -4,7 +4,7 @@ import { computed, ref, watch, type Ref } from "vue";
 import { useActivityStore, type ActivityMap } from "./activities";
 import { getUtcTimestamp } from "@/helper/date";
 import type { CalendarEvent, CalendarState } from "@/types/calendar";
-import { parseEventsFromActivities } from "@/helper/activities";
+import { parseEventsFromActivities } from "@/data/activities";
 
 
 export const useCalendarStore = defineStore(
@@ -37,15 +37,51 @@ export const useCalendarStore = defineStore(
             state.value.startTime = getUtcTimestamp(start);
             state.value.endTime = getUtcTimestamp(end);
             return activityStore.find({
-                selector: {
-                    events: {
-                        $elemMatch: {
-                            start: {
-                                $gte: state.value.startTime,
-                                $lte: state.value.endTime,
-                            },
-                        },
-                    },
+                "selector": {
+                    "events": {
+                        "$elemMatch": {
+                            "$or": [
+                                {
+                                    "start": {
+                                        "$gte": state.value.startTime
+                                    },
+                                    "end": {
+                                        "$exists": false
+                                    }
+                                },
+                                {
+                                    "start": {
+                                        "$lte": state.value.endTime
+                                    },
+                                    "end": {
+                                        "$gte": state.value.startTime
+                                    },
+                                },
+                                {
+                                    "start": {
+                                        "$lte": state.value.endTime
+                                    },
+                                    "repeat": {
+                                        "$exists": true
+                                    },
+                                    "repeatEnd": {
+                                        "$gte": state.value.startTime
+                                    },
+                                },
+                                {
+                                    "start": {
+                                        "$lte": state.value.endTime
+                                    },
+                                    "repeat": {
+                                        "$exists": true
+                                    },
+                                    "repeatEnd": {
+                                        "$exists": false
+                                    },
+                                },
+                            ]
+                        }
+                    }
                 },
             }).then((activities) => {
                 if (!state.value.startTime || !state.value.endTime) {

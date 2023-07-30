@@ -3,6 +3,7 @@ export interface CalendarEvent {
     title: string;
     start: Date;
     end: Date | undefined;
+    allDay: boolean;
     content: string;
     class: string;
     deletable: boolean;
