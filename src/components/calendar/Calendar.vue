@@ -7,6 +7,7 @@ import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
 import type { ActivityEvent } from '@/types/activity';
 import type Activity from '@/types/activity';
+import { updateEventInActivity } from '@/data/events';
 
 const calendarStore = useCalendarStore();
 const activityStore = useActivityStore();
@@ -24,7 +25,14 @@ const fetchEvents = (options: any) => {
 
 const eventClick = (event: any) => {
     if (event.id) {
-        layoutStore.showRightSidebar(event.id);
+        layoutStore.showRightSidebar(
+            event.id,
+            {
+                id: event.eventId ?? '',
+                start: event.start,
+                end: event.end,
+            }
+        );
     }
 };
 
@@ -59,16 +67,20 @@ const eventChange = (action: string, event: any) => {
             if (!activity) {
                 return;
             }
-            // TODO switch to activityEvent ids
-            const eventIndex = activity.events.findIndex(
-                (item: ActivityEvent) => item.start === event.originalEvent.start && item.end === event.originalEvent.end
-            );
-            if (-1 === eventIndex) {
+            if (!event.event.eventId) {
                 return;
             }
-            activity.events[eventIndex].start = event.event.start;
-            activity.events[eventIndex].end = event.event.end;
-            activityStore.updateField(activity._id, 'events', activity.events);
+            activityStore.update(
+                updateEventInActivity(
+                    activity,
+                    {
+                        id: event.event.eventId,
+                        start: event.event.start,
+                        end: event.event.end,
+                    },
+                    event.event.repeatIteration
+                )
+            );
         });
     } else if ('event-drag-create' === action) {
         layoutStore.showRightSidebar();
@@ -127,7 +139,8 @@ const eventChange = (action: string, event: any) => {
                        variant="text" />
             </v-col>
         </v-row>
-        <vue-cal style="height: calc(100vh - 48px - 8px - 80px);"
+        <vue-cal style="height: calc(100vh - 48px - 8px - 72px - 80px);"
+                 class="v-card calendar"
                  ref="vuecal"
                  :active-view="activeView"
                  :disable-views="['years']"
@@ -160,6 +173,7 @@ const eventChange = (action: string, event: any) => {
 .vuecal__event {
     background-color: rgb(var(--v-theme-primary));
     color: rgba(var(--v-theme-on-primary), var(--v-high-emphasis-opacity));
+    border-bottom: 1px solid #fff;
 }
 
 .calendar-event__task {

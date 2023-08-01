@@ -7,6 +7,7 @@ import database from "@/data/pouchdb";
 import { ref, type Ref } from "vue";
 import { addDefaultsToActivity, calculateActivity, parseActivityToDocument, parseDocumentToActivity } from "@/data/activities";
 import type { ActivityDocument } from "@/types/activity-document";
+import constants from "@/helper/constants";
 
 export interface ActivityMap {
   [key: string]: Activity;
@@ -41,6 +42,11 @@ export const useActivityStore = defineStore(
     };
 
     const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
+      if (constants.environment.development) {
+        (database as any).explain(request).then((result: any) => {
+          log(result, LogType.Debug);
+        });
+      }
       return database.find(request).then((result) => {
         return result.docs as ActivityDocument[];
       }).then((response: ActivityDocument[]) => {
@@ -100,7 +106,7 @@ export const useActivityStore = defineStore(
       return get(activityId).then((document: any) => {
         const newDocument = Object.assign({}, document);
         Object.keys(fields).forEach((field) => {
-          newDocument[field] = fields[field];
+          newDocument[field] = (fields as any)[field];
         });
         return put({
           ...newDocument,

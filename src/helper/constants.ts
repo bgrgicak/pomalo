@@ -9,4 +9,8 @@ export default {
     icons: {
         logo: 'mdi-palm-tree',
     },
+    environment: {
+        production: import.meta.env.PROD,
+        development: import.meta.env.DEV,
+    },
 };

@@ -1,7 +1,8 @@
 import { LogType } from "@/types/log";
+import constants from "./constants";
 
 const log = (value: string | Object, type?: LogType) => {
-    if (import.meta.env.PROD) return;
+    if (constants.environment.production) return;
 
     switch (type) {
         case LogType.Info:

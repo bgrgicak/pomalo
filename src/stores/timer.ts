@@ -4,6 +4,7 @@ import { computed, ref, type Ref } from "vue";
 import { useActivityStore } from "./activities";
 import { getTimePassed, getLocalDate, getUtcTimestamp } from "@/helper/date";
 import { newId } from "@/data/pouchdb";
+import { addEventToActivity, updateEventInActivity } from "@/data/events";
 
 interface TimerState {
     activity: Activity | undefined;
@@ -68,10 +69,12 @@ export const useTimerStore = defineStore(
                     event.end = getLocalDate();
                     return event;
                 });
-                return activityStore.updateField(
+                return activityStore.updateFields(
                     updatedActivity._id,
-                    'events',
-                    updatedActivity.events
+                    {
+                        'events': updatedActivity.events,
+                        'timerRunning': false,
+                    }
                 ).then(() => {
                     state.value.activity = undefined;
                 });
@@ -80,19 +83,24 @@ export const useTimerStore = defineStore(
         const start = (activityId: string) => {
             stop().then(() => {
                 activityStore.get(activityId).then((activity) => {
-                    const updatedActivity = activity as Activity;
-                    updatedActivity.events.push({
-                        id: newId('activityEvent'),
-                        start: getLocalDate(),
-                    });
-                    activityStore.updateField(
-                        updatedActivity._id,
-                        'events',
-                        updatedActivity.events
-                    ).then(() => {
-                        if (activity) {
-                            state.value.activity = updatedActivity;
+                    if (!activity) {
+                        return;
+                    }
+                    const updatedActivity = addEventToActivity(
+                        activity,
+                        {
+                            id: newId('activityEvent'),
+                            start: getLocalDate(),
                         }
+                    );
+                    activityStore.updateFields(
+                        updatedActivity._id,
+                        {
+                            'events': updatedActivity.events,
+                            'timerRunning': true,
+                        }
+                    ).then(() => {
+                        state.value.activity = updatedActivity;
                     });
                 });
             });
@@ -106,7 +114,7 @@ export const useTimerStore = defineStore(
                         "$lte": now
                     },
                     "eventLastEnd": {
-                        "$gte": now
+                        "$exists": true
                     },
                     "timerRunning": true,
                 },

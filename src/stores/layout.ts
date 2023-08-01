@@ -1,3 +1,4 @@
+import type { ActivityEvent } from "@/types/activity";
 import { defineStore } from "pinia";
 
 export const useLayoutStore = defineStore(
@@ -8,6 +9,7 @@ export const useLayoutStore = defineStore(
                 leftSidebarVisibility: false,
                 rightSidebarVisibility: false,
                 currentActivityId: undefined as string | undefined,
+                currentEvent: undefined as ActivityEvent | undefined,
             };
         },
         getters: {
@@ -21,15 +23,19 @@ export const useLayoutStore = defineStore(
             hideLeftSidebar () {
                 this.leftSidebarVisibility = false;
             },
-            showRightSidebar (activityId: string | undefined = undefined) {
+            showRightSidebar (activityId: string | undefined = undefined, event: ActivityEvent | undefined = undefined) {
                 this.rightSidebarVisibility = true;
                 if (activityId) {
                     this.currentActivityId = activityId;
+                }
+                if (event) {
+                    this.currentEvent = event;
                 }
             },
             hideRightSidebar () {
                 this.rightSidebarVisibility = false;
                 this.currentActivityId = undefined;
+                this.currentEvent = undefined;
             }
         }
     },

@@ -16,11 +16,24 @@ export const removeEventFromActivity = (activity: Activity, eventId: string): Ac
     return newActivity;
 };
 
-export const updateEventInActivity = (activity: Activity, event: ActivityEvent): Activity => {
+export const updateEventInActivity = (activity: Activity, event: ActivityEvent, repeatIteration: boolean = false): Activity => {
     const newActivity = { ...activity };
     newActivity.events = newActivity.events.map((oldEvent) => {
         if (oldEvent.id === event.id) {
-            return event;
+            let start = structuredClone(event.start);
+            let end = structuredClone(event.end);
+            if (repeatIteration) {
+                start.setDate(oldEvent.start.getDate());
+                if (end) {
+                    end.setDate(end.getDate());
+                }
+            }
+            return {
+                ...oldEvent,
+                ...event,
+                start,
+                end,
+            };
         }
         return oldEvent;
     });
@@ -68,6 +81,18 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
                 .forEach((event) => {
                     const isCurrentActivity = currentActivityId === activity._id;
                     const endDay = event.end ? event.end : getLocalDate();
+                    const eventData = {
+                        id: activity._id,
+                        eventId: event.id,
+                        title: activity.title,
+                        content: '',
+                        allDay: event.allDay,
+                        class: 'v-card calendar-event__' + activity.type,
+                        deletable: !isCurrentActivity,
+                        resizable: !isCurrentActivity,
+                        background: isCurrentActivity,
+                        repeatIteration: false,
+                    };
                     if (event.repeat) {
                         const iteratorDay = structuredClone(event.start);
                         const lastDay = !event.repeatEnd ? endTime : event.repeatEnd;
@@ -80,17 +105,15 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
                                 eventEnd.setHours(endDay.getHours());
                                 eventEnd.setMinutes(endDay.getMinutes());
 
+                                const isRepeatIteration = !(
+                                    event.start.getTime() === eventStart.getTime() &&
+                                    endDay.getTime() === eventEnd.getTime()
+                                );
                                 events.push({
-                                    id: activity._id,
-                                    title: activity.title,
+                                    ...eventData,
                                     start: eventStart,
                                     end: eventEnd,
-                                    allDay: event.allDay,
-                                    content: '',
-                                    class: 'calendar-event__' + activity.type,
-                                    deletable: !isCurrentActivity,
-                                    resizable: !isCurrentActivity,
-                                    background: isCurrentActivity,
+                                    repeatIteration: isRepeatIteration,
                                 });
                             }
                             iteratorDay.setDate(iteratorDay.getDate() + 1);
@@ -98,16 +121,9 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 
                     } else {
                         events.push({
-                            id: activity._id,
-                            title: activity.title,
+                            ...eventData,
                             start: event.start,
                             end: endDay,
-                            allDay: event.allDay,
-                            content: '',
-                            class: 'calendar-event__' + activity.type,
-                            deletable: !isCurrentActivity,
-                            resizable: !isCurrentActivity,
-                            background: isCurrentActivity,
                         });
                     }
                 });
