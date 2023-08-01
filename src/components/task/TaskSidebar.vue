@@ -3,7 +3,6 @@ import __ from '@/helper/translations';
 import ActivityClose from '../activity/ActivityClose.vue';
 import ActivityCompleted from './TaskCompleted.vue';
 import ActivityDueDate from './TaskDueDate.vue';
-import ActivityImportance from './TaskImportance.vue';
 import ActivityEstimatedTime from './TaskEstimatedTime.vue';
 import ActivityTimer from '../activity/ActivityTimer.vue';
 
@@ -23,8 +22,6 @@ const onFieldChange = (key: string, value: any) => {
                      @change="(value: any) => onFieldChange('dueDate', value)" />
     <ActivityEstimatedTime :activity="props.activity"
                            @change="(value: any) => onFieldChange('estimatedTime', value)" />
-    <ActivityImportance :activity="props.activity"
-                        @change="(value: any) => onFieldChange('importance', value)" />
     <v-divider />
     <ActivityClose :activity="props.activity"
                    class=" mt-4" />

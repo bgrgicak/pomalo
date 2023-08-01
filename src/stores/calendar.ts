@@ -2,9 +2,10 @@ import type Activity from "@/types/activity";
 import { defineStore } from "pinia";
 import { computed, ref, watch, type Ref } from "vue";
 import { useActivityStore, type ActivityMap } from "./activities";
-import { getUtcTimestamp } from "@/helper/date";
 import type { CalendarEvent, CalendarState } from "@/types/calendar";
-import { parseEventsFromActivities } from "@/data/activities";
+import { parseEventsFromActivities } from "@/data/events";
+import { getUtcTimestamp } from "@/helper/date";
+import { useTimerStore } from "./timer";
 
 
 export const useCalendarStore = defineStore(
@@ -16,6 +17,7 @@ export const useCalendarStore = defineStore(
         });
 
         const activityStore = useActivityStore();
+        const timerStore = useTimerStore();
 
         const isLoading = computed((): boolean => state.value.loading);
 
@@ -30,64 +32,32 @@ export const useCalendarStore = defineStore(
                 Object.values(updatedActivities) as Activity[],
                 state.value.startTime,
                 state.value.endTime,
+                timerStore.activityId,
             );
         }, { deep: true });
 
         const load = (start: Date, end: Date) => {
-            state.value.startTime = getUtcTimestamp(start);
-            state.value.endTime = getUtcTimestamp(end);
+            state.value.startTime = start;
+            state.value.endTime = end;
             return activityStore.find({
                 "selector": {
-                    "events": {
-                        "$elemMatch": {
-                            "$or": [
-                                {
-                                    "start": {
-                                        "$gte": state.value.startTime
-                                    },
-                                    "end": {
-                                        "$exists": false
-                                    }
-                                },
-                                {
-                                    "start": {
-                                        "$lte": state.value.endTime
-                                    },
-                                    "end": {
-                                        "$gte": state.value.startTime
-                                    },
-                                },
-                                {
-                                    "start": {
-                                        "$lte": state.value.endTime
-                                    },
-                                    "repeat": {
-                                        "$exists": true
-                                    },
-                                    "repeatEnd": {
-                                        "$gte": state.value.startTime
-                                    },
-                                },
-                                {
-                                    "start": {
-                                        "$lte": state.value.endTime
-                                    },
-                                    "repeat": {
-                                        "$exists": true
-                                    },
-                                    "repeatEnd": {
-                                        "$exists": false
-                                    },
-                                },
-                            ]
-                        }
-                    }
+                    "eventFirstStart": {
+                        "$lte": getUtcTimestamp(state.value.endTime)
+                    },
+                    "eventLastEnd": {
+                        "$gte": getUtcTimestamp(state.value.startTime)
+                    },
                 },
             }).then((activities) => {
                 if (!state.value.startTime || !state.value.endTime) {
                     return [];
                 }
-                state.value.events = parseEventsFromActivities(activities as Activity[], state.value.startTime, state.value.endTime);
+                state.value.events = parseEventsFromActivities(
+                    activities as Activity[],
+                    state.value.startTime,
+                    state.value.endTime,
+                    timerStore.activityId,
+                );
                 return events;
             });
         };

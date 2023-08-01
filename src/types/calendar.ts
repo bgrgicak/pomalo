@@ -14,6 +14,6 @@ export interface CalendarEvent {
 export interface CalendarState {
     events: CalendarEvent[];
     loading: boolean;
-    startTime?: number;
-    endTime?: number;
+    startTime?: Date;
+    endTime?: Date;
 }

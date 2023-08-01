@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useActivityStore } from '@/stores/activities';
 import __ from '@/helper/translations';
-import { getUtcTimestamp } from '@/helper/date';
+import { getLocalDate } from '@/helper/date';
 
 const props = defineProps(['activity']);
 const emit = defineEmits(['change']);
@@ -9,7 +9,7 @@ const emit = defineEmits(['change']);
 const activityStore = useActivityStore();
 
 const onChange = (event: any) => {
-    const newValue = event.target.checked ? getUtcTimestamp() : undefined;
+    const newValue = event.target.checked ? getLocalDate() : undefined;
     activityStore.updateField(
         props.activity._id,
         'completedDate',

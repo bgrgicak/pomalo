@@ -69,3 +69,7 @@ export const getWeekStartAndEnd = (date?: Date | string | number) => {
         end: new Date(to),
     };
 };
+
+export const maxDate = () => {
+    return new Date(8640000000000000);
+};

@@ -52,9 +52,6 @@ export const RepeatLabels: Object = {
     [RepeatInterval.Yearly]: {
         label: __('Yearly'),
     },
-    [RepeatInterval.Custom]: {
-        label: __('Custom'),
-    },
 };
 export enum FrequencyInterval {
     Daily = 'daily',
@@ -78,15 +75,14 @@ export const FrequencyLabels: Object = {
 };
 
 export interface ActivityEvent {
-    start: number;
-    end?: number;
+    id: string;
+    start: Date;
+    end?: Date;
     allDay?: boolean;
     repeat?: RepeatInterval;
-    repeatEnd?: number;
-    // TODO refactor
-    repeatFrequency?: FrequencyInterval;
-    repeatInterval?: number;
-    repeatDaysOfWeek?: number[];
+    repeatEnd?: Date;
+    repeatDays?: number[];
+    repeatInterval?: number[];
 }
 
 export interface ActivityMembers {
@@ -110,15 +106,22 @@ export default interface Activity {
     _id: string;
     _rev?: string;
     title: string;
-    created: number;
+    created: Date;
     description: string;
     type: ActivityType;
 
     members: ActivityMembers[];
     events: ActivityEvent[];
 
-    completedDate?: number;
-    dueDate?: number;
-    importance?: Importance;
+    completedDate?: Date;
+    dueDate?: Date;
     estimatedTime?: number;
+
+    eventFirstStart?: Date;
+    eventLastEnd?: Date;
+    timerRunning?: boolean;
+
+    priority: number;
+    aboveActivities: string[];
+    belowActivities: string[];
 }

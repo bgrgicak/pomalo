@@ -1,6 +1,6 @@
 import { LogType } from "@/types/log";
 
-const log = (value: string|Object, type?: LogType) => {
+const log = (value: string | Object, type?: LogType) => {
     if (import.meta.env.PROD) return;
 
     switch (type) {

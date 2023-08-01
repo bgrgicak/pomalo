@@ -142,7 +142,7 @@ const onEventFieldChange = (field: string, value: string | undefined) => {
                           @update:modelValue="(value: string) => onEventFieldChange('repeatInterval', value)" />
             <v-btn-toggle v-if="RepeatInterval.Weekly === event.repeatFrequency"
                           @update:modelValue="(value: string) => onEventFieldChange('repeatDaysOfWeek', value)"
-                          :model-value="event.repeatDaysOfWeek"
+                          :model-value="event.repeatDays"
                           variant="outlined"
                           multiple
                           rounded="0"

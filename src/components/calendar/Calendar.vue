@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import VueCal from 'vue-cal';
+import VueCal, { type VueCalEvent } from 'vue-cal';
 import { useCalendarStore } from '@/stores/calendar';
 import { useLayoutStore } from '@/stores/layout';
 import { ref } from 'vue';
 import __ from '@/helper/translations';
+import { useActivityStore } from '@/stores/activities';
+import type { ActivityEvent } from '@/types/activity';
+import type Activity from '@/types/activity';
 
 const calendarStore = useCalendarStore();
+const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
 
 const activeView = ref('week');
 const vuecal = ref(null);
 
 const fetchEvents = (options: any) => {
+    if (options.view) {
+        activeView.value = options.view;
+    }
     calendarStore.load(options.startDate, options.endDate);
 };
 
@@ -46,10 +53,34 @@ const addEvent = () => {
     layoutStore.showRightSidebar();
 };
 
+const eventChange = (action: string, event: any) => {
+    if ('event-duration-change' === action || 'event-drop' === action) {
+        activityStore.get(event.event.id).then((activity: Activity | void) => {
+            if (!activity) {
+                return;
+            }
+            // TODO switch to activityEvent ids
+            const eventIndex = activity.events.findIndex(
+                (item: ActivityEvent) => item.start === event.originalEvent.start && item.end === event.originalEvent.end
+            );
+            if (-1 === eventIndex) {
+                return;
+            }
+            activity.events[eventIndex].start = event.event.start;
+            activity.events[eventIndex].end = event.event.end;
+            activityStore.updateField(activity._id, 'events', activity.events);
+        });
+    } else if ('event-drag-create' === action) {
+        layoutStore.showRightSidebar();
+    } else if ('event-delete' === action) {
+
+    }
+    return true;
+};
 </script>
 <template>
     <v-card class="calendar pa-4">
-        <v-row class="pb-2">
+        <v-row class="pb-0">
             <v-col cols="4"
                    align="left">
                 <v-btn icon="mdi-plus"
@@ -75,6 +106,14 @@ const addEvent = () => {
                     </v-btn>
                 </v-btn-toggle>
             </v-col>
+            <v-col cols="4"></v-col>
+        </v-row>
+        <v-row class="pb-2">
+            <v-col cols="8">
+                <h2 class="m-0">
+                    {{ (vuecal as any)?.viewTitle }}
+                </h2>
+            </v-col>
             <v-col cols="4"
                    align="right">
                 <v-btn icon="mdi-arrow-left"
@@ -94,14 +133,20 @@ const addEvent = () => {
                  :disable-views="['years']"
                  :events="calendarStore.events"
                  :on-event-dblclick="eventClick"
-                 :click-to-navigate="false"
                  :dblclick-to-navigate="false"
+                 :click-to-navigate="['year', 'month'].includes(activeView)"
                  hide-view-selector
                  hide-title-bar
                  watch-realtime="true"
-                 @ready="fetchEvents"
                  :show-all-day-events="true"
-                 @view-change="fetchEvents">
+                 :editable-events="{ title: false, drag: true, resize: true, delete: true, create: true }"
+                 @ready="fetchEvents"
+                 @view-change="fetchEvents"
+                 @event-title-change="($event: any) => eventChange('event-title-change', $event)"
+                 @event-duration-change="($event: any) => eventChange('event-duration-change', $event)"
+                 @event-drop="($event: any) => eventChange('event-drop', $event)"
+                 @event-drag-create="($event: any) => eventChange('event-drag-create', $event)"
+                 @event-delete="($event: any) => eventChange('event-delete', $event)">
         </vue-cal>
 
     </v-card>
@@ -118,7 +163,7 @@ const addEvent = () => {
 }
 
 .calendar-event__task {
-    background-color: rgb(var(--v-theme-secondary));
+    background-color: rgb(var(--v-theme-success));
 }
 
 .calendar-event__event {

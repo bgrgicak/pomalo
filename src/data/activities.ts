@@ -1,26 +1,22 @@
 import type Activity from "@/types/activity";
 import type { ActivityEvent, ActivityType } from "@/types/activity";
 import Router from '@/router/router';
-import { getLocalDate, getUtcTimestamp } from "../helper/date";
-import type { CalendarEvent } from "@/types/calendar";
-
-export const newActivityId = (type: string): string => {
-    return [
-        type,
-        0, // if user isn't logged in, use 0
-        getUtcTimestamp() + Math.random(),
-    ].join('');
-};
+import { getLocalDate, getUtcTimestamp, maxDate } from "../helper/date";
+import { newId } from "./pouchdb";
+import type { ActivityDocument } from "@/types/activity-document";
 
 export const emptyActivity = (type: ActivityType): Activity => {
     return {
-        _id: newActivityId(type),
+        _id: newId(type),
         title: '',
         description: '',
         type,
-        created: getUtcTimestamp(),
+        created: new Date(),
         members: [],
         events: [],
+        priority: 0,
+        aboveActivities: [],
+        belowActivities: [],
     };
 };
 
@@ -35,98 +31,103 @@ export const openActivityPage = async (activity: Activity) => {
     return Router.push(`/${activity.type}/${activity._id}/`);
 };
 
-export const isDayInCustomFrequency = (day: Date, event: ActivityEvent): boolean => {
-    // TODO finish and debug this function
-    if (event.repeatFrequency === 'daily') {
-        const oneDay = 1000 * 60 * 60 * 24;
-        const diffInTime = day.getTime() - getLocalDate(event.start).getTime();
-        const diffInDays = Math.round(diffInTime / oneDay);
-        return diffInDays % event.repeatInterval === 0;
-    } else if (event.repeatFrequency === 'weekly') {
-        return event.repeatDaysOfWeek.includes(day.getDay());
-    } else if (event.repeatFrequency === 'monthly') {
-        return event.repeatInterval === day.getDate();
-    } else if (event.repeatFrequency === 'yearly') {
-        return event.repeatInterval === day.getMonth() && event.repeatDaysOfWeek.includes(day.getDay());
-    }
-    return false;
+const calculateActivityPriority = (activity: Activity): number => {
+    const timeLeft = activity.dueDate ? getUtcTimestamp(activity.dueDate) - getUtcTimestamp() : 365;
+    const estimatedTime = activity.estimatedTime ? activity.estimatedTime / 8 : 1;
+    return timeLeft / estimatedTime / 365;
 };
 
-export const isDayInRepeatCycle = (day: Date, event: ActivityEvent): boolean => {
-    if (event.repeat === 'daily') {
-        return true;
-    } else if (event.repeat === 'weekly') {
-        return event.repeatDaysOfWeek.includes(day.getDay());
-    } else if (event.repeat === 'monthly') {
-        return event.repeatInterval === day.getDate();
-    } else if (event.repeat === 'yearly') {
-        return event.repeatInterval === day.getMonth() && event.repeatDaysOfWeek.includes(day.getDay());
-    }
-    return false;
-};
-
-export const parseEventsFromActivities = (activities: Activity[], startTime: number, endTime: number, currentActivityId?: string): CalendarEvent[] => {
-    const events: CalendarEvent[] = [];
-    if (activities) {
-        activities.forEach((activity: Activity) => {
-            activity.events
-                .filter((event: ActivityEvent) => {
-                    if (event.start > endTime) {
-                        return false;
-                    }
-                    if (event.repeat) {
-                        return !event.repeatEnd || event.repeatEnd >= startTime;
-                    }
-                    return event.end >= startTime;
-                })
-                .forEach((event) => {
-                    const isCurrentActivity = currentActivityId === activity._id;
-                    const startDay = getLocalDate(event.start);
-                    const endDay = event.end ? getLocalDate(event.end) : getLocalDate();
-                    if (event.repeat) {
-                        const iteratorDay = Object.assign(new Date(), startDay);
-                        const lastDay = getLocalDate(endTime);
-                        while (iteratorDay <= lastDay) {
-                            if (isDayInRepeatCycle(iteratorDay, event)) {
-                                const eventStart = getLocalDate(iteratorDay);
-                                eventStart.setHours(startDay.getHours());
-                                eventStart.setMinutes(startDay.getMinutes());
-                                const eventEnd = getLocalDate(iteratorDay);
-                                eventEnd.setHours(endDay.getHours());
-                                eventEnd.setMinutes(endDay.getMinutes());
-
-                                events.push({
-                                    id: activity._id,
-                                    title: activity.title,
-                                    start: eventStart,
-                                    end: eventEnd,
-                                    allDay: event.allDay,
-                                    content: '',
-                                    class: 'calendar-event__' + activity.type,
-                                    deletable: isCurrentActivity,
-                                    resizable: isCurrentActivity,
-                                    background: isCurrentActivity,
-                                });
-                            }
-                            iteratorDay.setDate(iteratorDay.getDate() + 1);
-                        }
-
-                    } else {
-                        events.push({
-                            id: activity._id,
-                            title: activity.title,
-                            start: startDay,
-                            end: endDay,
-                            allDay: event.allDay,
-                            content: '',
-                            class: 'calendar-event__' + activity.type,
-                            deletable: isCurrentActivity,
-                            resizable: isCurrentActivity,
-                            background: isCurrentActivity,
-                        });
-                    }
-                });
+const calculateActivityStartEndDate = (activity: Activity) => {
+    let eventFirstStart = undefined;
+    let eventLastEnd = undefined;
+    if (activity.events.length > 0) {
+        eventFirstStart = activity.events[0].start;
+        if (activity.events[0].repeat) {
+            eventLastEnd = activity.events[0].repeatEnd;
+        } else {
+            eventLastEnd = activity.events[0].end;
+        }
+        activity.events.forEach((event) => {
+            if (event.start < eventFirstStart) {
+                eventFirstStart = event.start;
+            }
+            if (event.repeat) {
+                if (event.repeatEnd && event.repeatEnd > eventLastEnd) {
+                    eventLastEnd = event.repeatEnd;
+                }
+            } else if (event.end && event.end > eventLastEnd) {
+                eventLastEnd = event.end;
+            }
         });
+    }
+    if (undefined === eventFirstStart) {
+        eventFirstStart = getLocalDate(0);
+    }
+    if (undefined === eventLastEnd) {
+        eventLastEnd = maxDate();
+    }
+    return {
+        eventFirstStart,
+        eventLastEnd,
     };
-    return events;
+};
+
+const isTimerRunning = (activity: Activity): boolean => {
+    if (activity.events.length > 0) {
+        return -1 < activity.events.findIndex((event: ActivityEvent) => {
+            return !event.end;
+        });
+    }
+    return false;
+};
+
+export const calculateActivity = (activity: Activity): Activity => {
+    const computedActivity = { ...activity };
+
+    const { eventFirstStart, eventLastEnd } = calculateActivityStartEndDate(activity);
+    computedActivity.eventFirstStart = eventFirstStart;
+    computedActivity.eventLastEnd = eventLastEnd;
+
+    computedActivity.priority = calculateActivityPriority(activity);
+
+    computedActivity.timerRunning = isTimerRunning(activity);
+    return computedActivity;
+};
+
+export const parseDocumentToActivity = (doc: ActivityDocument): Activity => {
+    return {
+        ...doc,
+        created: getLocalDate(doc.created),
+        completedDate: doc.completedDate ? getLocalDate(doc.completedDate) : undefined,
+        dueDate: doc.dueDate ? getLocalDate(doc.dueDate) : undefined,
+        eventFirstStart: doc.eventFirstStart ? getLocalDate(doc.eventFirstStart) : undefined,
+        eventLastEnd: doc.eventLastEnd ? getLocalDate(doc.eventLastEnd) : undefined,
+        events: doc.events.map((event) => {
+            return {
+                ...event,
+                start: getLocalDate(event.start),
+                end: event.end ? getLocalDate(event.end) : undefined,
+                repeatEnd: event.repeatEnd ? getLocalDate(event.repeatEnd) : undefined,
+            };
+        }),
+    };
+};
+
+export const parseActivityToDocument = (activity: Activity): ActivityDocument => {
+    return {
+        ...activity,
+        created: getUtcTimestamp(activity.created),
+        completedDate: activity.completedDate ? getUtcTimestamp(activity.completedDate) : undefined,
+        dueDate: activity.dueDate ? getUtcTimestamp(activity.dueDate) : undefined,
+        eventFirstStart: activity.eventFirstStart ? getUtcTimestamp(activity.eventFirstStart) : undefined,
+        eventLastEnd: activity.eventLastEnd ? getUtcTimestamp(activity.eventLastEnd) : undefined,
+        events: activity.events.map((event) => {
+            return {
+                ...event,
+                start: getUtcTimestamp(event.start),
+                end: event.end ? getUtcTimestamp(event.end) : undefined,
+                repeatEnd: event.repeatEnd ? getUtcTimestamp(event.repeatEnd) : undefined,
+            };
+        }),
+    };
 };

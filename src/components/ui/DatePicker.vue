@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getSystemDateFormat, getUtcTimestamp, toInputDateString, getLocalDate } from '@/helper/date';
+import { getSystemDateFormat, toInputDateString, getLocalDate } from '@/helper/date';
 import { computed } from 'vue';
 
 const props = defineProps(['value', 'label', 'time']);
@@ -15,7 +15,7 @@ const dateValue = computed(() => {
     if (!props.value) {
         return undefined;
     }
-    return toInputDateString(getLocalDate(props.value));
+    return toInputDateString(props.value);
 });
 
 const timeValue = computed(() => {
@@ -36,16 +36,16 @@ const onChangeDate = (newValue: string) => {
         newDate.setHours(parseInt(hours));
         newDate.setMinutes(parseInt(minutes));
     }
-    emit('change', getUtcTimestamp(newDate));
+    emit('change', newDate);
 };
 const onChangeTime = (newValue: string) => {
     const timeSplit = newValue.split(':');
     const hours = timeSplit[0] ? parseInt(timeSplit[0]) : 0;
     const minutes = timeSplit[1] ? parseInt(timeSplit[1]) : 0;
-    const newDate = new Date(getLocalDate(props.value));
+    const newDate = getLocalDate(props.value);
     newDate.setHours(hours);
     newDate.setMinutes(minutes);
-    emit('change', getUtcTimestamp(newDate));
+    emit('change', newDate);
 
 };
 </script>

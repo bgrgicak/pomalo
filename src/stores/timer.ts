@@ -2,7 +2,8 @@ import type Activity from "@/types/activity";
 import { defineStore } from "pinia";
 import { computed, ref, type Ref } from "vue";
 import { useActivityStore } from "./activities";
-import { getTimePassed, getUtcTimestamp } from "@/helper/date";
+import { getTimePassed, getLocalDate, getUtcTimestamp } from "@/helper/date";
+import { newId } from "@/data/pouchdb";
 
 interface TimerState {
     activity: Activity | undefined;
@@ -64,7 +65,7 @@ export const useTimerStore = defineStore(
                     if (event.end) {
                         return event;
                     }
-                    event.end = getUtcTimestamp();
+                    event.end = getLocalDate();
                     return event;
                 });
                 return activityStore.updateField(
@@ -81,7 +82,8 @@ export const useTimerStore = defineStore(
                 activityStore.get(activityId).then((activity) => {
                     const updatedActivity = activity as Activity;
                     updatedActivity.events.push({
-                        start: getUtcTimestamp(),
+                        id: newId('activityEvent'),
+                        start: getLocalDate(),
                     });
                     activityStore.updateField(
                         updatedActivity._id,
@@ -97,20 +99,17 @@ export const useTimerStore = defineStore(
         };
 
         const getCurrentActivity = (): Promise<void | Activity[]> => {
+            const now = getUtcTimestamp();
             return activityStore.find({
-                selector: {
-                    events: {
-                        $elemMatch: {
-                            start: {
-                                $lte: getUtcTimestamp(),
-                            },
-                            end: {
-                                $exists: false,
-                            },
-                        }
-                    }
+                "selector": {
+                    "eventFirstStart": {
+                        "$lte": now
+                    },
+                    "eventLastEnd": {
+                        "$gte": now
+                    },
+                    "timerRunning": true,
                 },
-                // use_index: "events-index",
             }).then((activities) => {
                 if (activities && activities.length > 0) {
                     state.value.activity = activities[0];
