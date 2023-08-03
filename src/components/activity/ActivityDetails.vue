@@ -8,7 +8,7 @@ import ActivityContent from './ActivityContent.vue';
 import ActivityNew from './ActivityNew.vue';
 import EventSidebar from '@/components/event/EventSidebar.vue';
 
-const props = defineProps(['activity', 'small']);
+const props = defineProps(['activity', 'event', 'small']);
 
 const isNew = computed(() => {
     return undefined === props.activity;
@@ -31,6 +31,7 @@ const onFieldChange = (key: string, value: any) => {
                 <v-col :md="props.small ? '12' : '8'"
                        cols="12">
                     <ActivityNew v-if="isNew"
+                                 :event="props.event"
                                  openInSidebar="true" />
                     <ActivityContent v-else
                                      :activity="props.activity" />

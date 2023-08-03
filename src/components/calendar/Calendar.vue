@@ -52,7 +52,7 @@ const eventUnfocus = () => {
 };
 
 const eventFocus = (event: any) => {
-    if (event.id) {
+    if (event.eventId) {
         calendarStore.focusEvent(event.eventId);
     }
 };
@@ -154,7 +154,6 @@ const eventDragCreate = (event: any) => {
             </v-col>
             <v-col cols="4"></v-col>
         </v-row>
-        {{ calendarStore.focusedEvent }}
         <v-row class="pb-2">
             <v-col cols="8">
                 <h2 class="m-0">

@@ -22,9 +22,7 @@ export const useLayoutStore = defineStore(
         };
         const showRightSidebar = (activityId: string | undefined = undefined) => {
             state.value.rightSidebarVisibility = true;
-            if (activityId) {
-                state.value.currentActivityId = activityId;
-            }
+            state.value.currentActivityId = activityId;
         };
         const hideRightSidebar = () => {
             state.value.rightSidebarVisibility = false;

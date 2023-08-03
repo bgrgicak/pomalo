@@ -6,9 +6,11 @@ import { useActivityStore } from '@/stores/activities';
 import { watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { openActivityPage } from '@/data/activities';
+import { useCalendarStore } from '@/stores/calendar';
 
 const layoutStore = useLayoutStore();
 const activityStore = useActivityStore();
+const calendarStore = useCalendarStore();
 
 const route = useRoute();
 
@@ -43,6 +45,7 @@ watch(route, hide);
                    @click="hide" />
         </header>
         <ActivityDetails :activity="activity"
+                         :event="calendarStore.focusedEvent"
                          small="true" />
     </v-navigation-drawer>
 </template>

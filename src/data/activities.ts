@@ -38,8 +38,8 @@ const calculateActivityPriority = (activity: Activity): number => {
 };
 
 const calculateActivityStartEndDate = (activity: Activity) => {
-    let eventFirstStart = undefined;
-    let eventLastEnd = undefined;
+    let eventFirstStart: Date | undefined = undefined;
+    let eventLastEnd: Date | undefined = undefined;
     if (activity.events.length > 0) {
         eventFirstStart = activity.events[0].start;
         if (activity.events[0].repeat) {
@@ -48,14 +48,22 @@ const calculateActivityStartEndDate = (activity: Activity) => {
             eventLastEnd = activity.events[0].end;
         }
         activity.events.forEach((event) => {
-            if (event.start < eventFirstStart) {
+            if (undefined === eventFirstStart || event.start < eventFirstStart) {
                 eventFirstStart = event.start;
             }
             if (event.repeat) {
-                if (event.repeatEnd && event.repeatEnd > eventLastEnd) {
+                if (
+                    event.repeatEnd && (
+                        undefined === eventLastEnd || event.repeatEnd > eventLastEnd
+                    )
+                ) {
                     eventLastEnd = event.repeatEnd;
                 }
-            } else if (event.end && event.end > eventLastEnd) {
+            } else if (
+                event.end && (
+                    undefined === eventLastEnd || event.end > eventLastEnd
+                )
+            ) {
                 eventLastEnd = event.end;
             }
         });
