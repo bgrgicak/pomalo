@@ -83,14 +83,14 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
                     const endDay = event.end ? event.end : getLocalDate();
                     const eventData = {
                         id: activity._id,
-                        eventId: event.id,
                         title: activity.title,
                         content: '',
-                        allDay: event.allDay,
                         class: 'v-card calendar-event__' + activity.type,
-                        deletable: !isCurrentActivity,
+                        deletable: false,
                         resizable: !isCurrentActivity,
-                        background: isCurrentActivity,
+                        background: false,
+                        eventId: event.id,
+                        allDay: event.allDay,
                         repeatIteration: false,
                     };
                     if (event.repeat) {
@@ -114,7 +114,7 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
                                     start: eventStart,
                                     end: eventEnd,
                                     repeatIteration: isRepeatIteration,
-                                });
+                                } as CalendarEvent);
                             }
                             iteratorDay.setDate(iteratorDay.getDate() + 1);
                         }
@@ -124,7 +124,7 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
                             ...eventData,
                             start: event.start,
                             end: endDay,
-                        });
+                        } as CalendarEvent);
                     }
                 });
         });

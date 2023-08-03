@@ -5,7 +5,6 @@ import { useLayoutStore } from '@/stores/layout';
 import { ref } from 'vue';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
-import type { ActivityEvent } from '@/types/activity';
 import type Activity from '@/types/activity';
 import { updateEventInActivity } from '@/data/events';
 
@@ -14,7 +13,39 @@ const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
 
 const activeView = ref('week');
+
 const vuecal = ref(null);
+
+const cellClick = (cellDate: Date) => {
+    const vuecalRef = (vuecal as any).value;
+
+    const newEvent = vuecalRef.mutableEvents.findIndex((event: VueCalEvent) => !event.id && cellDate === event.start);
+
+    // Find new events that were previously created. but not saved. Exclude event that is currently being created.
+    const deleteEvents = vuecalRef.mutableEvents.filter((event: VueCalEvent) => !event.id && cellDate !== event.start);
+
+    deleteEvents.forEach((event: VueCalEvent) => {
+        vuecalRef.emitWithEvent('event-delete', event);
+        vuecalRef.mutableEvents = vuecalRef.mutableEvents.filter((e: VueCalEvent) => e._eid !== event._eid);
+        vuecalRef.view.events = vuecalRef.view.events.filter((e: VueCalEvent) => e._eid !== event._eid);
+    });
+
+    if (0 < deleteEvents.length && -1 === newEvent) {
+        console.log(cellDate);
+        eventUnfocus();
+    }
+};
+
+const eventUnfocus = () => {
+    calendarStore.unfocusEvent();
+    layoutStore.hideRightSidebar();
+};
+
+const eventFocus = (event: any) => {
+    if (event.id) {
+        calendarStore.focusEvent(event.id);
+    }
+};
 
 const fetchEvents = (options: any) => {
     if (options.view) {
@@ -25,14 +56,7 @@ const fetchEvents = (options: any) => {
 
 const eventClick = (event: any) => {
     if (event.id) {
-        layoutStore.showRightSidebar(
-            event.id,
-            {
-                id: event.eventId ?? '',
-                start: event.start,
-                end: event.end,
-            }
-        );
+        layoutStore.showRightSidebar(event.id);
     }
 };
 
@@ -61,33 +85,32 @@ const addEvent = () => {
     layoutStore.showRightSidebar();
 };
 
-const eventChange = (action: string, event: any) => {
-    if ('event-duration-change' === action || 'event-drop' === action) {
-        activityStore.get(event.event.id).then((activity: Activity | void) => {
-            if (!activity) {
-                return;
-            }
-            if (!event.event.eventId) {
-                return;
-            }
-            activityStore.update(
-                updateEventInActivity(
-                    activity,
-                    {
-                        id: event.event.eventId,
-                        start: event.event.start,
-                        end: event.event.end,
-                    },
-                    event.event.repeatIteration
-                )
-            );
-        });
-    } else if ('event-drag-create' === action) {
-        layoutStore.showRightSidebar();
-    } else if ('event-delete' === action) {
-
-    }
+const eventDurationChange = (event: any) => {
+    activityStore.get(event.event.id).then((activity: Activity | void) => {
+        if (!activity) {
+            return;
+        }
+        if (!event.event.eventId) {
+            return;
+        }
+        activityStore.update(
+            updateEventInActivity(
+                activity,
+                {
+                    id: event.event.eventId,
+                    start: event.event.start,
+                    end: event.event.end,
+                },
+                event.event.repeatIteration
+            )
+        );
+    });
     return true;
+};
+
+const eventDragCreate = (event: any) => {
+    calendarStore.focusNewEvent(event.start, event.end);
+    layoutStore.showRightSidebar();
 };
 </script>
 <template>
@@ -120,6 +143,7 @@ const eventChange = (action: string, event: any) => {
             </v-col>
             <v-col cols="4"></v-col>
         </v-row>
+        {{ calendarStore.focusedEvent }}
         <v-row class="pb-2">
             <v-col cols="8">
                 <h2 class="m-0">
@@ -145,9 +169,12 @@ const eventChange = (action: string, event: any) => {
                  :active-view="activeView"
                  :disable-views="['years']"
                  :events="calendarStore.events"
-                 :on-event-dblclick="eventClick"
-                 :dblclick-to-navigate="false"
-                 :click-to-navigate="['year', 'month'].includes(activeView)"
+                 :on-event-click="eventClick"
+                 @event-focus="eventFocus"
+                 @cell-click="cellClick"
+                 :click-to-navigate="false"
+                 :dblclick-to-navigate="['year', 'month'].includes(activeView)"
+                 :snap-to-time="15"
                  hide-view-selector
                  hide-title-bar
                  watch-realtime="true"
@@ -155,11 +182,9 @@ const eventChange = (action: string, event: any) => {
                  :editable-events="{ title: false, drag: true, resize: true, delete: true, create: true }"
                  @ready="fetchEvents"
                  @view-change="fetchEvents"
-                 @event-title-change="($event: any) => eventChange('event-title-change', $event)"
-                 @event-duration-change="($event: any) => eventChange('event-duration-change', $event)"
-                 @event-drop="($event: any) => eventChange('event-drop', $event)"
-                 @event-drag-create="($event: any) => eventChange('event-drag-create', $event)"
-                 @event-delete="($event: any) => eventChange('event-delete', $event)">
+                 @event-duration-change="eventDurationChange"
+                 @event-drop="eventDurationChange"
+                 @event-drag-create="eventDragCreate">
         </vue-cal>
 
     </v-card>
@@ -171,17 +196,21 @@ const eventChange = (action: string, event: any) => {
 }
 
 .vuecal__event {
-    background-color: rgb(var(--v-theme-primary));
-    color: rgba(var(--v-theme-on-primary), var(--v-high-emphasis-opacity));
+    background-color: rgb(var(--v-theme-accent));
+    color: rgba(var(--v-theme-on-accent), var(--v-high-emphasis-opacity));
     border-bottom: 1px solid #fff;
-}
 
-.calendar-event__task {
-    background-color: rgb(var(--v-theme-success));
-}
+    &.vuecal__event--focus {
+        box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
+    }
 
-.calendar-event__event {
-    background-color: rgb(var(--v-theme-primary));
+    &.calendar-event__task {
+        background-color: rgb(var(--v-theme-success));
+    }
+
+    &.calendar-event__event {
+        background-color: rgb(var(--v-theme-primary));
+    }
 }
 
 .vuecal__cell--selected,

@@ -1,3 +1,5 @@
+import type { ActivityEvent } from "./activity";
+
 export interface CalendarEvent {
     id: string;
     eventId: string;
@@ -16,6 +18,7 @@ export interface CalendarEvent {
 export interface CalendarState {
     events: CalendarEvent[];
     loading: boolean;
+    focusedEvent?: ActivityEvent;
     startTime?: Date;
     endTime?: Date;
 }
