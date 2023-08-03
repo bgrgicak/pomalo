@@ -26,22 +26,28 @@ export const useActivityStore = defineStore(
       if (change.deleted && activities.value[change.id]) {
         delete activities.value[change.id];
       } else {
-        activities.value[change.id] = addDefaultsToActivity(
-          parseDocumentToActivity(change.doc as ActivityDocument)
+        activities.value[change.id] = prepareActivityFromDocument(
+          change.doc as ActivityDocument
         );
       }
     }).catch((error) => {
       log(error);
     });
 
-    const addActivityDocument = (activityDocument: ActivityDocument) => {
-      activities.value[activityDocument._id as string] = addDefaultsToActivity(
+    const prepareActivityFromDocument = (activityDocument: ActivityDocument): Activity => {
+      return addDefaultsToActivity(
         parseDocumentToActivity(activityDocument)
+      );
+    };
+
+    const addActivityDocument = (activityDocument: ActivityDocument) => {
+      activities.value[activityDocument._id as string] = prepareActivityFromDocument(
+        activityDocument
       );
       return activities.value[activityDocument._id as string];
     };
 
-    const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
+    const find = (request?: PouchDB.Find.FindRequest<{}> | undefined, store: boolean = true): Promise<Activity[] | void> => {
       if (constants.environment.development) {
         (database as any).explain(request).then((result: any) => {
           log(result, LogType.Debug);
@@ -50,7 +56,10 @@ export const useActivityStore = defineStore(
       return database.find(request).then((result) => {
         return result.docs as ActivityDocument[];
       }).then((response: ActivityDocument[]) => {
-        return response.map((activity: ActivityDocument) => addActivityDocument(activity));
+        return response.map(
+          (activity: ActivityDocument) =>
+            store ? addActivityDocument(activity) : prepareActivityFromDocument(activity)
+        );
       }).catch((error) => {
         log(error, LogType.Error);
       });

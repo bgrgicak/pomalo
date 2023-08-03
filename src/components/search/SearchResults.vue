@@ -2,34 +2,23 @@
 import { emptyActivity, openActivityPage } from '@/data/activities';
 import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
-import { ref, watch, type Ref } from 'vue';
+import { watch } from 'vue';
 import ActivityTitle from '@/components/activity/ActivityTitle.vue';
 import TimerToggle from '../timer/TimerToggle.vue';
 import { ActivityType } from '@/types/activity';
 import __ from '@/helper/translations';
 import { useLayoutStore } from '@/stores/layout';
+import { useSearchStore } from '@/stores/search';
 
 const props = defineProps(['searchText', 'openInSidebar']);
-const searchResults: Ref<Activity[]> = ref([]);
 const emit = defineEmits(['hideSearch', 'click']);
 
 const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
+const searchStore = useSearchStore();
 
 watch(() => props.searchText, async (searchText: string) => {
-    if (searchText.length < 3) {
-        searchResults.value = [];
-        return;
-    }
-    activityStore.find({
-        selector: {
-            title: {
-                $regex: new RegExp(searchText, 'gi'),
-            },
-        },
-    }).then((response) => {
-        searchResults.value = response ?? [];
-    });
+    searchStore.search(searchText);
 });
 
 const hide = () => {
@@ -65,8 +54,8 @@ const add = (type: ActivityType) => {
     <v-card class="search-results"
             v-if="searchText">
         <v-list>
-            <v-list-item v-if="searchResults.length"
-                         v-for="activity in searchResults"
+            <v-list-item v-if="searchStore.activities.length"
+                         v-for="activity in searchStore.activities"
                          :key="activity._id"
                          class="search-result"
                          @click="() => openActivity(activity)">
