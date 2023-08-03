@@ -19,21 +19,31 @@ const vuecal = ref(null);
 const cellClick = (cellDate: Date) => {
     const vuecalRef = (vuecal as any).value;
 
+    deleteOlderNewEvents(cellDate);
+
     const newEvent = vuecalRef.mutableEvents.findIndex((event: VueCalEvent) => !event.id && cellDate === event.start);
+    if (-1 === newEvent) {
+        eventUnfocus();
+    }
+};
 
-    // Find new events that were previously created. but not saved. Exclude event that is currently being created.
-    const deleteEvents = vuecalRef.mutableEvents.filter((event: VueCalEvent) => !event.id && cellDate !== event.start);
-
-    deleteEvents.forEach((event: VueCalEvent) => {
+/**
+ * Delete new events that were previously created. but not saved. Exclude event that is currently being created.
+ * @param date Optional. Date of the event that is currently being created.
+ */
+const deleteOlderNewEvents = (date?: Date) => {
+    const vuecalRef = (vuecal as any).value;
+    vuecalRef.mutableEvents.forEach((event: VueCalEvent) => {
+        if (event.id) {
+            return;
+        }
+        if (date === event.start) {
+            return;
+        }
         vuecalRef.emitWithEvent('event-delete', event);
         vuecalRef.mutableEvents = vuecalRef.mutableEvents.filter((e: VueCalEvent) => e._eid !== event._eid);
         vuecalRef.view.events = vuecalRef.view.events.filter((e: VueCalEvent) => e._eid !== event._eid);
     });
-
-    if (0 < deleteEvents.length && -1 === newEvent) {
-        console.log(cellDate);
-        eventUnfocus();
-    }
 };
 
 const eventUnfocus = () => {
@@ -43,7 +53,7 @@ const eventUnfocus = () => {
 
 const eventFocus = (event: any) => {
     if (event.id) {
-        calendarStore.focusEvent(event.id);
+        calendarStore.focusEvent(event.eventId);
     }
 };
 
@@ -56,6 +66,7 @@ const fetchEvents = (options: any) => {
 
 const eventClick = (event: any) => {
     if (event.id) {
+        deleteOlderNewEvents();
         layoutStore.showRightSidebar(event.id);
     }
 };

@@ -3,11 +3,9 @@ import { defineStore } from "pinia";
 import { computed, ref, watch, type Ref } from "vue";
 import { useActivityStore, type ActivityMap } from "./activities";
 import type { CalendarEvent, CalendarState } from "@/types/calendar";
-import { newEvent, parseEventsFromActivities } from "@/data/events";
+import { newCalendarEvent, parseEventsFromActivities } from "@/data/events";
 import { getUtcTimestamp } from "@/helper/date";
 import { useTimerStore } from "./timer";
-import type { VueCalEvent } from "vue-cal";
-import type { ActivityEvent } from "@/types/activity";
 
 
 export const useCalendarStore = defineStore(
@@ -24,7 +22,7 @@ export const useCalendarStore = defineStore(
 
         const isLoading = computed((): boolean => state.value.loading);
         const events = computed((): CalendarEvent[] => state.value.events);
-        const focusedEvent = computed((): ActivityEvent | undefined => state.value.focusedEvent);
+        const focusedEvent = computed((): CalendarEvent | undefined => state.value.focusedEvent);
 
 
         watch(() => activityStore.activities, (updatedActivities: ActivityMap) => {
@@ -66,11 +64,11 @@ export const useCalendarStore = defineStore(
         };
 
         const focusEvent = (eventId: string) => {
-            state.value.focusedEvent = state.value.events.find((event) => event.id === eventId);
+            state.value.focusedEvent = state.value.events.find((event) => event.eventId === eventId);
         };
 
         const focusNewEvent = (start: Date, end: Date) => {
-            state.value.focusedEvent = newEvent(start, end);
+            state.value.focusedEvent = newCalendarEvent(start, end);
         };
 
 
