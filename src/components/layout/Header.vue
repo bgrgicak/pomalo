@@ -49,8 +49,7 @@ import Timer from '@/components/timer/Timer.vue';
 
 .header {
     height: $header-height;
-    position: fixed;
-    z-index: 10000;
+    overflow: visible !important;
 
     .v-btn__overlay {
         border-radius: 4px;

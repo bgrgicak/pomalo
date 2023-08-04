@@ -62,6 +62,7 @@ $form-width: 300px;
     position: fixed;
     width: $form-width;
     max-width: 100%;
+    top: calc(#{$header-height} - 6px);
 
     .v-list-item--link {
         cursor: unset;

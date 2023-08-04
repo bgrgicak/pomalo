@@ -60,7 +60,7 @@ watch(route, hide);
     overflow-y: auto;
 
     .v-navigation-drawer__content {
-        .v-card {
+        >.v-card {
             padding-top: 0 !important;
             height: 100%;
 
