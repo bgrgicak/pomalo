@@ -56,6 +56,14 @@ export const newCalendarEvent = (start: Date, end?: Date): CalendarEvent => {
     };
 };
 
+export const calendarEventToActivityEvent = (event: CalendarEvent): ActivityEvent => {
+    return {
+        id: event.eventId,
+        start: event.start,
+        end: event.end,
+    };
+};
+
 const isDayInRepeatCycle = (day: Date, event: ActivityEvent): boolean => {
     if (event.repeat === 'daily') {
         return true;

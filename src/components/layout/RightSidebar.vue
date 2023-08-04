@@ -7,6 +7,7 @@ import { watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { openActivityPage } from '@/data/activities';
 import { useCalendarStore } from '@/stores/calendar';
+import { calendarEventToActivityEvent } from '@/data/events';
 
 const layoutStore = useLayoutStore();
 const activityStore = useActivityStore();
@@ -16,6 +17,7 @@ const route = useRoute();
 
 const activityId = computed(() => layoutStore.currentActivityId as string);
 const activity = computed(() => activityStore.activities[activityId.value]);
+const event = computed(() => calendarStore.focusedEvent ? calendarEventToActivityEvent(calendarStore.focusedEvent) : null);
 
 if (activityId.value) {
     activityStore.get(activityId.value);
@@ -45,7 +47,7 @@ watch(route, hide);
                    @click="hide" />
         </header>
         <ActivityDetails :activity="activity"
-                         :event="calendarStore.focusedEvent"
+                         :event="event"
                          small="true" />
     </v-navigation-drawer>
 </template>

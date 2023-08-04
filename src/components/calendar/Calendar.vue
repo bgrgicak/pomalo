@@ -6,7 +6,8 @@ import { ref } from 'vue';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
-import { updateEventInActivity } from '@/data/events';
+import { removeEventFromActivity, updateEventInActivity } from '@/data/events';
+import CalendarHeader from './CalendarHeader.vue';
 
 const calendarStore = useCalendarStore();
 const activityStore = useActivityStore();
@@ -71,37 +72,12 @@ const eventClick = (event: any) => {
     }
 };
 
-const previous = () => {
-    if (!vuecal.value) {
-        return;
-    }
-    (vuecal.value as any).previous();
-};
-
-const next = () => {
-    if (!vuecal.value) {
-        return;
-    }
-    (vuecal.value as any).next();
-};
-
-const today = () => {
-    if (!vuecal.value) {
-        return;
-    }
-    (vuecal.value as any).switchView(activeView.value, new Date());
-};
-
-const addEvent = () => {
-    layoutStore.showRightSidebar();
-};
-
 const eventDurationChange = (event: any) => {
+    if (!event.event.eventId) {
+        return;
+    }
     activityStore.get(event.event.id).then((activity: Activity | void) => {
         if (!activity) {
-            return;
-        }
-        if (!event.event.eventId) {
             return;
         }
         activityStore.update(
@@ -123,56 +99,37 @@ const eventDragCreate = (event: any) => {
     calendarStore.focusNewEvent(event.start, event.end);
     layoutStore.showRightSidebar();
 };
+
+const maybeDeleteEvent = (keyboardEvent: any) => {
+    if (!calendarStore?.focusedEvent?.eventId) {
+        return;
+    }
+    if (!calendarStore?.focusedEvent?.id) {
+        return;
+    }
+    if ('Backspace' !== keyboardEvent.key) {
+        return;
+    }
+
+    activityStore.get(calendarStore.focusedEvent.id).then((activity: Activity | void) => {
+        if (!activity) {
+            return;
+        }
+        activityStore.update(
+            removeEventFromActivity(
+                activity,
+                calendarStore.focusedEvent!.eventId,
+            )
+        );
+    });
+
+};
 </script>
 <template>
-    <v-card class="calendar pa-4">
-        <v-row class="pb-0">
-            <v-col cols="4"
-                   align="left">
-                <v-btn icon="mdi-plus"
-                       @click="addEvent"
-                       variant="text" />
-            </v-col>
-            <v-col cols="4"
-                   align="center">
-                <v-btn-toggle v-model="activeView"
-                              rounded="0"
-                              group>
-                    <v-btn value="year">
-                        Year
-                    </v-btn>
-                    <v-btn value="month">
-                        Month
-                    </v-btn>
-                    <v-btn value="week">
-                        Week
-                    </v-btn>
-                    <v-btn value="day">
-                        Day
-                    </v-btn>
-                </v-btn-toggle>
-            </v-col>
-            <v-col cols="4"></v-col>
-        </v-row>
-        <v-row class="pb-2">
-            <v-col cols="8">
-                <h2 class="m-0">
-                    {{ (vuecal as any)?.viewTitle }}
-                </h2>
-            </v-col>
-            <v-col cols="4"
-                   align="right">
-                <v-btn icon="mdi-arrow-left"
-                       @click="previous"
-                       variant="text" />
-                <v-btn @click="today"
-                       icon="mdi-calendar-today"
-                       variant="text" />
-                <v-btn icon="mdi-arrow-right"
-                       @click="next"
-                       variant="text" />
-            </v-col>
-        </v-row>
+    <v-card class="calendar pa-4"
+            @keyup="maybeDeleteEvent">
+        <CalendarHeader v-model:active-view="activeView"
+                        :vuecal="vuecal" />
         <vue-cal style="height: calc(100vh - 48px - 8px - 72px - 80px);"
                  class="v-card calendar"
                  ref="vuecal"
@@ -195,6 +152,15 @@ const eventDragCreate = (event: any) => {
                  @event-duration-change="eventDurationChange"
                  @event-drop="eventDurationChange"
                  @event-drag-create="eventDragCreate">
+
+            <template #event="{ event, view }">
+                <v-card-title>
+                    {{ event.title }}
+                </v-card-title>
+                <v-card-subtitle>
+                    {{ event.start.formatTime('h:m') + ' - ' + event.end.formatTime('h:m') }}
+                </v-card-subtitle>
+            </template>
         </vue-cal>
 
     </v-card>
@@ -202,24 +168,26 @@ const eventDragCreate = (event: any) => {
 <style lang="scss">
 .vuecal__title-bar {
     background-color: rgb(var(--v-theme-on-surface-variant));
-    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+    color: rgb(var(--v-theme-on-surface));
 }
 
 .vuecal__event {
-    background-color: rgb(var(--v-theme-accent));
-    color: rgba(var(--v-theme-on-accent), var(--v-high-emphasis-opacity));
-    border-bottom: 1px solid #fff;
+    background-color: rgba(var(--v-theme-primary), var(--v-medium-emphasis-opacity));
+    color: rgb(var(--v-theme-primary-darken-4));
+    border: 1px solid #fff;
 
     &.vuecal__event--focus {
         box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
     }
 
     &.calendar-event__task {
-        background-color: rgb(var(--v-theme-success));
+        background-color: rgba(var(--v-theme-task), var(--v-medium-emphasis-opacity));
+        color: rgb(var(--v-theme-task-darken-4));
     }
 
     &.calendar-event__event {
-        background-color: rgb(var(--v-theme-primary));
+        background-color: rgba(var(--v-theme-event), var(--v-medium-emphasis-opacity));
+        color: rgb(var(--v-theme-event-darken-4));
     }
 }
 
