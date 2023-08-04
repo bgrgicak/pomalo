@@ -30,10 +30,7 @@ activityListStore.find(
   }
 );
 
-const addActivity = () => {
-  if (!newActivity.value.title) {
-    return;
-  }
+const addActivity = (openSidebar: boolean = false) => {
   activityListStore.add(newActivity.value as Activity).then(() => {
     newActivity.value = emptyActivity(type);
   });
@@ -52,6 +49,17 @@ const openActivity = (activity: Activity) => {
 </script>
 
 <template>
+  <v-row class="pa-4 pb-0">
+    <v-col cols="8">
+      <h2 class="activity-list__title mb-0">
+        {{ type + 's' }}
+      </h2>
+    </v-col>
+    <v-col cols="4"
+           class="pa-0"
+           align="right">
+    </v-col>
+  </v-row>
   <v-table class="activity-list">
     <thead>
       <tr>
@@ -100,6 +108,10 @@ const openActivity = (activity: Activity) => {
   </v-table>
 </template>
 <style scoped lang="scss">
+.activity-list__title {
+  text-transform: capitalize;
+}
+
 .activity-list__item--actions {
   text-align: end;
 }

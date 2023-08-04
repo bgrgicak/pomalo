@@ -41,8 +41,7 @@ const showLeftSidebar = () => {
                       class="header-search__input" />
         <v-btn icon="mdi-magnify"
                @click="showSearch"
-               v-if="!searchVisible"
-               :color="constants.colors.icons" />
+               v-if="!searchVisible" />
         <SearchResults class="header-search__results"
                        v-if="searchVisible"
                        :searchText="searchText"

@@ -3,7 +3,7 @@ import { useTimerStore } from '@/stores/timer';
 const timerStore = useTimerStore();
 </script>
 <template>
-    <div class="timer"
+    <div class="timer v-card"
          v-if="timerStore.active">
         <span class=" pr-2 timer__label timer__label--title">
             {{ timerStore.title }}
@@ -20,7 +20,7 @@ const timerStore = useTimerStore();
 </template>
 <style scoped lang="scss">
 .timer {
-    margin-left: 12px;
+    padding-left: 12px;
 }
 
 .timer__label {

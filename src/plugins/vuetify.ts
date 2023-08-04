@@ -1,24 +1,38 @@
 import 'vuetify/styles';
-import { createVuetify } from 'vuetify';
 import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles/main.sass';
+import { createVuetify, type ThemeDefinition } from 'vuetify';
 
+
+const appTheme: ThemeDefinition = {
+    dark: false,
+    colors: {
+        primary: '#30A2FF',
+        secondary: '#7ebc2c',
+        accent: '#131416',
+        success: '#90d338',
+        warning: '#d4cb1c',
+        error: '#eb2838',
+        info: '#2b96da',
+        task: '#36bc2c',
+        event: '#bc2c7e',
+        project: '#bcb22c',
+    }
+};
 
 export default createVuetify({
     theme: {
-        themes: {
-            light: {
-                dark: false,
-                colors: {
-                    primary: '#2196f3',
-                    secondary: '#03a9f4',
-                    accent: '#3f51b5',
-                    error: '#f44336',
-                    warning: '#ff9800',
-                    info: '#607d8b',
-                    success: '#4caf50'
-                }
-            },
+        defaultTheme: 'appTheme',
+        variations: {
+            colors: ['primary', 'secondary', 'task', 'event', 'project'],
+            lighten: 3,
+            darken: 4,
         },
+        themes: {
+            appTheme,
+        },
+    },
+    defaults: {
+        VBtn: { rounded: 'sm' },
     },
 });

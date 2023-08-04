@@ -3,17 +3,14 @@ import constants from '@/helper/constants';
 import { mainMenu } from '@/router/routes';
 </script>
 <template>
-    <v-navigation-drawer color="grey-lighten-3"
+    <v-navigation-drawer :color="constants.colors.menuBackground"
                          rail
                          class="navigation">
         <template v-for="item in mainMenu">
-            <RouterLink :to="item.path"
-                        class="navigation-item">
-                <v-icon :icon="item.icon"
-                        :color="constants.colors.icons"
-                        size="36" />
-            </RouterLink>
-            <v-divider class="mx-3 my-5"></v-divider>
+            <v-btn :to="item.path"
+                   class="navigation-item"
+                   variant="text"
+                   :icon="item.icon" />
         </template>
     </v-navigation-drawer>
 </template>
@@ -30,11 +27,7 @@ $navigation-icon-height: 36px;
 
 .navigation-item {
     width: $navigation-width;
-    display: block;
-
-    .v-icon {
-        margin: calc($navigation-width - $navigation-icon-height) auto;
-        display: block;
-    }
+    height: $navigation-width;
+    border-radius: 4px;
 }
 </style>

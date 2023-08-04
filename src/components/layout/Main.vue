@@ -10,15 +10,12 @@ import { RouterView } from "vue-router";
 @import '@/assets/styles/variables.scss';
 
 .main {
-    position: relative;
-    top: $header-height;
-    height: calc(100vh - #{$header-height});
-    max-height: calc(100vh - 48px);
+    height: 100vh;
     overflow: hidden;
 
     >main {
         overflow-y: auto;
-        height: calc(100vh - #{$header-height});
+        height: 100vh;
     }
 }
 </style>

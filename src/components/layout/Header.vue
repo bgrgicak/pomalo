@@ -5,11 +5,11 @@ import constants from '@/helper/constants';
 import Timer from '@/components/timer/Timer.vue';
 </script>
 <template>
-    <v-toolbar density="compact"
+    <v-app-bar density="compact"
+               :color="constants.colors.headerBackground"
                class="header">
-        <v-btn :color="constants.colors.icons"
-               to="/"
-               class="header__Logo">
+        <v-btn to="/"
+               class="header__logo">
             <v-icon :icon="constants.icons.logo"
                     class="header__logo-icon"
                     :size="36" />
@@ -29,7 +29,6 @@ import Timer from '@/components/timer/Timer.vue';
         <v-menu>
             <template v-slot:activator="{ props }">
                 <v-btn icon="mdi-dots-vertical"
-                       :color="constants.colors.icons"
                        v-bind="props"></v-btn>
             </template>
             <v-list>
@@ -43,23 +42,35 @@ import Timer from '@/components/timer/Timer.vue';
                 </v-list-item>
             </v-list>
         </v-menu>
-    </v-toolbar>
+    </v-app-bar>
 </template>
-<style scoped lang="scss">
+<style lang="scss">
 @import '@/assets/styles/variables.scss';
 
 .header {
     height: $header-height;
     position: fixed;
     z-index: 10000;
+
+    .v-btn__overlay {
+        border-radius: 4px;
+    }
 }
 
-.header__Logo {
+.header__logo {
     padding-left: 0;
     font-weight: 600;
+
+    &.v-btn--active .v-btn__overlay {
+        background-color: transparent !important;
+    }
 }
 
 .header__logo-icon {
     margin-right: 10px;
+}
+
+.timer {
+    background: rgb(var(--v-theme-primary-darken-2));
 }
 </style>
