@@ -2,7 +2,7 @@
 import { getSystemDateFormat, toInputDateString, getLocalDate } from '@/helper/date';
 import { computed } from 'vue';
 
-const props = defineProps(['value', 'label', 'time']);
+const props = defineProps(['value', 'label', 'time', 'hint', 'variant']);
 
 const emit = defineEmits(['change']);
 
@@ -56,27 +56,27 @@ const onChangeTime = (newValue: string) => {
                       class="date-picker__date"
                       @update:modelValue="onChangeDate"
                       type="date"
-                      :pattern="systemDateFormat" />
-        <v-divider v-if="showTime"
-                   vertical
-                   inset />
+                      :pattern="systemDateFormat"
+                      :hint="props.hint"
+                      :variant="props.variant" />
         <v-text-field v-if="showTime"
                       :value="timeValue"
                       class="date-picker__time"
                       @update:modelValue="onChangeTime"
                       type="time"
-                      pattern="[0-9]{2}:[0-9]{2}" />
+                      pattern="[0-9]{2}:[0-9]{2}"
+                      :variant="props.variant" />
     </div>
 </template>
 <style lang="scss">
 .date-picker {
     &.date-picker--has-time {
         display: flex;
-    }
 
-    .v-divider {
-        margin-top: 0;
-        margin-bottom: 22px;
+        .date-picker__time {
+            position: relative;
+            left: -1px;
+        }
     }
 }
 
@@ -87,9 +87,10 @@ const onChangeTime = (newValue: string) => {
 .date-picker__time {
     min-width: 124px;
     max-width: 124px;
+    border-left: unset;
 
     .v-field__input {
-        padding: 25px 16px 5px 16px;
+        padding-left: 6px;
     }
 }
 </style>

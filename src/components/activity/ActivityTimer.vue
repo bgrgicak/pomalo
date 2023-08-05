@@ -14,7 +14,6 @@ const isActive = computed(() => {
 <template v-if="!timerStore.isLoading">
     <v-btn v-if="isActive"
            class="activity-stop"
-           variant="outlined"
            @click="timerStore.stop"
            append-icon="mdi-stop-circle-outline">
         {{ __('Stop timer') }}
@@ -22,7 +21,6 @@ const isActive = computed(() => {
     <v-btn v-else
            color="primary"
            class="activity-start"
-           variant="outlined"
            @click="() => timerStore.start(props.activity._id)"
            append-icon="mdi-play-circle-outline">
         {{ __('Start timer') }}

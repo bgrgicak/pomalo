@@ -18,6 +18,8 @@ const prepareDate = (date?: Date | string | number) => {
     return date;
 };
 
+const dayInMilliseconds = 1000 * 60 * 60 * 24;
+
 /**
  * Convert UTC date to local date string
  */
@@ -62,8 +64,8 @@ export const getTimePassed = (start: Date | string | number, end?: Date | string
 
 export const getWeekStartAndEnd = (date?: Date | string | number) => {
     var d = getLocalDate(prepareDate(date));
-    var to = d.setTime(d.getTime() - (d.getDay() ? d.getDay() : 7) * 24 * 60 * 60 * 1000);
-    var from = d.setTime(d.getTime() - 6 * 24 * 60 * 60 * 1000);
+    var to = d.setTime(d.getTime() - (d.getDay() ? d.getDay() : 7) * dayInMilliseconds);
+    var from = d.setTime(d.getTime() - 6 * dayInMilliseconds);
     return {
         start: new Date(from),
         end: new Date(to),
@@ -72,4 +74,12 @@ export const getWeekStartAndEnd = (date?: Date | string | number) => {
 
 export const maxDate = () => {
     return new Date(8640000000000000);
+};
+
+export const daysBetweenDates = (start: Date, end: Date) => {
+    return Math.round((start.getTime() - end.getTime()) / dayInMilliseconds);
+};
+
+export const weeksBetweenDates = (start: Date, end: Date) => {
+    return Math.round((start.getTime() - end.getTime()) / (dayInMilliseconds * 7));
 };

@@ -22,7 +22,6 @@ const onChange = (value: string | undefined) => {
 </script>
 <template>
     <DatePicker :label="__('Due date')"
-                variant="outlined"
                 :value="props.activity.dueDate"
                 @change="onChange" />
 </template>

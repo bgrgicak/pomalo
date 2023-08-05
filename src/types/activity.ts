@@ -82,7 +82,7 @@ export interface ActivityEvent {
     repeat?: RepeatInterval;
     repeatEnd?: Date;
     repeatDays?: number[];
-    repeatInterval?: number[];
+    repeatInterval?: number;
 }
 
 export interface ActivityMembers {

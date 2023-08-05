@@ -61,8 +61,7 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
             <v-col cols="12">
                 <v-text-field @keyup="onKeyup"
                               v-model="state.activity.title"
-                              class="activity-title"
-                              variant="underlined" />
+                              class="activity-title" />
             </v-col>
         </v-row>
         <v-row>
@@ -70,8 +69,7 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
                    class="pb-0">
                 <v-textarea @keyup="onKeyup"
                             v-model="state.activity.description"
-                            rows="5"
-                            variant="outlined" />
+                            rows="5" />
             </v-col>
         </v-row>
         <v-row v-if="state.isEditing"

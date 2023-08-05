@@ -33,6 +33,15 @@ export default createVuetify({
         },
     },
     defaults: {
-        VBtn: { rounded: 'sm' },
+        VBtn: {
+            rounded: 'sm',
+            variant: 'outlined',
+        },
+        VTextField: { variant: 'underlined' },
+        VSelect: { variant: 'underlined' },
+        VAlert: {
+            rounded: 'sm',
+            variant: 'outlined'
+        },
     },
 });

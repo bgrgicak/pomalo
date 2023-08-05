@@ -16,13 +16,14 @@ const onFieldChange = (key: string, value: any) => {
 <template>
     <ActivityTimer :activity="props.activity" />
     <ActivityCompleted :activity="props.activity"
+                       class="pb-0"
                        @change="(value: any) => onFieldChange('completedDate', value)" />
-    <v-divider />
+    <v-divider class="mb-8" />
     <ActivityDueDate :activity="props.activity"
                      @change="(value: any) => onFieldChange('dueDate', value)" />
     <ActivityEstimatedTime :activity="props.activity"
                            @change="(value: any) => onFieldChange('estimatedTime', value)" />
-    <v-divider />
+    <v-divider class="mb-2" />
     <ActivityClose :activity="props.activity"
                    class=" mt-4" />
 </template>

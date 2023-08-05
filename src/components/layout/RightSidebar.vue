@@ -31,6 +31,7 @@ watch(route, hide);
 </script>
 <template>
     <v-navigation-drawer location="right"
+                         v-bind:width="350"
                          v-if="layoutStore.isRightSidebarVisible"
                          class="right-sidebar">
         <header class="right-sidebar__header">
@@ -58,6 +59,7 @@ watch(route, hide);
     top: $header-height !important;
     height: calc(100vh - #{$header-height}) !important;
     overflow-y: auto;
+    min-width: 350px;
 
     .v-navigation-drawer__content {
         >.v-card {

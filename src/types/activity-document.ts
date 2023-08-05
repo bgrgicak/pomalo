@@ -8,7 +8,7 @@ export interface ActivityDocumentEvent {
     repeat?: RepeatInterval;
     repeatEnd?: number;
     repeatDays?: number[];
-    repeatInterval?: number[];
+    repeatInterval?: number;
 }
 export interface ActivityDocument {
     _id: string;

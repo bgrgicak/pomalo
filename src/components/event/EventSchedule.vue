@@ -4,7 +4,7 @@ import __ from '@/helper/translations';
 import type { ActivityEvent } from '@/types/activity';
 import { computed } from 'vue';
 import DatePicker from '@/components/ui/DatePicker.vue';
-import { FrequencyLabels, RepeatInterval, RepeatLabels } from '@/types/activity';
+import { RepeatInterval, RepeatLabels } from '@/types/activity';
 
 
 const props = defineProps(['activity']);
@@ -22,13 +22,6 @@ const activityStore = useActivityStore();
 const repeatOptions = Object.keys(RepeatLabels).map((key) => {
     return {
         text: (RepeatLabels as any)[key].label,
-        value: key,
-    };
-});
-
-const repeatFrequencyOptions = Object.keys(FrequencyLabels).map((key) => {
-    return {
-        text: (FrequencyLabels as any)[key].label,
         value: key,
     };
 });
@@ -64,11 +57,12 @@ const repeatDaysOfWeekOptions = [
     },
 ];
 
-const isCustom = computed(() => {
-    return RepeatInterval.Custom === event.value.repeat;
+const isRepeatActivity = computed(() => {
+    return event.value.repeat;
 });
 
-const onEventFieldChange = (field: string, value: string | undefined) => {
+const onEventFieldChange = (field: string, value: any) => {
+    console.log('onEventFieldChange', field, value);
     const events = [...props.activity.events];
     if (!events[0]) {
         events[0] = {} as ActivityEvent;
@@ -98,7 +92,6 @@ const onEventFieldChange = (field: string, value: string | undefined) => {
         <v-col cols="6"
                md="12">
             <DatePicker :label="__('Starts')"
-                        variant="outlined"
                         :value="event.start"
                         @change="(value: string) => onEventFieldChange('start', value)"
                         :time="!event.allDay" />
@@ -106,7 +99,6 @@ const onEventFieldChange = (field: string, value: string | undefined) => {
         <v-col cols="6"
                md="12">
             <DatePicker :label="__('Ends')"
-                        variant="outlined"
                         :value="event.end"
                         @change="(value: string) => onEventFieldChange('end', value)"
                         :time="!event.allDay" />
@@ -118,42 +110,44 @@ const onEventFieldChange = (field: string, value: string | undefined) => {
             <v-select :label="__('Repeat')"
                       :items="repeatOptions"
                       :model-value="event.repeat"
-                      variant="outlined"
                       item-title="text"
                       item-value="value"
                       @update:modelValue="(value: string) => onEventFieldChange('repeat', value)" />
         </v-col>
     </v-row>
-    <v-row v-if="isCustom">
-        <v-col cols="12"
-               class="pb-8">
-            <v-select :label="__('Frequency')"
-                      :items="repeatFrequencyOptions"
-                      :model-value="event.repeatFrequency"
-                      variant="outlined"
-                      item-title="text"
-                      item-value="value"
-                      @update:modelValue="(value: string) => onEventFieldChange('repeatFrequency', value)" />
+    <v-row v-if="isRepeatActivity">
+
+        <v-col cols="3">
             <v-text-field :label="__('Interval')"
                           :model-value="event.repeatInterval ?? 1"
-                          variant="outlined"
                           type="number"
-                          :hint="__('How often the event should repeat.')"
-                          @update:modelValue="(value: string) => onEventFieldChange('repeatInterval', value)" />
-            <v-btn-toggle v-if="RepeatInterval.Weekly === event.repeatFrequency"
-                          @update:modelValue="(value: string) => onEventFieldChange('repeatDaysOfWeek', value)"
-                          :model-value="event.repeatDays"
-                          variant="outlined"
-                          multiple
-                          rounded="0"
-                          group>
-                <v-btn v-for="day in repeatDaysOfWeekOptions"
-                       :key="day.value"
-                       :value="day.value"
-                       size="x-small">
-                    {{ day.text[0] }}
-                </v-btn>
-            </v-btn-toggle>
+                          min="1"
+                          @update:modelValue="(value: string) => onEventFieldChange('repeatInterval', parseInt(value))" />
+        </v-col>
+        <v-col cols="9">
+            <DatePicker :label="__('Repeat ends')"
+                        :value="event.repeatEnd"
+                        @change="(value: string) => onEventFieldChange('repeatEnd', value)" />
+        </v-col>
+    </v-row>
+    <v-row v-if="RepeatInterval.Weekly === event.repeat">
+        <v-col cols="12"
+               class="pb-8">
+            <v-label class="event-schedule__weekly-label">{{ __('Repeat on days') }}</v-label>
+            <v-field class="event-schedule__weekly-repeat-days"
+                     variant="plain">
+                <v-btn-toggle @update:modelValue="(value: string) => onEventFieldChange('repeatDays', value)"
+                              :model-value="event.repeatDays"
+                              variant="text"
+                              multiple
+                              group>
+                    <v-btn v-for="day in repeatDaysOfWeekOptions"
+                           :key="day.value"
+                           :value="day.value">
+                        {{ day.text[0] }}
+                    </v-btn>
+                </v-btn-toggle>
+            </v-field>
         </v-col>
     </v-row>
 </template>
@@ -164,5 +158,23 @@ const onEventFieldChange = (field: string, value: string | undefined) => {
 
 .date-picker {
     height: 56px;
+}
+
+.event-schedule__weekly-repeat-days {
+    width: 100%;
+
+    .v-btn {
+        min-width: calc(100% / 7);
+        width: calc(100% / 7);
+    }
+}
+
+.event-schedule__weekly-label {
+    font-size: var(--v-field-label-scale);
+    --v-field-label-scale: 0.75rem;
+    margin-bottom: 5px;
+    color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity));
+    opacity: var(--v-medium-emphasis-opacity);
+    font-weight: 400;
 }
 </style>

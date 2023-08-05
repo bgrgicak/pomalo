@@ -1,5 +1,8 @@
+<script setup lang="ts">
+import Calendar from "@/components/calendar/Calendar.vue";
+</script>
 <template>
-    <v-title>
-        <span>Dashboard</span>
-    </v-title>
+    <main>
+        <Calendar />
+    </main>
 </template>

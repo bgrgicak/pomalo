@@ -23,11 +23,9 @@ const onChange = (value: string | undefined) => {
     <v-text-field :label="__('Estimated hours')"
                   :model-value="props.activity.estimatedTime"
                   @update:modelValue="onChange"
-                  variant="outlined"
                   type="number" />
     <v-alert v-if="props.activity.estimatedTime > settings.recommendedMaxHoursPerTask"
              color="primary"
-             variant="outlined"
              class="mb-8"
              :text="__('It\'s recommended to split large tasks into smaller ones.')" />
 </template>

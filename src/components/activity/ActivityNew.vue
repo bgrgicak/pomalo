@@ -36,8 +36,7 @@ const activityClick = (activity: Activity) => {
         <v-col cols="12">
             <v-text-field v-model="title"
                           class="activity-title"
-                          autofocus
-                          variant="underlined" />
+                          autofocus />
             <SearchResults :searchText="title"
                            openInSidebar="true"
                            @click="activityClick" />

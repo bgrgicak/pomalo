@@ -1,6 +1,6 @@
 import type Activity from "@/types/activity";
-import type { ActivityEvent } from "@/types/activity";
-import { getLocalDate } from "../helper/date";
+import { RepeatInterval, type ActivityEvent } from "@/types/activity";
+import { daysBetweenDates, getLocalDate, getWeekStartAndEnd, weeksBetweenDates } from "../helper/date";
 import type { CalendarEvent } from "@/types/calendar";
 import { newId } from "./pouchdb";
 
@@ -64,17 +64,41 @@ export const calendarEventToActivityEvent = (event: CalendarEvent): ActivityEven
     };
 };
 
-const isDayInRepeatCycle = (day: Date, event: ActivityEvent): boolean => {
-    if (event.repeat === 'daily') {
+const isInInterval = (day: Date, event: ActivityEvent): boolean => {
+    if (undefined === event.repeatInterval) {
         return true;
-    } else if (event.repeat === 'weekly') {
+    }
+    let between = 0;
+    if (event.repeat === RepeatInterval.Daily) {
+        between = daysBetweenDates(day, event.start);
+    } else if (event.repeat === RepeatInterval.Weekly) {
+        const { end } = getWeekStartAndEnd(day);
+        between = weeksBetweenDates(end, event.start);
+    } else if (event.repeat === RepeatInterval.Monthly) {
+        between = day.getMonth() - event.start.getMonth();
+    } else if (event.repeat === RepeatInterval.Yearly) {
+        between = day.getFullYear() - event.start.getFullYear();
+    }
+    if (between % event.repeatInterval === 0) {
+        return true;
+    }
+    return false;
+};
+
+const isDayInRepeatCycle = (day: Date, event: ActivityEvent): boolean => {
+    if (!isInInterval(day, event)) {
+        return false;
+    }
+    if (event.repeat === RepeatInterval.Daily) {
+        return true;
+    } else if (event.repeat === RepeatInterval.Weekly) {
         if (!event.repeatDays) {
             return day.getDay() === event.start.getDay();
         }
         return event.repeatDays.includes(day.getDay());
-    } else if (event.repeat === 'monthly') {
+    } else if (event.repeat === RepeatInterval.Monthly) {
         return event.start.getDate() === day.getDate();
-    } else if (event.repeat === 'yearly') {
+    } else if (event.repeat === RepeatInterval.Yearly) {
         return event.start.getDate() === day.getDate() && event.start.getMonth() === day.getMonth();
     }
     return false;
@@ -110,8 +134,11 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
                         repeatIteration: false,
                     };
                     if (event.repeat) {
-                        const iteratorDay = structuredClone(event.start);
-                        const lastDay = !event.repeatEnd ? endTime : event.repeatEnd;
+                        const iteratorDay = structuredClone(
+                            startTime.getTime() > event.start.getTime()
+                                ? startTime : event.start
+                        );
+                        const lastDay = event.repeatEnd ?? endTime;
                         while (iteratorDay <= lastDay) {
                             if (isDayInRepeatCycle(iteratorDay, event)) {
                                 const eventStart = structuredClone(iteratorDay);
