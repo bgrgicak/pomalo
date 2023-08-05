@@ -53,7 +53,7 @@ const repeatDaysOfWeekOptions = [
     },
     {
         text: __('Sunday'),
-        value: 7,
+        value: 0,
     },
 ];
 
@@ -62,7 +62,6 @@ const isRepeatActivity = computed(() => {
 });
 
 const onEventFieldChange = (field: string, value: any) => {
-    console.log('onEventFieldChange', field, value);
     const events = [...props.activity.events];
     if (!events[0]) {
         events[0] = {} as ActivityEvent;

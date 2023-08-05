@@ -72,8 +72,10 @@ const isInInterval = (day: Date, event: ActivityEvent): boolean => {
     if (event.repeat === RepeatInterval.Daily) {
         between = daysBetweenDates(day, event.start);
     } else if (event.repeat === RepeatInterval.Weekly) {
-        const { end } = getWeekStartAndEnd(day);
-        between = weeksBetweenDates(end, event.start);
+        between = weeksBetweenDates(
+            getWeekStartAndEnd(day).end,
+            getWeekStartAndEnd(event.start).end
+        );
     } else if (event.repeat === RepeatInterval.Monthly) {
         between = day.getMonth() - event.start.getMonth();
     } else if (event.repeat === RepeatInterval.Yearly) {

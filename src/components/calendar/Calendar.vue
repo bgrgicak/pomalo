@@ -3,17 +3,33 @@ import VueCal, { type VueCalEvent } from 'vue-cal';
 import { useCalendarStore } from '@/stores/calendar';
 import { useLayoutStore } from '@/stores/layout';
 import { ref } from 'vue';
+import router from '@/router/router';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
 import { removeEventFromActivity, updateEventInActivity } from '@/data/events';
 import CalendarHeader from './CalendarHeader.vue';
+import { getLocalDate, getUtcTimestamp } from '@/helper/date';
+import { settings } from '@/helper/settings';
+import { computed } from 'vue';
 
 const calendarStore = useCalendarStore();
 const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
 
-const activeView = ref('week');
+const activeView = ref(router.currentRoute.value.query.view?.toString() ?? settings.calendar.defaultView);
+
+const selectedDate = computed(() => {
+    if (!router.currentRoute.value.query.date) {
+        return undefined;
+    }
+    return getLocalDate(
+        parseInt(
+            router.currentRoute.value.query.date as string,
+        )
+    );
+});
+
 
 const vuecal = ref(null);
 
@@ -63,6 +79,15 @@ const fetchEvents = (options: any) => {
         activeView.value = options.view;
     }
     calendarStore.load(options.startDate, options.endDate);
+
+    if (options.startDate && options.view) {
+        router.push({
+            query: {
+                date: getUtcTimestamp(options.startDate),
+                view: options.view ?? 'week',
+            }
+        });
+    }
 };
 
 const eventClick = (event: any) => {
@@ -131,6 +156,7 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
         <CalendarHeader v-model:active-view="activeView"
                         :vuecal="vuecal" />
         <vue-cal style="height: calc(100vh - 48px - 8px - 72px - 80px);"
+                 :selected-date="selectedDate"
                  class="v-card calendar"
                  ref="vuecal"
                  :active-view="activeView"
