@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import ActivityClose from '../activity/ActivityClose.vue';
-import EventsSchedule from '../event/EventSchedule.vue';
+import ActivitySchedule from '../activity/ActivitySchedule.vue';
 
-const props = defineProps(['activity', 'small']);
+const props = defineProps(['activity', 'small', 'event']);
 const emit = defineEmits(['fieldChange']);
 
 const onFieldChange = (key: string, value: any) => {
@@ -10,8 +10,9 @@ const onFieldChange = (key: string, value: any) => {
 };
 </script>
 <template>
-    <EventsSchedule :activity="props.activity"
-                    @fieldChange="(value) => onFieldChange('events', value)" />
+    <ActivitySchedule :activity="props.activity"
+                      :event="props.event"
+                      @fieldChange="(value) => onFieldChange('events', value)" />
     <v-divider />
     <ActivityClose :activity="props.activity"
                    class=" mt-4" />

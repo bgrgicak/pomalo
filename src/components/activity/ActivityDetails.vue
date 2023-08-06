@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ActivityType, type ActivityState } from '@/types/activity';
+import { ActivityType } from '@/types/activity';
 import __ from '@/helper/translations';
 import TaskDetails from '../task/TaskDetails.vue';
 import TaskSidebar from '../task/TaskSidebar.vue';
@@ -46,10 +46,12 @@ const onFieldChange = (key: string, value: any) => {
                     <TaskSidebar v-if="isTask"
                                  :activity="props.activity"
                                  :small="props.small"
+                                 :event="props.event"
                                  @fieldChange="onFieldChange" />
                     <EventSidebar v-else-if="isEvent"
                                   :activity="props.activity"
                                   :small="props.small"
+                                  :event="props.event"
                                   @fieldChange="onFieldChange" />
                 </v-col>
             </v-row>

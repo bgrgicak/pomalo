@@ -7,11 +7,15 @@ import router from '@/router/router';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
-import { removeEventFromActivity, updateEventInActivity } from '@/data/events';
+import { getEventFromActivity, newEvent, removeEventFromActivity, updateEventInActivity } from '@/data/events';
 import CalendarHeader from './CalendarHeader.vue';
-import { getLocalDate, getUtcTimestamp, isValidDate } from '@/helper/date';
+import { getLocalDate, getUtcTimestamp, isValidDate, minutesBetweenDates } from '@/helper/date';
 import { settings } from '@/helper/settings';
 import { computed } from 'vue';
+import { CalendarClipboardType } from '@/types/calendar';
+import { addEventToActivity } from '@/data/events';
+import { useNoticeStore } from '@/stores/notices';
+import { NoticeType } from '@/types/notice';
 
 const calendarStore = useCalendarStore();
 const activityStore = useActivityStore();
@@ -41,6 +45,8 @@ const cellClick = (cellDate: Date) => {
     const vuecalRef = (vuecal as any).value;
 
     deleteOlderNewEvents(cellDate);
+
+    calendarStore.focusCell(cellDate);
 
     const newEvent = vuecalRef.mutableEvents.findIndex((event: VueCalEvent) => !event.id && cellDate === event.start);
     if (-1 === newEvent) {
@@ -97,6 +103,11 @@ const fetchEvents = (options: any) => {
 const eventClick = (event: any) => {
     if (event.id) {
         deleteOlderNewEvents();
+    }
+};
+
+const eventDoubleClick = (event: any) => {
+    if (event.id) {
         layoutStore.showRightSidebar(event.id);
     }
 };
@@ -129,6 +140,73 @@ const eventDragCreate = (event: any) => {
     layoutStore.showRightSidebar();
 };
 
+const onKeyboardEvent = (keyboardEvent: any) => {
+    maybeCopyPasteEvent(keyboardEvent);
+    maybeDeleteEvent(keyboardEvent);
+};
+
+const maybeCopyPasteEvent = (keyboardEvent: any) => {
+    if (!keyboardEvent.ctrlKey && !keyboardEvent.metaKey) {
+        return;
+    }
+    if ('v' === keyboardEvent.key) {
+        if (calendarStore.clipboard && calendarStore.focusedCell && isValidDate(calendarStore.focusedCell)) {
+            activityStore.get(calendarStore.clipboard.activityId).then((activity: Activity | void) => {
+                if (!activity) {
+                    return;
+                }
+
+                const event = getEventFromActivity(activity, calendarStore.clipboard!.eventId);
+
+                if (!event) {
+                    return;
+                }
+                if (!event.start) {
+                    return;
+                }
+                if (!event.end) {
+                    useNoticeStore().addNotice({
+                        type: NoticeType.Info,
+                        title: __('Could not paste in progress event.'),
+                    });
+                    return;
+                }
+
+                const start = calendarStore.focusedCell!;
+                const end = start.addMinutes(
+                    minutesBetweenDates(
+                        event.end,
+                        event.start
+                    )
+                );
+                activityStore.update(
+                    addEventToActivity(
+                        activity,
+                        newEvent(
+                            start,
+                            end
+                        ),
+                    )
+                );
+            });
+        }
+    }
+
+
+    if (!calendarStore?.focusedEvent?.eventId) {
+        return;
+    }
+    if (!calendarStore?.focusedEvent?.id) {
+        return;
+    }
+    if ('c' === keyboardEvent.key) {
+        calendarStore.addToClipboard(calendarStore.focusedEvent!.id, calendarStore.focusedEvent!.eventId, CalendarClipboardType.Copy);
+    }
+    if ('x' === keyboardEvent.key) {
+        calendarStore.addToClipboard(calendarStore.focusedEvent!.id, calendarStore.focusedEvent!.eventId, CalendarClipboardType.Cut);
+    }
+};
+
 const maybeDeleteEvent = (keyboardEvent: any) => {
     if (!calendarStore?.focusedEvent?.eventId) {
         return;
@@ -151,12 +229,11 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
             )
         );
     });
-
 };
 </script>
 <template>
     <v-card class="calendar pa-4"
-            @keyup="maybeDeleteEvent">
+            @keydown="onKeyboardEvent">
         <CalendarHeader v-model:active-view="activeView"
                         :vuecal="vuecal" />
         <vue-cal style="height: calc(100vh - 48px - 8px - 72px - 80px);"
@@ -167,6 +244,7 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
                  :disable-views="['years']"
                  :events="calendarStore.events"
                  :on-event-click="eventClick"
+                 :on-event-dblclick="eventDoubleClick"
                  @event-focus="eventFocus"
                  @cell-click="cellClick"
                  :click-to-navigate="false"

@@ -5,8 +5,9 @@ import ActivityCompleted from './TaskCompleted.vue';
 import ActivityDueDate from './TaskDueDate.vue';
 import ActivityEstimatedTime from './TaskEstimatedTime.vue';
 import ActivityTimer from '../activity/ActivityTimer.vue';
+import ActivitySchedule from '../activity/ActivitySchedule.vue';
 
-const props = defineProps(['activity', 'small']);
+const props = defineProps(['activity', 'small', 'event']);
 const emit = defineEmits(['fieldChange']);
 
 const onFieldChange = (key: string, value: any) => {
@@ -15,6 +16,12 @@ const onFieldChange = (key: string, value: any) => {
 </script>
 <template>
     <ActivityTimer :activity="props.activity" />
+    <template v-if="props.event">
+        <ActivitySchedule :activity="props.activity"
+                          :event="props.event"
+                          @fieldChange="(value: any) => onFieldChange('events', value)" />
+        <v-divider class="mb-2 mt-10" />
+    </template>
     <ActivityCompleted :activity="props.activity"
                        class="pb-0"
                        @change="(value: any) => onFieldChange('completedDate', value)" />

@@ -76,6 +76,10 @@ export const maxDate = () => {
     return new Date(8640000000000000);
 };
 
+export const minutesBetweenDates = (start: Date, end: Date) => {
+    return Math.round((start.getTime() - end.getTime()) / 60000);
+};
+
 export const daysBetweenDates = (start: Date, end: Date) => {
     return Math.round((start.getTime() - end.getTime()) / dayInMilliseconds);
 };

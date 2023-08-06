@@ -2,10 +2,10 @@ import type Activity from "@/types/activity";
 import { defineStore } from "pinia";
 import { computed, ref, watch, type Ref } from "vue";
 import { useActivityStore, type ActivityMap } from "./activities";
-import type { CalendarEvent, CalendarState } from "@/types/calendar";
 import { newCalendarEvent, parseEventsFromActivities } from "@/data/events";
 import { getUtcTimestamp } from "@/helper/date";
 import { useTimerStore } from "./timer";
+import type { CalendarState, CalendarEvent, CalendarClipboardType, CalendarClipboard } from "@/types/calendar";
 
 
 export const useCalendarStore = defineStore(
@@ -14,7 +14,9 @@ export const useCalendarStore = defineStore(
         const state: Ref<CalendarState> = ref({
             events: [],
             focusedEvent: undefined,
+            focusedCell: undefined,
             loading: true,
+            clipboard: undefined,
         });
 
         const activityStore = useActivityStore();
@@ -23,6 +25,8 @@ export const useCalendarStore = defineStore(
         const isLoading = computed((): boolean => state.value.loading);
         const events = computed((): CalendarEvent[] => state.value.events);
         const focusedEvent = computed((): CalendarEvent | undefined => state.value.focusedEvent);
+        const clipboard = computed((): CalendarClipboard | undefined => state.value.clipboard);
+        const focusedCell = computed((): Date | undefined => state.value.focusedCell);
 
 
         watch(() => activityStore.activities, (updatedActivities: ActivityMap) => {
@@ -71,9 +75,28 @@ export const useCalendarStore = defineStore(
             state.value.focusedEvent = newCalendarEvent(start, end);
         };
 
-
         const unfocusEvent = () => {
             state.value.focusedEvent = undefined;
+        };
+
+        const focusCell = (date: Date) => {
+            state.value.focusedCell = date;
+        };
+
+        const unfocusCell = () => {
+            state.value.focusedCell = undefined;
+        };
+
+        const addToClipboard = (activityId: string, eventId: string, type: CalendarClipboardType) => {
+            state.value.clipboard = {
+                activityId,
+                eventId,
+                type,
+            };
+        };
+
+        const removeFromClipboard = () => {
+            state.value.clipboard = undefined;
         };
 
         return {
@@ -81,10 +104,16 @@ export const useCalendarStore = defineStore(
             isLoading,
             events,
             focusedEvent,
+            focusedCell,
+            clipboard,
             load,
             focusEvent,
             focusNewEvent,
             unfocusEvent,
+            focusCell,
+            unfocusCell,
+            addToClipboard,
+            removeFromClipboard
         };
     }
 );

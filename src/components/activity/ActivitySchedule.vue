@@ -5,14 +5,24 @@ import type { ActivityEvent } from '@/types/activity';
 import { computed } from 'vue';
 import DatePicker from '@/components/ui/DatePicker.vue';
 import { RepeatInterval, RepeatLabels } from '@/types/activity';
+import { updateEventFieldInActivity } from '@/data/events';
 
 
-const props = defineProps(['activity']);
+const props = defineProps(['activity', 'event']);
 const emit = defineEmits(['fieldChange']);
 
 const event = computed(() => {
     if (0 === props.activity.events.length) {
         return {} as ActivityEvent;
+    }
+
+    if (props.event) {
+        const newEvent = props.activity.events.find((eventIteration: ActivityEvent) => {
+            return eventIteration.id === props.event.id;
+        });
+        if (newEvent) {
+            return newEvent;
+        }
     }
     return props.activity.events[0];
 });
@@ -62,17 +72,14 @@ const isRepeatActivity = computed(() => {
 });
 
 const onEventFieldChange = (field: string, value: any) => {
-    const events = [...props.activity.events];
-    if (!events[0]) {
-        events[0] = {} as ActivityEvent;
-    }
-    events[0][field] = value;
-    activityStore.updateField(
-        props.activity._id,
-        'events',
-        events,
-    ).then(() => {
-        emit('fieldChange', events);
+    const updatedActivity = updateEventFieldInActivity(
+        props.activity,
+        event.value,
+        field,
+        value,
+    );
+    activityStore.update(updatedActivity).then(() => {
+        emit('fieldChange', updatedActivity.events);
     });
 };
 </script>
@@ -83,7 +90,7 @@ const onEventFieldChange = (field: string, value: any) => {
             <v-switch :model-value="event.allDay"
                       color="primary"
                       @change="(event: any) => onEventFieldChange('allDay', event.target.checked)"
-                      class="event-schedule__all-day"
+                      class="activity-schedule__all-day"
                       label="All day" />
         </v-col>
     </v-row>
@@ -132,8 +139,8 @@ const onEventFieldChange = (field: string, value: any) => {
     <v-row v-if="RepeatInterval.Weekly === event.repeat">
         <v-col cols="12"
                class="pb-8">
-            <v-label class="event-schedule__weekly-label">{{ __('Repeat on days') }}</v-label>
-            <v-field class="event-schedule__weekly-repeat-days"
+            <v-label class="activity-schedule__weekly-label">{{ __('Repeat on days') }}</v-label>
+            <v-field class="activity-schedule__weekly-repeat-days"
                      variant="plain">
                 <v-btn-toggle @update:modelValue="(value: string) => onEventFieldChange('repeatDays', value)"
                               :model-value="event.repeatDays"
@@ -151,7 +158,7 @@ const onEventFieldChange = (field: string, value: any) => {
     </v-row>
 </template>
 <style scoped lang="scss">
-.event-schedule__all-day {
+.activity-schedule__all-day {
     height: 56px;
 }
 
@@ -159,7 +166,7 @@ const onEventFieldChange = (field: string, value: any) => {
     height: 56px;
 }
 
-.event-schedule__weekly-repeat-days {
+.activity-schedule__weekly-repeat-days {
     width: 100%;
 
     .v-btn {
@@ -168,7 +175,7 @@ const onEventFieldChange = (field: string, value: any) => {
     }
 }
 
-.event-schedule__weekly-label {
+.activity-schedule__weekly-label {
     font-size: var(--v-field-label-scale);
     --v-field-label-scale: 0.75rem;
     margin-bottom: 5px;

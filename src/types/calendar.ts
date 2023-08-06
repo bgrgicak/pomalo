@@ -1,5 +1,3 @@
-import type { ActivityEvent } from "./activity";
-
 export interface CalendarEvent {
     id?: string;
     eventId: string;
@@ -19,6 +17,20 @@ export interface CalendarState {
     events: CalendarEvent[];
     loading: boolean;
     focusedEvent?: CalendarEvent;
+    focusedCell?: Date;
     startTime?: Date;
     endTime?: Date;
+    clipboard?: CalendarClipboard;
+}
+
+export enum CalendarClipboardType {
+    Copy = "copy",
+    Cut = "cut",
+}
+
+
+export interface CalendarClipboard {
+    activityId: string;
+    eventId: string;
+    type: CalendarClipboardType;
 }

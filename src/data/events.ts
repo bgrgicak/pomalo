@@ -4,6 +4,10 @@ import { daysBetweenDates, getLocalDate, getWeekStartAndEnd, weeksBetweenDates }
 import type { CalendarEvent } from "@/types/calendar";
 import { newId } from "./pouchdb";
 
+export const getEventFromActivity = (activity: Activity, eventId: string): ActivityEvent | undefined => {
+    return activity.events.find(event => event.id === eventId);
+};
+
 export const addEventToActivity = (activity: Activity, event: ActivityEvent): Activity => {
     const newActivity = { ...activity };
     newActivity.events.push(event);
@@ -38,6 +42,14 @@ export const updateEventInActivity = (activity: Activity, event: ActivityEvent, 
         return oldEvent;
     });
     return newActivity;
+};
+
+export const updateEventFieldInActivity = (activity: Activity, event: ActivityEvent, field: string, value: any): Activity => {
+    const newEvent = {
+        ...event,
+        [field]: value,
+    };
+    return updateEventInActivity(activity, newEvent);
 };
 
 export const newEvent = (start: Date, end?: Date): ActivityEvent => {
