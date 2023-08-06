@@ -9,7 +9,7 @@ import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
 import { removeEventFromActivity, updateEventInActivity } from '@/data/events';
 import CalendarHeader from './CalendarHeader.vue';
-import { getLocalDate, getUtcTimestamp } from '@/helper/date';
+import { getLocalDate, getUtcTimestamp, isValidDate } from '@/helper/date';
 import { settings } from '@/helper/settings';
 import { computed } from 'vue';
 
@@ -23,11 +23,15 @@ const selectedDate = computed(() => {
     if (!router.currentRoute.value.query.date) {
         return undefined;
     }
-    return getLocalDate(
+    const date = getLocalDate(
         parseInt(
             router.currentRoute.value.query.date as string,
         )
     );
+    if (!isValidDate(date)) {
+        return undefined;
+    }
+    return date;
 });
 
 
@@ -80,7 +84,7 @@ const fetchEvents = (options: any) => {
     }
     calendarStore.load(options.startDate, options.endDate);
 
-    if (options.startDate && options.view) {
+    if (options.startDate && isValidDate(options.startDate) && options.view) {
         router.push({
             query: {
                 date: getUtcTimestamp(options.startDate),

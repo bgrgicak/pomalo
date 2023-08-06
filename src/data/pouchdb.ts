@@ -5,34 +5,37 @@ import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 import { getUtcTimestamp } from '@/helper/date';
 
+const maybeSyncRemote = (database: PouchDB.Database) => {
+  if (constants.databaseRemotePath) {
+    const remoteDatabase = new PouchDB(constants.databaseRemotePath);
+    remoteDatabase.info().then(() => {
+      database.sync(
+        remoteDatabase,
+        {
+          live: true
+        }
+      ).on('error', (error: any) => {
+        log(error, LogType.Error);
+      });
+    });
+  }
+};
+
+const createIndexes = (database: PouchDB.Database) => {
+  database.createIndex({
+    index: {
+      fields: ['eventFirstStart', 'eventLastEnd', 'timerRunning'],
+      name: 'event-index',
+    }
+  });
+};
+
 const database = new PouchDB(constants.databaseName);
 PouchDB.plugin(PouchDBFind);
 
-if (constants.databaseRemotePath) {
-  try {
-    const remoteDatabase = new PouchDB(constants.databaseRemotePath);
-    database.sync(
-      remoteDatabase,
-      {
-        live: true
-      }
-    ).on('error', (error: any) => {
-      log(error, LogType.Error);
-    });
-  } catch (error: any) {
-    log(error.message, LogType.Error);
-  }
-}
-
-database.createIndex({
-  index: {
-    fields: ['eventFirstStart', 'eventLastEnd', 'timerRunning'],
-    name: 'event-index',
-  }
-}).then(result => {
-  log(result, LogType.Debug);
-}).catch(error => {
-  log(error, LogType.Error);
+database.info().then(() => {
+  maybeSyncRemote(database);
+  createIndexes(database);
 });
 
 export default database;

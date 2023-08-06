@@ -83,3 +83,7 @@ export const daysBetweenDates = (start: Date, end: Date) => {
 export const weeksBetweenDates = (start: Date, end: Date) => {
     return Math.round((start.getTime() - end.getTime()) / (dayInMilliseconds * 7));
 };
+
+export const isValidDate = (date: any) => {
+    return date instanceof Date && !isNaN(date as any);
+};
