@@ -71,10 +71,6 @@ export const useCalendarStore = defineStore(
             state.value.focusedEvent = state.value.events.find((event) => event.eventId === eventId);
         };
 
-        const focusNewEvent = (start: Date, end: Date) => {
-            state.value.focusedEvent = newCalendarEvent(start, end);
-        };
-
         const unfocusEvent = () => {
             state.value.focusedEvent = undefined;
         };
@@ -108,7 +104,6 @@ export const useCalendarStore = defineStore(
             clipboard,
             load,
             focusEvent,
-            focusNewEvent,
             unfocusEvent,
             focusCell,
             unfocusCell,

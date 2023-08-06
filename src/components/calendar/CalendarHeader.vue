@@ -3,12 +3,12 @@ import { useLayoutStore } from '@/stores/layout';
 import __ from '@/helper/translations';
 import { getLocalDate } from '@/helper/date';
 import { useCalendarStore } from '@/stores/calendar';
+import { newEvent } from '@/data/events';
 
 const props = defineProps(['vuecal', 'activeView']);
 const emit = defineEmits(['update:activeView']);
 
 const layoutStore = useLayoutStore();
-const calendarStore = useCalendarStore();
 
 const previous = () => {
     if (!props.vuecal) {
@@ -39,8 +39,13 @@ const addEvent = () => {
         newEventDuration,
         { title: '' }
     );
-    calendarStore.focusNewEvent(now, now.addMinutes(newEventDuration));
-    layoutStore.showRightSidebar();
+    layoutStore.showRightSidebar(
+        undefined,
+        newEvent(
+            now,
+            now.addMinutes(newEventDuration)
+        )
+    );
 };
 </script>
 <template>

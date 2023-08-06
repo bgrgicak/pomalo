@@ -6,9 +6,14 @@ import ActivityDueDate from './TaskDueDate.vue';
 import ActivityEstimatedTime from './TaskEstimatedTime.vue';
 import ActivityTimer from '../activity/ActivityTimer.vue';
 import ActivitySchedule from '../activity/ActivitySchedule.vue';
+import { computed } from 'vue';
 
 const props = defineProps(['activity', 'small', 'event']);
 const emit = defineEmits(['fieldChange']);
+
+const showSchedulerInSidebar = computed(() => {
+    return props.event && props.small;
+});
 
 const onFieldChange = (key: string, value: any) => {
     emit('fieldChange', key, value);
@@ -16,12 +21,15 @@ const onFieldChange = (key: string, value: any) => {
 </script>
 <template>
     <ActivityTimer :activity="props.activity" />
-    <template v-if="props.event">
+    <div v-if="showSchedulerInSidebar"
+         class="mt-8">
         <ActivitySchedule :activity="props.activity"
                           :event="props.event"
+                          :repeat="false"
+                          :allDay="false"
                           @fieldChange="(value: any) => onFieldChange('events', value)" />
         <v-divider class="mb-2 mt-10" />
-    </template>
+    </div>
     <ActivityCompleted :activity="props.activity"
                        class="pb-0"
                        @change="(value: any) => onFieldChange('completedDate', value)" />

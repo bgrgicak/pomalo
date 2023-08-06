@@ -17,7 +17,7 @@ const route = useRoute();
 
 const activityId = computed(() => layoutStore.currentActivityId as string);
 const activity = computed(() => activityStore.activities[activityId.value]);
-const event = computed(() => calendarStore.focusedEvent ? calendarEventToActivityEvent(calendarStore.focusedEvent) : null);
+const event = computed(() => layoutStore.currentEvent ?? undefined);
 
 if (activityId.value) {
     activityStore.get(activityId.value);

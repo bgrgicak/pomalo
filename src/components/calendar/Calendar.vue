@@ -108,7 +108,14 @@ const eventClick = (event: any) => {
 
 const eventDoubleClick = (event: any) => {
     if (event.id) {
-        layoutStore.showRightSidebar(event.id);
+        layoutStore.showRightSidebar(
+            event.id,
+            {
+                id: event.eventId,
+                start: event.start,
+                end: event.end,
+            }
+        );
     }
 };
 
@@ -136,8 +143,13 @@ const eventDurationChange = (event: any) => {
 };
 
 const eventDragCreate = (event: any) => {
-    calendarStore.focusNewEvent(event.start, event.end);
-    layoutStore.showRightSidebar();
+    layoutStore.showRightSidebar(
+        undefined,
+        newEvent(
+            event.start,
+            event.end,
+        )
+    );
 };
 
 const onKeyboardEvent = (keyboardEvent: any) => {
@@ -286,16 +298,25 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
 
     &.vuecal__event--focus {
         box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
+        background-color: rgba(var(--v-theme-primary), var(--v-high-emphasis-opacity));
     }
 
     &.calendar-event__task {
         background-color: rgba(var(--v-theme-task), var(--v-medium-emphasis-opacity));
         color: rgb(var(--v-theme-task-darken-4));
+
+        &.vuecal__event--focus {
+            background-color: rgba(var(--v-theme-task), var(--v-high-emphasis-opacity));
+        }
     }
 
     &.calendar-event__event {
         background-color: rgba(var(--v-theme-event), var(--v-medium-emphasis-opacity));
         color: rgb(var(--v-theme-event-darken-4));
+
+        &.vuecal__event--focus {
+            background-color: rgba(var(--v-theme-event), var(--v-high-emphasis-opacity));
+        }
     }
 }
 
