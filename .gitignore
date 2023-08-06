@@ -1,12 +1,3 @@
 node_modules/
 .DS_Store
-dist/
 dev-dist/
-_replicator/
-_users/
-pouch__all_dbs__/
-pomalo/
-log.txt
-pomalo-mrview-afbc4767b1977652a67039d6533d6c38/
-pomalo-mrview-a3f28d3ea60507a95eac04f7e1c1f14f/
-pomalo-mrview-ef9fb352cbe43ee1b7d99cad10f087b5/
