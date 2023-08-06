@@ -1,0 +1,11 @@
+# The Docker image that will be used to build your app
+image: node:16-alpine
+
+pages:
+  script:
+    - nvm use
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist
