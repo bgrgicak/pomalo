@@ -3,7 +3,7 @@ image: node:16
 pages:
   stage: deploy
   script:
-    - npm install @scope:registry
+    - npm install --registry=https://registry.npmjs.org/
     - npm run build
   artifacts:
     paths:
