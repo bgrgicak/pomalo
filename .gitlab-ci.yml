@@ -3,6 +3,7 @@ image: node:16
 pages:
   stage: deploy
   before_script:
+    - npm config set registry https://registry.npmjs.org/
     - npm install
   script:
     - npm run build
