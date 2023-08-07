@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import constants from '@/helper/constants';
 import { mainMenu } from '@/router/routes';
+import { useLayoutStore } from '@/stores/layout';
+
+const layoutStore = useLayoutStore();
 </script>
 <template>
     <v-navigation-drawer :color="constants.colors.menuBackground"
                          rail
+                         :model-value="layoutStore.isMenuVisible"
+                         @update:model-value="layoutStore.updateMenuVisibility"
                          class="navigation">
         <template v-for="item in mainMenu">
             <v-btn :to="item.path"

@@ -22,7 +22,7 @@ const routes: Route[] = [
     {
         path: "/task/:_id",
         name: __("Task"),
-        icon: "mdi-format-list-bulleted",
+        icon: "mdi-format-list-checkbox",
         component: () => import("../views/ActivityView.vue"),
         menu: [],
     },
@@ -36,7 +36,7 @@ const routes: Route[] = [
     {
         path: "/tasks",
         name: __("Tasks"),
-        icon: "mdi-format-list-bulleted",
+        icon: "mdi-format-list-checkbox",
         component: () => import("../views/TaskListView.vue"),
         menu: [
             MenuType.Main,

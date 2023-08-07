@@ -38,7 +38,7 @@ const onFieldChange = (key: string, value: any) => {
                     <TaskDetails v-if="isTask"
                                  :activity="props.activity"
                                  :small="props.small"
-                                 class="mt-6" />
+                                 class="mt-6 d-none d-md-block" />
                 </v-col>
                 <v-col :md="props.small ? '12' : '3'"
                        :offset-md="props.small ? '0' : '1'"
@@ -63,6 +63,8 @@ const onFieldChange = (key: string, value: any) => {
 
 .activity-details {
     position: relative;
+    overflow-y: auto;
+    height: calc(100vh - $header-height);
 
     .v-container {
         max-width: 100%;

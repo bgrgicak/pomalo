@@ -9,12 +9,14 @@ export const useLayoutStore = defineStore(
         const state: Ref<LayoutState> = ref({
             leftSidebarVisibility: false,
             rightSidebarVisibility: false,
+            menuVisibility: undefined,
             current: {},
 
         });
 
         const isLeftSidebarVisible = computed(() => state.value.leftSidebarVisibility);
         const isRightSidebarVisible = computed(() => state.value.rightSidebarVisibility);
+        const isMenuVisible = computed(() => state.value.menuVisibility);
         const currentActivityId = computed(() => state.value.current.activityId);
         const currentEvent = computed(() => state.value.current.event);
 
@@ -35,16 +37,22 @@ export const useLayoutStore = defineStore(
             state.value.rightSidebarVisibility = false;
             state.value.current = {};
         };
+
+        const updateMenuVisibility = (visible: boolean) => {
+            state.value.menuVisibility = visible;
+        };
         return {
             state,
             isLeftSidebarVisible,
             isRightSidebarVisible,
+            isMenuVisible,
             currentActivityId,
             currentEvent,
             showLeftSidebar,
             hideLeftSidebar,
             showRightSidebar,
             hideRightSidebar,
+            updateMenuVisibility,
         };
     }
 );

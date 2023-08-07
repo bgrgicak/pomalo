@@ -3,18 +3,21 @@ import { headerMenu } from '@/router/routes';
 import Search from '@/components/search/Search.vue';
 import constants from '@/helper/constants';
 import Timer from '@/components/timer/Timer.vue';
+import { useLayoutStore } from '@/stores/layout';
+
+const layoutStore = useLayoutStore();
+
+const toggleMenu = () => {
+    layoutStore.updateMenuVisibility(!layoutStore.isMenuVisible);
+};
 </script>
 <template>
     <v-app-bar density="compact"
                :color="constants.colors.headerBackground"
                class="header">
-        <v-btn to="/"
-               class="header__logo">
-            <v-icon :icon="constants.icons.logo"
-                    class="header__logo-icon"
-                    :size="36" />
-            {{ constants.appTitle }}
-        </v-btn>
+        <v-app-bar-nav-icon variant="text"
+                            class="ml-1"
+                            @click.stop="toggleMenu"></v-app-bar-nav-icon>
         <v-spacer />
         <v-divider vertical />
 

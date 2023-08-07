@@ -72,10 +72,11 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
                             rows="5" />
             </v-col>
         </v-row>
-        <v-row v-if="state.isEditing"
-               class="mt-0">
+        <v-row v-show="state.isEditing"
+               class="mt-0 mb-4">
             <v-col cols="12">
-                <v-btn color="primary"
+                <v-btn color="success"
+                       block
                        @click="save">
                     {{ __('Save') }}
                 </v-btn>

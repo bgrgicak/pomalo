@@ -50,9 +50,10 @@ const addEvent = () => {
 </script>
 <template>
     <v-row class="pb-0">
-        <v-col cols="4"></v-col>
-        <v-col cols="4"
-               align="center">
+        <v-col cols="9"
+               :md="6"
+               :offset-md="3"
+               class="d-flex flex-column align-start align-md-center">
             <v-btn-toggle @update:modelValue="(value) => emit('update:activeView', value)"
                           :modelValue="props.activeView"
                           rounded="0"
@@ -71,21 +72,23 @@ const addEvent = () => {
                 </v-btn>
             </v-btn-toggle>
         </v-col>
-        <v-col cols="4"
-               align="right">
+        <v-col cols="3"
+               class="d-flex flex-column align-end">
             <v-btn icon="mdi-plus"
                    @click="addEvent"
                    variant="text" />
         </v-col>
     </v-row>
     <v-row class="pb-2">
-        <v-col cols="8">
-            <h2 class="m-0">
+        <v-col cols="8"
+               class="d-flex align-center">
+            <h2 class="m-0 text-subtitle-2 text-md-h6">
                 {{ (props.vuecal as any)?.viewTitle }}
             </h2>
         </v-col>
         <v-col cols="4"
-               align="right">
+               class="d-flex align-center">
+            <v-spacer />
             <v-btn icon="mdi-arrow-left"
                    @click="previous"
                    variant="text" />
