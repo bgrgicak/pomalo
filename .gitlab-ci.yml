@@ -3,7 +3,7 @@ image: node:16
 pages:
   stage: deploy
   before_script:
-    - npm ci @scope:registry
+    - npm ci
   script:
     - npm run build
   artifacts:
