@@ -6,7 +6,7 @@ import router from "./router/router";
 
 import vuetify from "./plugins/vuetify";
 
-import "./assets/styles/main.scss";
+import "./styles/main.scss";
 
 import 'vue-cal/dist/vuecal.css';
 

@@ -53,7 +53,7 @@ watch(route, hide);
     </v-navigation-drawer>
 </template>
 <style lang="scss">
-@import '@/assets/styles/variables.scss';
+@import '@/styles/variables.scss';
 
 .right-sidebar {
     top: $header-height !important;

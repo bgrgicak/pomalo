@@ -45,7 +45,7 @@ import Timer from '@/components/timer/Timer.vue';
     </v-app-bar>
 </template>
 <style lang="scss">
-@import '@/assets/styles/variables.scss';
+@import '@/styles/variables.scss';
 
 .header {
     height: $header-height;

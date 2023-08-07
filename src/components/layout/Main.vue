@@ -7,7 +7,7 @@ import { RouterView } from "vue-router";
     </v-main>
 </template>
 <style lang="scss" scoped>
-@import '@/assets/styles/variables.scss';
+@import '@/styles/variables.scss';
 
 .main {
     height: 100vh;

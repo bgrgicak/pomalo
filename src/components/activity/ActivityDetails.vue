@@ -59,7 +59,7 @@ const onFieldChange = (key: string, value: any) => {
     </v-card>
 </template>
 <style lang="scss">
-@import '@/assets/styles/variables.scss';
+@import '@/styles/variables.scss';
 
 .activity-details {
     position: relative;

@@ -49,7 +49,7 @@ const showLeftSidebar = () => {
     </div>
 </template>
 <style lang="scss">
-@import '@/assets/styles/variables.scss';
+@import '@/styles/variables.scss';
 $form-width: 300px;
 
 .header-search__input {

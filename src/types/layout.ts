@@ -1,4 +1,4 @@
-import { ActivityEvent } from "./activity";
+import type { ActivityEvent } from "./activity";
 
 export interface LayoutState {
     leftSidebarVisibility: boolean;

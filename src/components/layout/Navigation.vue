@@ -15,7 +15,7 @@ import { mainMenu } from '@/router/routes';
     </v-navigation-drawer>
 </template>
 <style scoped lang="scss">
-@import '@/assets/styles/variables.scss';
+@import '@/styles/variables.scss';
 $navigation-icon-height: 36px;
 
 .navigation {
