@@ -1,0 +1,1 @@
+import{am as a,i as n,o,k as c,j as e,a as s,q as r,ao as _,g as l}from"./index-89d17eaf.js";const i={},d=l("span",null,"Sign In",-1);function u(f,m){const t=n("v-title");return o(),c(t,null,{default:e(()=>[s(_,null,{default:e(()=>[r("mdi-account")]),_:1}),d]),_:1})}const x=a(i,[["render",u]]);export{x as default};
