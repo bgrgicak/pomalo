@@ -1,1 +1,0 @@
-import{al as n,i as a,o,k as c,j as e,a as s,q as l,an as r,g as _}from"./index-ccb246e3.js";const i={},d=_("span",null,"Sign In",-1);function u(f,p){const t=a("v-title");return o(),c(t,null,{default:e(()=>[s(r,null,{default:e(()=>[l("mdi-account")]),_:1}),d]),_:1})}const x=n(i,[["render",u]]);export{x as default};

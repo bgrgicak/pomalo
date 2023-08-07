@@ -1,1 +1,0 @@
-import{al as a,i as o,o as n,k as s,j as e,a as c,q as l,an as r,g as _}from"./index-ccb246e3.js";const i={},d=_("span",null,"Settings",-1);function f(u,p){const t=o("v-title");return n(),s(t,null,{default:e(()=>[c(r,null,{default:e(()=>[l("mdi-cog")]),_:1}),d]),_:1})}const x=a(i,[["render",f]]);export{x as default};
