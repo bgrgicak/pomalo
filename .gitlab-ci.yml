@@ -1,10 +1,9 @@
-image: node:16
+image: nginx:latest
 
 pages:
   stage: deploy
   script:
-    - npm install --registry=https://registry.npmjs.org/
-    - npm run build
+    - echo "The site will be deployed to $CI_PAGES_URL"
   artifacts:
     paths:
       - public
