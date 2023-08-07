@@ -2,8 +2,9 @@ image: node:16
 
 pages:
   stage: deploy
-  script:
+  before_script:
     - npm install
+  script:
     - npm run build
   artifacts:
     paths:
