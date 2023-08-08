@@ -11,7 +11,6 @@ export const useLayoutStore = defineStore(
             rightSidebarVisibility: false,
             menuVisibility: undefined,
             current: {},
-
         });
 
         const isLeftSidebarVisible = computed(() => state.value.leftSidebarVisibility);

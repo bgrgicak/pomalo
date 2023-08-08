@@ -1,0 +1,1 @@
+import{_ as e}from"./Calendar.vue_vue_type_style_index_0_lang-60e12d26.js";import{d as a,o as n,c as o,a as r}from"./index-dd25f82f.js";const p=a({__name:"CalendarView",setup(t){return(c,s)=>(n(),o("main",null,[r(e)]))}});export{p as default};

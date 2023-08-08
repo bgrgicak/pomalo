@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import ActivityDetails from '@/components/activity/ActivityDetails.vue';
+import ActivityMain from '@/components/activity/ActivityMain.vue';
 import { useActivityStore } from '@/stores/activities';
 
 const activityStore = useActivityStore();
@@ -21,6 +21,6 @@ watch(() => route.params._id, (newId) => {
 });
 </script>
 <template>
-   <ActivityDetails v-if="activityStore.activities[activityId]"
-                    :activity="activityStore.activities[activityId]" />
+   <ActivityMain v-if="activityStore.activities[activityId]"
+                 :activity="activityStore.activities[activityId]" />
 </template>

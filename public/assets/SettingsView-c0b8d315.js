@@ -1,0 +1,1 @@
+import{an as a,i as o,o as n,k as s,j as e,a as c,q as r,ap as _,g as l}from"./index-dd25f82f.js";const i={},d=l("span",null,"Settings",-1);function f(p,u){const t=o("v-title");return n(),s(t,null,{default:e(()=>[c(_,null,{default:e(()=>[r("mdi-cog")]),_:1}),d]),_:1})}const x=a(i,[["render",f]]);export{x as default};

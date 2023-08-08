@@ -16,12 +16,23 @@ import { CalendarClipboardType } from '@/types/calendar';
 import { addEventToActivity } from '@/data/events';
 import { useNoticeStore } from '@/stores/notices';
 import { NoticeType } from '@/types/notice';
+import { display } from '@/plugins/vuetify';
+
+const initialActiveView = () => {
+    const view = router.currentRoute.value.query.view?.toString() ?? settings.calendar.defaultView;
+    if (calendarStore.small && 'week' === view) {
+        return 'day';
+    }
+    return view;
+};
 
 const calendarStore = useCalendarStore();
 const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
 
-const activeView = ref(router.currentRoute.value.query.view?.toString() ?? settings.calendar.defaultView);
+const activeView = ref(initialActiveView());
+
+const vuecal = ref(null);
 
 const selectedDate = computed(() => {
     if (!router.currentRoute.value.query.date) {
@@ -37,9 +48,6 @@ const selectedDate = computed(() => {
     }
     return date;
 });
-
-
-const vuecal = ref(null);
 
 const cellClick = (cellDate: Date) => {
     const vuecalRef = (vuecal as any).value;
@@ -158,6 +166,10 @@ const onKeyboardEvent = (keyboardEvent: any) => {
 };
 
 const maybeCopyPasteEvent = (keyboardEvent: any) => {
+    if ('Escape' === keyboardEvent.key) {
+        eventUnfocus();
+        return;
+    }
     if (!keyboardEvent.ctrlKey && !keyboardEvent.metaKey) {
         return;
     }
@@ -242,12 +254,55 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
         );
     });
 };
+
+const scrollToCurrentTime = () => {
+    const calendar = document.querySelector('.calendar .vuecal__bg');
+    if (!calendar) {
+        return;
+    }
+    const now = getLocalDate();
+    const hours = now.getHours() + now.getMinutes() / 60;
+    calendar.scrollTo({ top: hours * (vuecal.value as any).timeCellHeight, behavior: 'smooth' });
+};
+
+const onReady = (options: any) => {
+    fetchEvents(options);
+    scrollToCurrentTime();
+};
+const addEvent = (start?: Date) => {
+    console.log('addEvent', start);
+    if (!start) {
+        start = getLocalDate();
+    }
+    const newEventDuration = 60;
+    (vuecal.value as any).createEvent(
+        start,
+        newEventDuration,
+        { title: '' }
+    );
+    layoutStore.showRightSidebar(
+        undefined,
+        newEvent(
+            start,
+            start.addMinutes(newEventDuration)
+        )
+    );
+};
+
+const cellDoubleClick = (start: Date) => {
+    // If event is focused, do not create new event
+    if (calendarStore.focusedEvent) {
+        return;
+    }
+    addEvent(start);
+};
 </script>
 <template>
     <v-card class="calendar pa-4"
             @keydown="onKeyboardEvent">
         <CalendarHeader v-model:active-view="activeView"
-                        :vuecal="vuecal" />
+                        :vuecal="vuecal"
+                        @addEvent="addEvent" />
         <vue-cal style="height: calc(100vh - 48px - 8px - 72px - 80px);"
                  :selected-date="selectedDate"
                  class="v-card calendar"
@@ -255,10 +310,11 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
                  :active-view="activeView"
                  :disable-views="['years']"
                  :events="calendarStore.events"
-                 :on-event-click="eventClick"
-                 :on-event-dblclick="eventDoubleClick"
+                 @event-click="eventClick"
+                 @event-dblclick="eventDoubleClick"
                  @event-focus="eventFocus"
                  @cell-click="cellClick"
+                 @cell-dblclick="cellDoubleClick"
                  :click-to-navigate="false"
                  :dblclick-to-navigate="['year', 'month'].includes(activeView)"
                  :snap-to-time="15"
@@ -266,8 +322,8 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
                  hide-title-bar
                  watch-realtime="true"
                  :show-all-day-events="true"
-                 :editable-events="{ title: false, drag: true, resize: true, delete: true, create: true }"
-                 @ready="fetchEvents"
+                 :editable-events="{ title: false, drag: true, resize: true, delete: true, create: !display.mobile.value }"
+                 @ready="onReady"
                  @view-change="fetchEvents"
                  @event-duration-change="eventDurationChange"
                  @event-drop="eventDurationChange"

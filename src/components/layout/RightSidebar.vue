@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useLayoutStore } from '@/stores/layout';
-import ActivityDetails from '@/components/activity/ActivityDetails.vue';
+import ActivityMain from '@/components/activity/ActivityMain.vue';
 import { computed } from 'vue';
 import { useActivityStore } from '@/stores/activities';
 import { watch } from 'vue';
@@ -33,6 +33,7 @@ watch(route, hide);
     <v-navigation-drawer location="right"
                          v-bind:width="350"
                          v-if="layoutStore.isRightSidebarVisible"
+                         v-model:model-value="layoutStore.isRightSidebarVisible"
                          class="right-sidebar">
         <header class="right-sidebar__header">
             <v-btn icon="mdi-arrow-expand"
@@ -47,9 +48,9 @@ watch(route, hide);
                    class="right-sidebar__close mr-2"
                    @click="hide" />
         </header>
-        <ActivityDetails :activity="activity"
-                         :event="event"
-                         small="true" />
+        <ActivityMain :activity="activity"
+                      :event="event"
+                      small="true" />
     </v-navigation-drawer>
 </template>
 <style lang="scss">

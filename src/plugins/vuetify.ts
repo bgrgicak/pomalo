@@ -2,7 +2,7 @@ import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles/main.sass';
 import { createVuetify, type ThemeDefinition } from 'vuetify';
-
+import { computed } from 'vue';
 
 const appTheme: ThemeDefinition = {
     dark: false,
@@ -20,7 +20,7 @@ const appTheme: ThemeDefinition = {
     }
 };
 
-export default createVuetify({
+const vuetify = createVuetify({
     theme: {
         defaultTheme: 'appTheme',
         variations: {
@@ -45,3 +45,7 @@ export default createVuetify({
         },
     },
 });
+
+export default vuetify;
+
+export const display = computed(() => vuetify.display);
