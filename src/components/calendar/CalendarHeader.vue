@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
-import { useCalendarStore } from '@/stores/calendar';
+import { defaultView } from '@/plugins/vuecal';
 
-const props = defineProps(['vuecal', 'activeView']);
+const props = defineProps(['vuecal', 'activeView', 'views']);
 const emit = defineEmits(['update:activeView', 'addEvent']);
-
-
-const calendarStore = useCalendarStore();
 
 const previous = () => {
     props.vuecal.previous();
@@ -33,18 +30,9 @@ const today = () => {
                           :modelValue="props.activeView"
                           rounded="0"
                           group>
-                <v-btn value="year">
-                    Year
-                </v-btn>
-                <v-btn value="month">
-                    Month
-                </v-btn>
-                <v-btn value="week"
-                       v-if="!calendarStore.small">
-                    Week
-                </v-btn>
-                <v-btn value="day">
-                    Day
+                <v-btn v-for="view in props.views"
+                       :value="view">
+                    {{ view }}
                 </v-btn>
             </v-btn-toggle>
         </v-col>

@@ -9,25 +9,31 @@ import type Activity from '@/types/activity';
 import { getEventFromActivity, newEvent, removeEventFromActivity, updateEventInActivity } from '@/data/events';
 import CalendarHeader from './CalendarHeader.vue';
 import { getLocalDate, getUtcTimestamp, isValidDate, minutesBetweenDates } from '@/helper/date';
-import { settings } from '@/helper/settings';
 import { computed } from 'vue';
 import { CalendarClipboardType } from '@/types/calendar';
 import { useNoticeStore } from '@/stores/notices';
 import { NoticeType } from '@/types/notice';
 import CalendarMain from './CalendarMain.vue';
+import { allViews, defaultView, defaultSmallView } from '@/plugins/vuecal';
 
-const allowedViews = () => {
-    const views = ['day', 'month', 'year'];
-    if (!calendarStore.small) {
-        views.push('week');
-    }
-    return views;
-};
+const allowedViews = computed(() => {
+    return structuredClone(allViews).filter(
+        (view: string) => {
+            if ('years' === view) {
+                return false;
+            }
+            if (calendarStore.small && 'week' === view) {
+                return false;
+            }
+            return true;
+        }
+    );
+});
 
 const initialActiveView = () => {
-    const view = router.currentRoute.value.query.view?.toString() ?? settings.calendar.defaultView;
-    if (!allowedViews().includes(view)) {
-        return 'day';
+    const view = router.currentRoute.value.query.view?.toString() ?? defaultView;
+    if (!allowedViews.value.includes(view)) {
+        return defaultSmallView;
     }
     return view;
 };
@@ -210,10 +216,11 @@ const fetch = (start: Date, end: Date) => {
             @keydown="onKeyboardEvent">
         <CalendarHeader v-model:active-view="activeView"
                         :vuecal="vuecal"
+                        :views="allowedViews"
                         @addEvent="addEvent" />
         <CalendarMain v-model:active-view="activeView"
                       ref="vuecalRef"
-                      :views="allowedViews()"
+                      :views="allowedViews"
                       :vuecal="vuecal"
                       @addEvent="addEvent"
                       @updateEvent="updateEvent"

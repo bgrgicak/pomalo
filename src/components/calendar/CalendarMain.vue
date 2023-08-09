@@ -5,6 +5,7 @@ import { getLocalDate } from '@/helper/date';
 import { useCalendarStore } from '@/stores/calendar';
 import { useLayoutStore } from '@/stores/layout';
 import { display } from '@/plugins/vuetify';
+import { allViews } from '@/plugins/vuecal';
 import { ref } from 'vue';
 import { computed } from 'vue';
 import type { Ref } from 'vue';
@@ -34,7 +35,7 @@ const disabledViews = computed(() => {
     if (!props.views) {
         return [];
     }
-    return Object.keys(props.vuecal.views).filter((view: string) => {
+    return allViews.filter((view: string) => {
         return !props.views.includes(view);
     });
 });
@@ -107,7 +108,7 @@ const deleteOlderNewEvents = (date?: Date) => {
 };
 
 const fetchEvents = (options: any) => {
-    if (options.view) {
+    if (options.view && props.vuecal) {
         emit('update:activeView', options.view);
     }
 
