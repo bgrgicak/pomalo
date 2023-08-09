@@ -144,6 +144,9 @@ const eventDragCreate = (event: any) => {
 };
 
 const cellDoubleClick = (start: Date) => {
+    if (display.value.mobile.value) {
+        return;
+    }
     // If event is focused, do not create new event
     if (calendarStore.focusedEvent) {
         return false;
@@ -157,6 +160,37 @@ const cellDoubleClick = (start: Date) => {
     }
     emit('addEvent', start);
 };
+
+const addLongPressEvent = () => {
+    if (!display.value.mobile.value) {
+        return;
+    }
+    if (!props.vuecal) {
+        return;
+    }
+    const cells = document.querySelectorAll('.calendar .vuecal__bg .vuecal__cell');
+    if (!cells) {
+        return;
+    }
+    cells.forEach((cell: any, index: number) => {
+        const currentCell = structuredClone(props.vuecal.viewCells[index]);
+        cell.addEventListener('mousedown', (event: any) => {
+            if (event.button !== 0) {
+                return;
+            }
+            const timeout = setTimeout(() => {
+                const start = currentCell.startDate.addMinutes(
+                    props.vuecal.utils.cell.minutesAtCursor(event).minutes
+                );
+                emit('addEvent', start);
+            }, 500);
+            cell.addEventListener('mouseup', () => {
+                clearTimeout(timeout);
+            });
+        });
+    });
+};
+
 const scrollToCurrentTime = () => {
     if (!props.vuecal) {
         return;
@@ -169,10 +203,10 @@ const scrollToCurrentTime = () => {
 };
 
 const onReady = (options: any) => {
-    // Wait for vuecal to update the prop value
     nextTick(() => {
         fetchEvents(options);
         scrollToCurrentTime();
+        addLongPressEvent();
     });
 };
 </script>
