@@ -9,6 +9,9 @@ import { allViews } from '@/plugins/vuecal';
 import { ref } from 'vue';
 import { computed } from 'vue';
 import type { Ref } from 'vue';
+import type { CalendarEvent } from '@/types/calendar';
+import { nextTick } from 'vue';
+import { watch } from 'vue';
 
 const props = defineProps(['vuecal', 'activeView', 'selectedDate', 'views']);
 const emit = defineEmits(['update:activeView', 'addEvent', 'updateEvent', 'fetchEvents']);
@@ -17,6 +20,15 @@ const vuecal: Ref<any> = ref(null);
 
 const calendarStore = useCalendarStore();
 const layoutStore = useLayoutStore();
+
+watch(
+    () => layoutStore.isRightSidebarVisible,
+    (value: boolean) => {
+        if (false === value) {
+            deleteOlderNewEvents();
+        }
+    }
+);
 
 const editingOptions = computed(() => {
     return {
@@ -134,11 +146,17 @@ const eventDragCreate = (event: any) => {
 const cellDoubleClick = (start: Date) => {
     // If event is focused, do not create new event
     if (calendarStore.focusedEvent) {
-        return;
+        return false;
+    }
+    const findIndex = calendarStore.events.findIndex((event: CalendarEvent) => {
+        return event.start <= start && (!event.end || event.end >= start);
+    });
+    // If clicked cell is already occupied by an event, do not create new event
+    if (-1 < findIndex) {
+        return false;
     }
     emit('addEvent', start);
 };
-
 const scrollToCurrentTime = () => {
     if (!props.vuecal) {
         return;
@@ -151,8 +169,11 @@ const scrollToCurrentTime = () => {
 };
 
 const onReady = (options: any) => {
-    fetchEvents(options);
-    scrollToCurrentTime();
+    // Wait for vuecal to update the prop value
+    nextTick(() => {
+        fetchEvents(options);
+        scrollToCurrentTime();
+    });
 };
 </script>
 <template>

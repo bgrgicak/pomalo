@@ -1,4 +1,4 @@
-export const debounce = (value: any) => {
+export const debounce = (value: any, delay: number = 1000) => {
     let timeout: any;
     return new Promise((resolve) => {
         if (timeout) {
@@ -6,6 +6,6 @@ export const debounce = (value: any) => {
         }
         timeout = setTimeout(() => {
             resolve(value);
-        }, 1000);
+        }, delay);
     });
 };
