@@ -12,6 +12,7 @@ const onFieldChange = (key: string, value: any) => {
 <template>
     <ActivitySchedule :activity="props.activity"
                       :event="props.event"
+                      :small="props.small"
                       @fieldChange="(value) => onFieldChange('events', value)" />
     <v-divider />
     <ActivityClose :activity="props.activity"

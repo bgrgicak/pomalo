@@ -8,7 +8,7 @@ import { RepeatInterval, RepeatLabels } from '@/types/activity';
 import { updateEventFieldInActivity } from '@/data/events';
 
 
-const props = defineProps(['activity', 'event', 'repeat', 'allDay']);
+const props = defineProps(['activity', 'event', 'repeat', 'allDay', 'small']);
 const emit = defineEmits(['fieldChange']);
 
 const event = computed(() => {
@@ -95,14 +95,16 @@ const onEventFieldChange = (field: string, value: any) => {
         </v-col>
     </v-row>
     <v-row>
-        <v-col cols="6"
+        <v-col cols="12"
+               :sm="props.small ? 12 : 6"
                md="12">
             <DatePicker :label="__('Starts')"
                         :value="event.start"
                         @change="(value: string) => onEventFieldChange('start', value)"
                         :time="!event.allDay" />
         </v-col>
-        <v-col cols="6"
+        <v-col cols="12"
+               :sm="props.small ? 12 : 6"
                md="12">
             <DatePicker :label="__('Ends')"
                         :value="event.end"

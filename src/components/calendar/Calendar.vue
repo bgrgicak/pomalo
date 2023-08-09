@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import VueCal, { type VueCalEvent } from 'vue-cal';
 import { useCalendarStore } from '@/stores/calendar';
 import { useLayoutStore } from '@/stores/layout';
 import { ref } from 'vue';
@@ -13,14 +12,21 @@ import { getLocalDate, getUtcTimestamp, isValidDate, minutesBetweenDates } from 
 import { settings } from '@/helper/settings';
 import { computed } from 'vue';
 import { CalendarClipboardType } from '@/types/calendar';
-import { addEventToActivity } from '@/data/events';
 import { useNoticeStore } from '@/stores/notices';
 import { NoticeType } from '@/types/notice';
-import { display } from '@/plugins/vuetify';
+import CalendarMain from './CalendarMain.vue';
+
+const allowedViews = () => {
+    const views = ['day', 'month', 'year'];
+    if (!calendarStore.small) {
+        views.push('week');
+    }
+    return views;
+};
 
 const initialActiveView = () => {
     const view = router.currentRoute.value.query.view?.toString() ?? settings.calendar.defaultView;
-    if (calendarStore.small && 'week' === view) {
+    if (!allowedViews().includes(view)) {
         return 'day';
     }
     return view;
@@ -32,7 +38,7 @@ const layoutStore = useLayoutStore();
 
 const activeView = ref(initialActiveView());
 
-const vuecal = ref(null);
+const vuecalRef = ref(null);
 
 const selectedDate = computed(() => {
     if (!router.currentRoute.value.query.date) {
@@ -49,116 +55,12 @@ const selectedDate = computed(() => {
     return date;
 });
 
-const cellClick = (cellDate: Date) => {
-    const vuecalRef = (vuecal as any).value;
-
-    deleteOlderNewEvents(cellDate);
-
-    calendarStore.focusCell(cellDate);
-
-    const newEvent = vuecalRef.mutableEvents.findIndex((event: VueCalEvent) => !event.id && cellDate === event.start);
-    if (-1 === newEvent) {
-        eventUnfocus();
+const vuecal = computed(() => {
+    if (!vuecalRef.value) {
+        return undefined;
     }
-};
-
-/**
- * Delete new events that were previously created. but not saved. Exclude event that is currently being created.
- * @param date Optional. Date of the event that is currently being created.
- */
-const deleteOlderNewEvents = (date?: Date) => {
-    const vuecalRef = (vuecal as any).value;
-    vuecalRef.mutableEvents.forEach((event: VueCalEvent) => {
-        if (event.id) {
-            return;
-        }
-        if (date === event.start) {
-            return;
-        }
-        vuecalRef.emitWithEvent('event-delete', event);
-        vuecalRef.mutableEvents = vuecalRef.mutableEvents.filter((e: VueCalEvent) => e._eid !== event._eid);
-        vuecalRef.view.events = vuecalRef.view.events.filter((e: VueCalEvent) => e._eid !== event._eid);
-    });
-};
-
-const eventUnfocus = () => {
-    calendarStore.unfocusEvent();
-    layoutStore.hideRightSidebar();
-};
-
-const eventFocus = (event: any) => {
-    if (event.eventId) {
-        calendarStore.focusEvent(event.eventId);
-    }
-};
-
-const fetchEvents = (options: any) => {
-    if (options.view) {
-        activeView.value = options.view;
-    }
-    calendarStore.load(options.startDate, options.endDate);
-
-    if (options.startDate && isValidDate(options.startDate) && options.view) {
-        router.push({
-            query: {
-                date: getUtcTimestamp(options.startDate),
-                view: options.view ?? 'week',
-            }
-        });
-    }
-};
-
-const eventClick = (event: any) => {
-    if (event.id) {
-        deleteOlderNewEvents();
-    }
-};
-
-const eventDoubleClick = (event: any) => {
-    if (event.id) {
-        layoutStore.showRightSidebar(
-            event.id,
-            {
-                id: event.eventId,
-                start: event.start,
-                end: event.end,
-            }
-        );
-    }
-};
-
-const eventDurationChange = (event: any) => {
-    if (!event.event.eventId) {
-        return;
-    }
-    activityStore.get(event.event.id).then((activity: Activity | void) => {
-        if (!activity) {
-            return;
-        }
-        activityStore.update(
-            updateEventInActivity(
-                activity,
-                {
-                    id: event.event.eventId,
-                    start: event.event.start,
-                    end: event.event.end,
-                },
-                event.event.repeatIteration
-            )
-        );
-    });
-    return true;
-};
-
-const eventDragCreate = (event: any) => {
-    layoutStore.showRightSidebar(
-        undefined,
-        newEvent(
-            event.start,
-            event.end,
-        )
-    );
-};
+    return (vuecalRef.value as any).$refs.vuecal;
+});
 
 const onKeyboardEvent = (keyboardEvent: any) => {
     maybeCopyPasteEvent(keyboardEvent);
@@ -167,7 +69,8 @@ const onKeyboardEvent = (keyboardEvent: any) => {
 
 const maybeCopyPasteEvent = (keyboardEvent: any) => {
     if ('Escape' === keyboardEvent.key) {
-        eventUnfocus();
+        calendarStore.unfocusEvent();
+        layoutStore.hideRightSidebar();
         return;
     }
     if (!keyboardEvent.ctrlKey && !keyboardEvent.metaKey) {
@@ -203,19 +106,16 @@ const maybeCopyPasteEvent = (keyboardEvent: any) => {
                         event.start
                     )
                 );
-                activityStore.update(
-                    addEventToActivity(
-                        activity,
-                        newEvent(
-                            start,
-                            end
-                        ),
+                updateEvent(
+                    activity._id,
+                    newEvent(
+                        start,
+                        end,
                     )
                 );
             });
         }
     }
-
 
     if (!calendarStore?.focusedEvent?.eventId) {
         return;
@@ -242,35 +142,39 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
         return;
     }
 
-    activityStore.get(calendarStore.focusedEvent.id).then((activity: Activity | void) => {
+    removeEvent(calendarStore.focusedEvent.id, calendarStore.focusedEvent!.eventId);
+};
+
+const removeEvent = (activityId: string, eventId: string) => {
+    activityStore.get(activityId).then((activity: Activity | void) => {
         if (!activity) {
             return;
         }
         activityStore.update(
             removeEventFromActivity(
                 activity,
-                calendarStore.focusedEvent!.eventId,
+                eventId,
             )
         );
     });
 };
 
-const scrollToCurrentTime = () => {
-    const calendar = document.querySelector('.calendar .vuecal__bg');
-    if (!calendar) {
-        return;
-    }
-    const now = getLocalDate();
-    const hours = now.getHours() + now.getMinutes() / 60;
-    calendar.scrollTo({ top: hours * (vuecal.value as any).timeCellHeight, behavior: 'smooth' });
+const updateEvent = (activityId: string, event: any, repeatIteration: boolean = false) => {
+    activityStore.get(activityId).then((activity: Activity | void) => {
+        if (!activity) {
+            return;
+        }
+        activityStore.update(
+            updateEventInActivity(
+                activity,
+                event,
+                repeatIteration
+            )
+        );
+    });
 };
 
-const onReady = (options: any) => {
-    fetchEvents(options);
-    scrollToCurrentTime();
-};
 const addEvent = (start?: Date) => {
-    console.log('addEvent', start);
     if (!start) {
         start = getLocalDate();
     }
@@ -289,12 +193,16 @@ const addEvent = (start?: Date) => {
     );
 };
 
-const cellDoubleClick = (start: Date) => {
-    // If event is focused, do not create new event
-    if (calendarStore.focusedEvent) {
-        return;
+const fetch = (start: Date, end: Date) => {
+    calendarStore.load(start, end);
+    if (start && isValidDate(start) && activeView.value) {
+        router.push({
+            query: {
+                date: getUtcTimestamp(start),
+                view: activeView.value ?? 'week',
+            }
+        });
     }
-    addEvent(start);
 };
 </script>
 <template>
@@ -303,76 +211,44 @@ const cellDoubleClick = (start: Date) => {
         <CalendarHeader v-model:active-view="activeView"
                         :vuecal="vuecal"
                         @addEvent="addEvent" />
-        <vue-cal style="height: calc(100vh - 48px - 8px - 72px - 80px);"
-                 :selected-date="selectedDate"
-                 class="v-card calendar"
-                 ref="vuecal"
-                 :active-view="activeView"
-                 :disable-views="['years']"
-                 :events="calendarStore.events"
-                 @event-click="eventClick"
-                 @event-dblclick="eventDoubleClick"
-                 @event-focus="eventFocus"
-                 @cell-click="cellClick"
-                 @cell-dblclick="cellDoubleClick"
-                 :click-to-navigate="false"
-                 :dblclick-to-navigate="['year', 'month'].includes(activeView)"
-                 :snap-to-time="15"
-                 hide-view-selector
-                 hide-title-bar
-                 watch-realtime="true"
-                 :show-all-day-events="true"
-                 :editable-events="{ title: false, drag: true, resize: true, delete: true, create: !display.mobile.value }"
-                 @ready="onReady"
-                 @view-change="fetchEvents"
-                 @event-duration-change="eventDurationChange"
-                 @event-drop="eventDurationChange"
-                 @event-drag-create="eventDragCreate">
-
-            <template #event="{ event, view }">
-                <v-card-title>
-                    {{ event.title }}
-                </v-card-title>
-                <v-card-subtitle>
-                    {{ event.start.formatTime('h:m') + ' - ' + event.end.formatTime('h:m') }}
-                </v-card-subtitle>
-            </template>
-        </vue-cal>
-
+        <CalendarMain v-model:active-view="activeView"
+                      ref="vuecalRef"
+                      :views="allowedViews()"
+                      :vuecal="vuecal"
+                      @addEvent="addEvent"
+                      @updateEvent="updateEvent"
+                      @fetchEvents="fetch"
+                      :selectedDate="selectedDate" />
     </v-card>
 </template>
 <style lang="scss">
-.vuecal__title-bar {
-    background-color: rgb(var(--v-theme-on-surface-variant));
-    color: rgb(var(--v-theme-on-surface));
+@mixin event-colors($background, $text) {
+    background-color: rgba($background, var(--v-medium-emphasis-opacity));
+    color: rgb($text);
+
+    &.vuecal__event--focus {
+        background-color: rgba($background, var(--v-high-emphasis-opacity));
+    }
 }
 
 .vuecal__event {
-    background-color: rgba(var(--v-theme-primary), var(--v-medium-emphasis-opacity));
-    color: rgb(var(--v-theme-primary-darken-4));
+    @include event-colors(var(--v-theme-primary), var(--v-theme-primary-darken-4));
     border: 1px solid #fff;
 
     &.vuecal__event--focus {
         box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
-        background-color: rgba(var(--v-theme-primary), var(--v-high-emphasis-opacity));
     }
 
     &.calendar-event__task {
-        background-color: rgba(var(--v-theme-task), var(--v-medium-emphasis-opacity));
-        color: rgb(var(--v-theme-task-darken-4));
-
-        &.vuecal__event--focus {
-            background-color: rgba(var(--v-theme-task), var(--v-high-emphasis-opacity));
-        }
+        @include event-colors(var(--v-theme-task), var(--v-theme-task-darken-4));
     }
 
     &.calendar-event__event {
-        background-color: rgba(var(--v-theme-event), var(--v-medium-emphasis-opacity));
-        color: rgb(var(--v-theme-event-darken-4));
+        @include event-colors(var(--v-theme-event), var(--v-theme-event-darken-4));
+    }
 
-        &.vuecal__event--focus {
-            background-color: rgba(var(--v-theme-event), var(--v-high-emphasis-opacity));
-        }
+    &.calendar-event__project {
+        @include event-colors(var(--v-theme-project), var(--v-theme-project-darken-4));
     }
 }
 

@@ -1,41 +1,30 @@
 <script setup lang="ts">
-import { useLayoutStore } from '@/stores/layout';
 import __ from '@/helper/translations';
-import { getLocalDate } from '@/helper/date';
-import { newEvent } from '@/data/events';
 import { useCalendarStore } from '@/stores/calendar';
 
 const props = defineProps(['vuecal', 'activeView']);
 const emit = defineEmits(['update:activeView', 'addEvent']);
 
-const layoutStore = useLayoutStore();
+
 const calendarStore = useCalendarStore();
 
 const previous = () => {
-    if (!props.vuecal) {
-        return;
-    }
-    (props.vuecal as any).previous();
+    props.vuecal.previous();
 };
 
 const next = () => {
-    if (!props.vuecal) {
-        return;
-    }
-    (props.vuecal as any).next();
+    props.vuecal.next();
 };
 
 const today = () => {
-    if (!props.vuecal) {
-        return;
-    }
-    (props.vuecal as any).switchView(props.activeView, new Date());
+    props.vuecal.switchView(props.activeView, new Date());
 };
 
 
 </script>
 <template>
-    <v-row class="pb-0">
+    <v-row class="pb-0"
+           v-if="props.vuecal">
         <v-col cols="9"
                :md="6"
                :offset-md="3"

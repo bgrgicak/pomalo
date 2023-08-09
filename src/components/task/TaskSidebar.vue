@@ -25,6 +25,7 @@ const onFieldChange = (key: string, value: any) => {
          class="mt-8">
         <ActivitySchedule :activity="props.activity"
                           :event="props.event"
+                          :small="props.small"
                           :repeat="false"
                           :allDay="false"
                           @fieldChange="(value: any) => onFieldChange('events', value)" />
