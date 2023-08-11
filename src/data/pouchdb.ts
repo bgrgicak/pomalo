@@ -4,10 +4,23 @@ import log from '@/helper/logs';
 import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 import { getUtcTimestamp } from '@/helper/date';
+import { useSettingsStore } from '@/stores/settings';
 
 const maybeSyncRemote = (database: PouchDB.Database) => {
-  if (constants.databaseRemotePath) {
-    const remoteDatabase = new PouchDB(constants.databaseRemotePath);
+  const settingsStore = useSettingsStore();
+  const path = settingsStore.get('databaseRemotePath');
+  const username = settingsStore.get('databaseRemoteUsername');
+  const password = settingsStore.get('databaseRemotePassword');
+  if (path) {
+    const remoteDatabase = new PouchDB(
+      path,
+      {
+        auth: {
+          username,
+          password,
+        }
+      }
+    );
     remoteDatabase.info().then(() => {
       database.sync(
         remoteDatabase,

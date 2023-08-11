@@ -1,6 +1,6 @@
+<script setup lang="ts">
+import Settings from '@/components/settings/Settings.vue';
+</script>
 <template>
-    <v-title>
-        <v-icon>mdi-cog</v-icon>
-        <span>Settings</span>
-    </v-title>
+    <Settings />
 </template>
