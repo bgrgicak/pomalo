@@ -174,17 +174,14 @@ const addLongPressEvent = () => {
     }
     cells.forEach((cell: any, index: number) => {
         const currentCell = structuredClone(props.vuecal.viewCells[index]);
-        cell.addEventListener('mousedown', (event: any) => {
-            if (event.button !== 0) {
-                return;
-            }
+        cell.addEventListener('touchstart', (event: any) => {
             const timeout = setTimeout(() => {
                 const start = currentCell.startDate.addMinutes(
                     props.vuecal.utils.cell.minutesAtCursor(event).minutes
                 );
                 emit('addEvent', start);
             }, 500);
-            cell.addEventListener('mouseup', () => {
+            cell.addEventListener('touchend', () => {
                 clearTimeout(timeout);
             });
         });
