@@ -43,7 +43,35 @@ export const useTimerStore = defineStore(
             return state.value.activity._id;
         });
 
+
+        const getCurrentActivity = (): Promise<void | Activity[]> => {
+            const now = getUtcTimestamp();
+            return activityStore.find({
+                "selector": {
+                    "eventFirstStart": {
+                        "$lte": now
+                    },
+                    "eventLastEnd": {
+                        "$exists": true
+                    },
+                    "timerRunning": true,
+                },
+            }).then((activities) => {
+                if (activities && activities.length > 0) {
+                    state.value.activity = activities[0];
+                } else {
+                    state.value.activity = undefined;
+                }
+            });
+        };
+
         setInterval(() => {
+            // TODO reduce calls to getCurrentActivity
+            if (0 === getLocalDate().getSeconds() % 10) {
+                getCurrentActivity().then(() => {
+                    state.value.loading = false;
+                });
+            }
             if (!state.value.activity) {
                 return '';
             }
@@ -106,29 +134,6 @@ export const useTimerStore = defineStore(
             });
         };
 
-        const getCurrentActivity = (): Promise<void | Activity[]> => {
-            const now = getUtcTimestamp();
-            return activityStore.find({
-                "selector": {
-                    "eventFirstStart": {
-                        "$lte": now
-                    },
-                    "eventLastEnd": {
-                        "$exists": true
-                    },
-                    "timerRunning": true,
-                },
-            }).then((activities) => {
-                if (activities && activities.length > 0) {
-                    state.value.activity = activities[0];
-                }
-            });
-        };
-
-        getCurrentActivity().then(() => {
-            state.value.loading = false;
-        });
-
         return {
             state,
             active,
@@ -138,7 +143,6 @@ export const useTimerStore = defineStore(
             title,
             start,
             stop,
-            getCurrentActivity,
         };
     },
 );

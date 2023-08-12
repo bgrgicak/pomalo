@@ -25,7 +25,8 @@ const maybeSyncRemote = (database: PouchDB.Database) => {
       database.sync(
         remoteDatabase,
         {
-          live: true
+          live: true,
+          retry: true,
         }
       ).on('error', (error: any) => {
         log(error, LogType.Error);

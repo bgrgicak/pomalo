@@ -24,7 +24,8 @@ const onChange = (value: unknown) => {
             <v-text-field v-else
                           :model-value="props.setting.value"
                           :type="props.setting.type"
-                          @update:model-value="onChange" />
+                          @update:model-value="onChange"
+                          autocomplete="off" />
         </v-list-item-action>
     </v-list-item>
 </template>

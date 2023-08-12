@@ -26,9 +26,10 @@ const prepareSetting = (setting: Setting) => {
             <v-col cols="12">
                 <h2>{{ group.title }}</h2>
             </v-col>
-            <v-col>
+            <v-col cols="12">
                 <v-row v-for="(section, sectionKey) in group">
-                    <v-list v-if="'title' !== sectionKey">
+                    <v-list v-if="'title' !== sectionKey"
+                            class="d-flex flex-column">
                         <SettingEdit v-for="setting in section.settings"
                                      :key="setting.id"
                                      :setting="prepareSetting(setting)"
