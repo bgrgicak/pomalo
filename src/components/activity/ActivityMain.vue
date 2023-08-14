@@ -7,8 +7,9 @@ import { computed } from 'vue';
 import ActivityContent from './ActivityContent.vue';
 import ActivityNew from './ActivityNew.vue';
 import EventSidebar from '@/components/event/EventSidebar.vue';
+import ProjectSidebar from '@/components/project/ProjectSidebar.vue';
 
-const props = defineProps(['activity', 'event', 'small']);
+const props = defineProps(['activity', 'event', 'small', 'type']);
 
 const isNew = computed(() => {
     return undefined === props.activity;
@@ -18,6 +19,10 @@ const isTask = computed(() => {
 });
 const isEvent = computed(() => {
     return props.activity && ActivityType.Event === props.activity.type;
+});
+
+const isProject = computed(() => {
+    return props.activity && ActivityType.Project === props.activity.type;
 });
 
 const onFieldChange = (key: string, value: any) => {
@@ -32,6 +37,7 @@ const onFieldChange = (key: string, value: any) => {
                        cols="12">
                     <ActivityNew v-if="isNew"
                                  :event="props.event"
+                                 :type="props.type"
                                  openInSidebar="true" />
                     <ActivityContent v-else
                                      :activity="props.activity" />
@@ -53,6 +59,11 @@ const onFieldChange = (key: string, value: any) => {
                                   :small="props.small"
                                   :event="props.event"
                                   @fieldChange="onFieldChange" />
+                    <ProjectSidebar v-else-if="isProject"
+                                    :activity="props.activity"
+                                    :small="props.small"
+                                    :event="props.event"
+                                    @fieldChange="onFieldChange" />
                 </v-col>
             </v-row>
         </v-container>

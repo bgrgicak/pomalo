@@ -10,7 +10,7 @@ import { toLocaleDateString } from '@/helper/date';
 import TimerToggle from '../timer/TimerToggle.vue';
 import { computed } from 'vue';
 
-const props = defineProps(['type']);
+const props = defineProps(['type', 'items']);
 const type = props.type as ActivityType;
 
 if (!type) {
@@ -47,9 +47,9 @@ activityListStore.find(
   }
 );
 
-const addActivity = (openSidebar: boolean = false) => {
-  if (openSidebar) {
-    layoutStore.showRightSidebar();
+const addActivity = (title?: string) => {
+  if (!title) {
+    layoutStore.showRightSidebarNewActivity(type);
   } else {
     activityListStore.add(newActivity.value as Activity).then(() => {
       newActivity.value = emptyActivity(type);
@@ -80,7 +80,7 @@ const openActivity = (activity: Activity) => {
            align="right">
       <v-btn icon
              variant="text"
-             @click="() => addActivity(true)">
+             @click="() => addActivity()">
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </v-col>
@@ -89,6 +89,10 @@ const openActivity = (activity: Activity) => {
     <thead>
       <tr>
         <th>{{ __('Title') }}</th>
+        <th v-for="(headerItem, headerIndex) in props.items"
+            :key="headerIndex">
+          {{ headerItem.name }}
+        </th>
         <th>{{ __('Due Date') }}</th>
         <th class="d-none d-sm-table-cell">{{ __('Estimated hours') }}</th>
         <th></th>
@@ -117,8 +121,7 @@ const openActivity = (activity: Activity) => {
           <v-text-field v-model="newActivity.title"
                         :placeholder="__('Add a ') + newActivity.type"
                         variant="plain"
-                        @keyup.enter="addActivity"
-                        @change="addActivity" />
+                        @keyup.enter="addActivity" />
         </td>
       </tr>
     </tbody>

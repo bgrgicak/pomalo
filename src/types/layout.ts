@@ -1,4 +1,4 @@
-import type { ActivityEvent } from "./activity";
+import type { ActivityEvent, ActivityType } from "./activity";
 
 export interface LayoutState {
     leftSidebarVisibility: boolean;
@@ -7,5 +7,6 @@ export interface LayoutState {
     current: {
         activityId?: string;
         event?: ActivityEvent;
+        type?: ActivityType;
     };
 }

@@ -8,7 +8,7 @@ import { openActivityPage } from '@/data/activities';
 import { useActivityStore } from '@/stores/activities';
 import { addEventToActivity } from '@/data/events';
 
-const props = defineProps(['event', 'openInSidebar']);
+const props = defineProps(['event', 'openInSidebar', 'type']);
 const title = ref('');
 
 const layoutStore = useLayoutStore();
@@ -39,6 +39,7 @@ const activityClick = (activity: Activity) => {
                           autofocus />
             <SearchResults :searchText="title"
                            openInSidebar="true"
+                           :newTypes="props.type ? [props.type] : undefined"
                            @click="activityClick" />
         </v-col>
     </v-row>

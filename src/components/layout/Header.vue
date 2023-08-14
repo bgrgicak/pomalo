@@ -18,11 +18,11 @@ const toggleMenu = () => {
         <v-app-bar-nav-icon variant="text"
                             class="ml-1 d-lg-none"
                             @click.stop="toggleMenu"></v-app-bar-nav-icon>
-        <v-app-bar-logo class="d-none d-lg-inline-flex ml-1">
+        <v-app-bar-title class="d-none d-lg-inline-flex ml-1">
             <v-btn class="header__logo"
                    to="/calendar"
                    :icon="constants.icons.logo" />
-        </v-app-bar-logo>
+        </v-app-bar-title>
         <v-spacer />
         <v-divider vertical />
 

@@ -1,4 +1,4 @@
-import type { ActivityEvent } from "@/types/activity";
+import type { ActivityEvent, ActivityType } from "@/types/activity";
 import type { LayoutState } from "@/types/layout";
 import { defineStore } from "pinia";
 import { type Ref, computed, ref } from "vue";
@@ -18,6 +18,7 @@ export const useLayoutStore = defineStore(
         const isMenuVisible = computed(() => state.value.menuVisibility);
         const currentActivityId = computed(() => state.value.current.activityId);
         const currentEvent = computed(() => state.value.current.event);
+        const newActivityType = computed(() => state.value.current.type);
 
         const showLeftSidebar = () => {
             state.value.leftSidebarVisibility = true;
@@ -30,6 +31,12 @@ export const useLayoutStore = defineStore(
             state.value.current = {
                 activityId,
                 event,
+            };
+        };
+        const showRightSidebarNewActivity = (type: ActivityType) => {
+            state.value.rightSidebarVisibility = true;
+            state.value.current = {
+                type
             };
         };
         const hideRightSidebar = () => {
@@ -47,9 +54,11 @@ export const useLayoutStore = defineStore(
             isMenuVisible,
             currentActivityId,
             currentEvent,
+            newActivityType,
             showLeftSidebar,
             hideLeftSidebar,
             showRightSidebar,
+            showRightSidebarNewActivity,
             hideRightSidebar,
             updateMenuVisibility,
         };
