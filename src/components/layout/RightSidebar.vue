@@ -31,8 +31,8 @@ watch(route, hide);
     <v-navigation-drawer location="right"
                          v-bind:width="350"
                          v-if="layoutStore.isRightSidebarVisible"
-                         v-model:model-value="layoutStore.isRightSidebarVisible"
-                         @update:model-value="layoutStore.hideRightSidebar"
+                         :model-value="layoutStore.isRightSidebarVisible"
+                         @update:model-value="hide"
                          class="right-sidebar">
         <header class="right-sidebar__header">
             <v-btn icon="mdi-arrow-expand"

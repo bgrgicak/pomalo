@@ -44,6 +44,10 @@ export const useLayoutStore = defineStore(
             state.value.current = {};
         };
 
+        const toggleRightSidebar = () => {
+            state.value.rightSidebarVisibility = !state.value.rightSidebarVisibility;
+        };
+
         const updateMenuVisibility = (visible: boolean) => {
             state.value.menuVisibility = visible;
         };
@@ -60,6 +64,7 @@ export const useLayoutStore = defineStore(
             showRightSidebar,
             showRightSidebarNewActivity,
             hideRightSidebar,
+            toggleRightSidebar,
             updateMenuVisibility,
         };
     }
