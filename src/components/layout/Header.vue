@@ -16,8 +16,13 @@ const toggleMenu = () => {
                :color="constants.colors.headerBackground"
                class="header">
         <v-app-bar-nav-icon variant="text"
-                            class="ml-1"
+                            class="ml-1 d-lg-none"
                             @click.stop="toggleMenu"></v-app-bar-nav-icon>
+        <v-app-bar-logo class="d-none d-lg-inline-flex ml-1">
+            <v-btn class="header__logo"
+                   to="/calendar"
+                   :icon="constants.icons.logo" />
+        </v-app-bar-logo>
         <v-spacer />
         <v-divider vertical />
 
@@ -60,9 +65,6 @@ const toggleMenu = () => {
 }
 
 .header__logo {
-    padding-left: 0;
-    font-weight: 600;
-
     &.v-btn--active .v-btn__overlay {
         background-color: transparent !important;
     }

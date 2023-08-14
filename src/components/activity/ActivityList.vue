@@ -8,7 +8,6 @@ import __ from '@/helper/translations';
 import { useActivityListStore } from '@/stores/activity-list';
 import { toLocaleDateString } from '@/helper/date';
 import TimerToggle from '../timer/TimerToggle.vue';
-import { recalculateAllPriorities } from '@/data/priority';
 import { computed } from 'vue';
 
 const props = defineProps(['type']);
