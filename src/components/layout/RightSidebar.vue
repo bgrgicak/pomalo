@@ -6,12 +6,9 @@ import { useActivityStore } from '@/stores/activities';
 import { watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { openActivityPage } from '@/data/activities';
-import { useCalendarStore } from '@/stores/calendar';
-import { calendarEventToActivityEvent } from '@/data/events';
 
 const layoutStore = useLayoutStore();
 const activityStore = useActivityStore();
-const calendarStore = useCalendarStore();
 
 const route = useRoute();
 
@@ -34,6 +31,7 @@ watch(route, hide);
                          v-bind:width="350"
                          v-if="layoutStore.isRightSidebarVisible"
                          v-model:model-value="layoutStore.isRightSidebarVisible"
+                         @update:model-value="layoutStore.hideRightSidebar"
                          class="right-sidebar">
         <header class="right-sidebar__header">
             <v-btn icon="mdi-arrow-expand"

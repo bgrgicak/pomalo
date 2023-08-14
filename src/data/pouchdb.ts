@@ -6,6 +6,18 @@ import PouchDBFind from 'pouchdb-find';
 import { getUtcTimestamp } from '@/helper/date';
 import { useSettingsStore } from '@/stores/settings';
 
+const removeAllIndexes = (database: PouchDB.Database) => {
+  database.getIndexes().then(function (indexesResult) {
+    indexesResult.indexes.forEach(function (index: any) {
+      return database.deleteIndex(index);
+    });
+  }).then(function (result) {
+    // handle result
+  }).catch(function (err) {
+    console.log(err);
+  });
+};
+
 const maybeSyncRemote = (database: PouchDB.Database) => {
   const settingsStore = useSettingsStore();
   const path = settingsStore.get('databaseRemotePath');
@@ -38,6 +50,12 @@ const maybeSyncRemote = (database: PouchDB.Database) => {
 const createIndexes = (database: PouchDB.Database) => {
   database.createIndex({
     index: {
+      fields: ['priority', 'type'],
+      name: 'activity-priority-index',
+    },
+  });
+  database.createIndex({
+    index: {
       fields: ['eventFirstStart', 'eventLastEnd', 'timerRunning'],
       name: 'event-index',
     }
@@ -49,6 +67,7 @@ PouchDB.plugin(PouchDBFind);
 
 database.info().then(() => {
   maybeSyncRemote(database);
+  // removeAllIndexes(database);
   createIndexes(database);
 });
 

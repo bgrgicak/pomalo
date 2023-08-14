@@ -1,9 +1,11 @@
 import type Activity from "@/types/activity";
 import type { ActivityEvent, ActivityType } from "@/types/activity";
 import Router from '@/router/router';
-import { getLocalDate, getUtcTimestamp, maxDate } from "../helper/date";
+import { getLocalDate, getUtcTimestamp, maxDate, yearInMilliseconds } from "../helper/date";
 import { newId } from "./pouchdb";
 import type { ActivityDocument } from "@/types/activity-document";
+import { settings } from "@/helper/settings";
+import { calculateActivityPriority } from "./priority";
 
 export const emptyActivity = (type: ActivityType): Activity => {
     return {
@@ -29,12 +31,6 @@ export const addDefaultsToActivity = (activity: Activity): Activity => {
 
 export const openActivityPage = async (activity: Activity) => {
     return Router.push(`/${activity.type}/${activity._id}/`);
-};
-
-const calculateActivityPriority = (activity: Activity): number => {
-    const timeLeft = activity.dueDate ? getUtcTimestamp(activity.dueDate) - getUtcTimestamp() : 365;
-    const estimatedTime = activity.estimatedTime ? activity.estimatedTime / 8 : 1;
-    return timeLeft / estimatedTime / 365;
 };
 
 const calculateActivityStartEndDate = (activity: Activity) => {

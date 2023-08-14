@@ -5,10 +5,11 @@ import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
 import { ref, type Ref } from 'vue';
 import __ from '@/helper/translations';
-import ActivityClose from './ActivityClose.vue';
 import { useActivityListStore } from '@/stores/activity-list';
 import { toLocaleDateString } from '@/helper/date';
 import TimerToggle from '../timer/TimerToggle.vue';
+import { recalculateAllPriorities } from '@/data/priority';
+import { computed } from 'vue';
 
 const props = defineProps(['type']);
 const type = props.type as ActivityType;
@@ -22,18 +23,39 @@ const newActivity: Ref<Activity> = ref(emptyActivity(type));
 const layoutStore = useLayoutStore();
 const activityListStore = useActivityListStore();
 
+const activities = computed(() => {
+  return activityListStore.list.sort(
+    (a, b) => {
+      return b.priority - a.priority;
+    }
+  );
+});
+
 activityListStore.find(
   {
     selector: {
-      type
+      priority: {
+        $exists: true
+      },
+      type,
     },
+    sort: [
+      {
+        priority: 'desc',
+        type: 'asc',
+      }
+    ],
   }
 );
 
 const addActivity = (openSidebar: boolean = false) => {
-  activityListStore.add(newActivity.value as Activity).then(() => {
-    newActivity.value = emptyActivity(type);
-  });
+  if (openSidebar) {
+    layoutStore.showRightSidebar();
+  } else {
+    activityListStore.add(newActivity.value as Activity).then(() => {
+      newActivity.value = emptyActivity(type);
+    });
+  }
 };
 
 const showActivitySidebar = (activity: Activity) => {
@@ -50,14 +72,18 @@ const openActivity = (activity: Activity) => {
 
 <template>
   <v-row class="pa-4 pb-0">
-    <v-col cols="8">
+    <v-col cols="10">
       <h2 class="activity-list__title mb-0">
         {{ type + 's' }}
       </h2>
     </v-col>
-    <v-col cols="4"
-           class="pa-0"
+    <v-col cols="2"
            align="right">
+      <v-btn icon
+             variant="text"
+             @click="() => addActivity(true)">
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
     </v-col>
   </v-row>
   <v-table class="activity-list">
@@ -65,11 +91,12 @@ const openActivity = (activity: Activity) => {
       <tr>
         <th>{{ __('Title') }}</th>
         <th>{{ __('Due Date') }}</th>
+        <th class="d-none d-sm-table-cell">{{ __('Estimated hours') }}</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in activityListStore.list"
+      <tr v-for="item in activities"
           :key="item._id">
         <td @click="() => showActivitySidebar(item)"
             @dblclick="() => openActivity(item)"
@@ -79,20 +106,11 @@ const openActivity = (activity: Activity) => {
         <td class="activity-list__item">
           {{ item.dueDate ? toLocaleDateString(item.dueDate) : '' }}
         </td>
+        <td class="activity-list__item d-none d-sm-table-cell">
+          {{ item.estimatedTime }}
+        </td>
         <td class="activity-list__item activity-list__item--actions">
           <TimerToggle :activity="item" />
-          <v-menu>
-            <template v-slot:activator="{ props }">
-              <v-btn icon="mdi-dots-vertical"
-                     v-bind="props"
-                     variant="plain"></v-btn>
-            </template>
-            <v-list>
-              <v-list-item>
-                <ActivityClose :activity="item" />
-              </v-list-item>
-            </v-list>
-          </v-menu>
         </td>
       </tr>
       <tr>

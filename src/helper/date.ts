@@ -18,7 +18,11 @@ const prepareDate = (date?: Date | string | number) => {
     return date;
 };
 
-const dayInMilliseconds = 1000 * 60 * 60 * 24;
+export const hourInMilliseconds = 1000 * 60 * 60;
+export const dayInMilliseconds = hourInMilliseconds * 24;
+export const weekInMilliseconds = dayInMilliseconds * 7;
+export const yearInMilliseconds = dayInMilliseconds * 365;
+export const daysInAYear = 365;
 
 /**
  * Convert UTC date to local date string
