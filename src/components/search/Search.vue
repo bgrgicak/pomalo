@@ -7,11 +7,10 @@ import { useSearchStore } from '@/stores/search';
 import type Activity from '@/types/activity';
 import { ActivityType } from '@/types/activity';
 import __ from '@/helper/translations';
-import ActivityTitle from '@/components/activity/ActivityTitle.vue';
 import TimerToggle from '../timer/TimerToggle.vue';
 import { addEventToActivity } from '@/data/events';
 
-const props = defineProps(['searchText', 'openInSidebar', 'newTypes', 'visible', 'event']);
+const props = defineProps(['searchText', 'openInSidebar', 'newTypes', 'visible', 'event', 'autofocus']);
 const emit = defineEmits(['hideSearch', 'click']);
 
 const searchVisible = ref(!!props.visible);
@@ -30,6 +29,8 @@ const newTypes = computed(
 );
 
 const hide = () => {
+    searchVisible.value = false;
+    searchText.value = '';
     emit('hideSearch');
 };
 
@@ -44,7 +45,7 @@ const openActivity = (activity: Activity) => {
         );
     }
     if (props.openInSidebar) {
-        layoutStore.showRightSidebar(activity._id);
+        layoutStore.showRightSidebar(activity._id, props.event);
     } else {
         openActivityPage(activity);
     }
@@ -71,42 +72,42 @@ const showSearch = async () => {
         (searchRef.value as HTMLInputElement).focus();
     }
 };
-const hideSearch = () => {
-    searchVisible.value = false;
-    searchText.value = '';
-};
 </script>
 <template>
-    <v-responsive class="header-search">
+    <v-responsive class="search">
         <v-autocomplete v-if="searchVisible"
                         ref="searchRef"
-                        v-click-outside="hideSearch"
                         v-bind:placeholder="__('Search')"
                         :items="searchStore.activities"
                         v-model:search="searchText"
                         @update:search="searchStore.search"
                         variant="solo-filled"
                         density="compact"
-                        class="header-search__autocomplete"
+                        class="search__autocomplete"
                         append-inner-icon="mdi-magnify"
                         menu-icon=""
-                        :focused="searchVisible">
+                        :focused="searchVisible"
+                        :autofocus="props.autofocus">
             <template v-slot:item="{ props, item }">
-                <v-list-item class="d-flex w-100">
-                    <ActivityTitle :activity="item.raw"
-                                   class="flex-grow-1"
-                                   :disabled="props.openInSidebar"
-                                   @click="() => openActivity(item.raw)" />
-                    <TimerToggle :activity="item.raw"
-                                 @change="() => timerToggle(item.raw)" />
+                <v-list-item>
+                    <v-btn class="search__result-title"
+                           variant="plain"
+                           @click="() => openActivity(item.raw)">
+                        {{ item.raw.title }}
+                    </v-btn>
+                    <template #append>
+                        <TimerToggle :activity="item.raw"
+                                     @change="() => timerToggle(item.raw)" />
+                    </template>
                 </v-list-item>
             </template>
-            <template #append-item>
+            <template #append-item
+                      v-if="searchStore.activities">
                 <v-list-item v-for="(newType, newTypeIndex) in newTypes"
                              :key="newTypeIndex">
-                    <v-btn variant="text"
+                    <v-btn variant="plain"
                            color="primary"
-                           class="search-action--add"
+                           class="search-action--add text-left"
                            @click="() => add(newType)">
                         {{ __('Create') + ' ' + newType }}
                     </v-btn>
@@ -123,14 +124,19 @@ const hideSearch = () => {
 @import '@/styles/variables.scss';
 $form-width: 300px;
 
-.header-search {
+.v-responsive.search {
     align-items: end;
     flex-direction: column;
+    flex: 0 0 auto;
 }
 
-.header-search__autocomplete {
+.search__autocomplete {
     width: $form-width;
     position: relative;
     top: 2px;
+}
+
+.search__result-title {
+    cursor: pointer;
 }
 </style>

@@ -5,6 +5,7 @@ import PouchDB from 'pouchdb';
 import PouchDBFind from 'pouchdb-find';
 import { getUtcTimestamp } from '@/helper/date';
 import { useSettingsStore } from '@/stores/settings';
+import { error } from '@/helper/logs';
 
 const removeAllIndexes = (database: PouchDB.Database) => {
   database.getIndexes().then(function (indexesResult) {
@@ -14,7 +15,7 @@ const removeAllIndexes = (database: PouchDB.Database) => {
   }).then(function (result) {
     // handle result
   }).catch(function (err) {
-    console.log(err);
+    error(err);
   });
 };
 

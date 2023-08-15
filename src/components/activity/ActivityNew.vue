@@ -11,6 +11,7 @@ const props = defineProps(['event', 'openInSidebar', 'type', 'visible']);
             <Search :openInSidebar="props.openInSidebar"
                     :event="props.event"
                     :newTypes="props.type ? [props.type] : undefined"
+                    :autofocus="true"
                     :visible="true" />
         </v-col>
     </v-row>

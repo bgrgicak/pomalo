@@ -38,7 +38,7 @@ const onFieldChange = (key: string, value: any) => {
                     <ActivityNew v-if="isNew"
                                  :event="props.event"
                                  :type="props.type"
-                                 :openInSidebar="true" />
+                                 openInSidebar="true" />
                     <ActivityContent v-else
                                      :activity="props.activity" />
                     <TaskDetails v-if="isTask"
