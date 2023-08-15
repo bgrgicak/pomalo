@@ -65,9 +65,9 @@ export const useTimerStore = defineStore(
             });
         };
 
-        setInterval(() => {
+        const calculateTime = (forceActivityCheck: boolean = false) => {
             // TODO reduce calls to getCurrentActivity
-            if (0 === getLocalDate().getSeconds() % 10) {
+            if (forceActivityCheck || 0 === getLocalDate().getSeconds() % 10) {
                 getCurrentActivity().then(() => {
                     state.value.loading = false;
                 });
@@ -82,7 +82,9 @@ export const useTimerStore = defineStore(
                 return '';
             }
             state.value.time = getTimePassed(currentEvent.start);
-        }, 1000);
+        };
+        calculateTime(true);
+        setInterval(calculateTime, 1000);
 
         const stop = () => {
             if (!state.value.activity) {
