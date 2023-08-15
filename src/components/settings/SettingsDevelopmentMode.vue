@@ -1,0 +1,32 @@
+<script setup lang="ts">
+import { recalculateAllPriorities } from '@/data/priority';
+import SettingEdit from './SettingEdit.vue';
+import { SettingType, type Setting } from '@/types/setting';
+import __ from '@/helper/translations';
+
+const actions: Setting[] = [
+    {
+        id: 'recalculatePriorities',
+        label: __('Recalculate task priorities'),
+        name: __('Recalculate'),
+        action: recalculateAllPriorities,
+        type: SettingType.Button,
+    },
+];
+</script>
+<template>
+    <v-row>
+        <v-col cols="12">
+            <h2>{{ __('Debug') }}</h2>
+        </v-col>
+        <v-col cols="12">
+            <v-row v-for="action in actions">
+                <v-list class="d-flex flex-column">
+                    <SettingEdit :setting="action" />
+                </v-list>
+            </v-row>
+            <v-spacer />
+        </v-col>
+        <v-spacer />
+    </v-row>
+</template>

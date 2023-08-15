@@ -3,14 +3,17 @@ export enum SettingType {
     Number = "number",
     Boolean = "boolean",
     Password = "password",
+    Button = "button",
     Url = "url",
 };
 
 export interface Setting {
     id: string;
     name: string;
+    label?: string;
     value?: any;
     type: SettingType;
+    action?: Function;
 };
 
 export interface SettingsState {

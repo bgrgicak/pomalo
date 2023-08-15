@@ -5,6 +5,8 @@ import settingsStructure from './settings';
 import { addDefaultsToSetting } from '@/data/settings';
 import type { Setting } from '@/types/setting';
 import __ from '@/helper/translations';
+import constants from '@/helper/constants';
+import SettingsDevelopmentMode from './SettingsDevelopmentMode.vue';
 
 const settingsStore = useSettingsStore();
 
@@ -40,7 +42,8 @@ const prepareSetting = (setting: Setting) => {
             </v-col>
             <v-spacer />
         </v-row>
-        <v-row>
+        <SettingsDevelopmentMode v-if="constants.environment.development" />
+        <v-row class="mt-12">
             <v-col cols="12">
                 <v-btn @click="settingsStore.save"
                        color="primary">
