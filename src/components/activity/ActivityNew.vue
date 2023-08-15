@@ -12,18 +12,9 @@ const props = defineProps(['event', 'openInSidebar', 'type', 'visible']);
                     :event="props.event"
                     :newTypes="props.type ? [props.type] : undefined"
                     :autofocus="true"
-                    variant="underlined"
                     :placeholder="__('Title')"
-                    :visible="true" />
+                    :visible="true"
+                    :hideIcon="true" />
         </v-col>
     </v-row>
 </template>
-<style lang="scss">
-.new-activity {
-    .search {
-        .v-field__append-inner {
-            display: none;
-        }
-    }
-}
-</style>

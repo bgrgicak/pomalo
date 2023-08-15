@@ -30,7 +30,7 @@ const toggleMenu = () => {
 
         <v-divider vertical />
 
-        <Search />
+        <Search variant="solo-filled" />
 
         <v-divider vertical />
 

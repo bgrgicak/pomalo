@@ -109,6 +109,7 @@ export default interface Activity {
     created: Date;
     description: string;
     type: ActivityType;
+    parent?: string;
 
     members: ActivityMembers[];
     events: ActivityEvent[];

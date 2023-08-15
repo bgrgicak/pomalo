@@ -43,6 +43,10 @@ const vuetify = createVuetify({
             rounded: 'sm',
             variant: 'outlined'
         },
+        VAutocomplete: {
+            rounded: 'sm',
+            variant: 'underlined',
+        },
     },
 });
 

@@ -4,7 +4,6 @@ import { computed, ref, type Ref } from "vue";
 import { useActivityStore } from "./activities";
 import type { SearchState } from "@/types/search";
 
-
 export const useSearchStore = defineStore(
     "search",
     () => {
@@ -19,19 +18,27 @@ export const useSearchStore = defineStore(
         const isLoading = computed((): boolean => state.value.loading);
         const activities = computed((): Activity[] => state.value.activities);
 
-        const search = (searchText: string) => {
+        const search = (searchText: string, types?: string[]) => {
             state.value.searchText = searchText;
             if (state.value.searchText.length < 3) {
                 state.value.activities = [];
                 return;
             }
-            return activityStore.find({
+            const searchOptions: PouchDB.Find.FindRequest<{}> = {
                 selector: {
                     title: {
                         $regex: new RegExp(searchText, 'gi'),
-                    },
+                    }
                 },
-            }, false).then((response) => {
+            };
+            if (types) {
+                searchOptions.selector.type = {
+                    $in: types,
+                };
+            }
+            return activityStore.find(
+                searchOptions, false
+            ).then((response) => {
                 state.value.activities = response ?? [];
             });
         };

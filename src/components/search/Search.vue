@@ -10,7 +10,22 @@ import __ from '@/helper/translations';
 import TimerToggle from '../timer/TimerToggle.vue';
 import { addEventToActivity } from '@/data/events';
 
-const props = defineProps(['searchText', 'openInSidebar', 'newTypes', 'visible', 'event', 'autofocus', 'variant', 'placeholder']);
+const props = defineProps([
+    'value',
+    'label',
+    'openInSidebar',
+    'types',
+    'newTypes',
+    'visible',
+    'event',
+    'autofocus',
+    'variant',
+    'placeholder',
+    'preventDefault',
+    'hideTimer',
+    'hideIcon',
+    'clearable',
+]);
 const emit = defineEmits(['hideSearch', 'click']);
 
 const searchVisible = ref(!!props.visible);
@@ -35,31 +50,37 @@ const noInput = computed(
 );
 
 const hide = () => {
-    searchVisible.value = false;
     searchText.value = '';
+    if (props.visible) {
+        return;
+    }
+    searchVisible.value = false;
     emit('hideSearch');
 };
 
 const openActivity = (activity: Activity) => {
-    emit('click', activity);
-    if (props.event) {
-        activityStore.update(
-            addEventToActivity(
-                activity,
-                props.event
-            )
-        );
-    }
-    if (props.openInSidebar) {
-        layoutStore.showRightSidebar(activity._id, props.event);
+    if (props.preventDefault) {
+        emit('click', activity);
+        toggleFocus();
     } else {
-        openActivityPage(activity);
+        if (props.event) {
+            activityStore.update(
+                addEventToActivity(
+                    activity,
+                    props.event
+                )
+            );
+        }
+        if (props.openInSidebar) {
+            layoutStore.showRightSidebar(activity._id, props.event);
+        } else {
+            openActivityPage(activity);
+        }
     }
     hide();
 };
 
 const timerToggle = (activity: Activity) => {
-    emit('click', activity);
     if (props.openInSidebar) {
         layoutStore.showRightSidebar(activity._id, props.event);
     }
@@ -77,26 +98,49 @@ const add = (type: ActivityType) => {
 const showSearch = async () => {
     searchVisible.value = true;
     await nextTick();
+    toggleFocus();
+};
+
+const toggleFocus = () => {
     if (null !== searchRef.value) {
-        (searchRef.value as HTMLInputElement).focus();
+        const element: any = searchRef.value;
+        if (element.focused) {
+            element.blur();
+        } else {
+            element.focus();
+        }
     }
+};
+
+const onSearch = (searchText: string) => {
+    searchStore.search(searchText, props.types);
+};
+
+const onClear = () => {
+    emit('click', undefined);
+    hide();
 };
 </script>
 <template>
     <v-autocomplete v-if="searchVisible"
+                    v-click-outside="hide"
+                    :label="props.label"
                     ref="searchRef"
                     v-bind:placeholder="props.placeholder ?? __('Search')"
                     :items="searchStore.activities"
+                    v-model:model-value="props.value"
                     v-model:search="searchText"
-                    @update:search="searchStore.search"
-                    :variant="props.variant ?? 'solo-filled'"
+                    @update:search="onSearch"
+                    :variant="props.variant"
                     density="compact"
                     class="search"
-                    append-inner-icon="mdi-magnify"
+                    :append-inner-icon="props.hideIcon ? '' : 'mdi-magnify'"
                     menu-icon=""
                     :hide-no-data="noInput"
                     :focused="searchVisible"
-                    :autofocus="props.autofocus">
+                    :autofocus="props.autofocus"
+                    :clearable="props.clearable"
+                    @click:clear="onClear">
         <template v-slot:item="{ props, item }">
             <v-list-item>
                 <v-btn class="search__result-title"
@@ -104,7 +148,8 @@ const showSearch = async () => {
                        @click="() => openActivity(item.raw)">
                     {{ item.raw.title }}
                 </v-btn>
-                <template #append>
+                <template #append
+                          v-if="!hideTimer">
                     <TimerToggle :activity="item.raw"
                                  @change="() => timerToggle(item.raw)" />
                 </template>
@@ -123,7 +168,6 @@ const showSearch = async () => {
             </v-list-item>
         </template>
         <template #no-data></template>
-
     </v-autocomplete>
     <v-btn v-else
            icon="mdi-magnify"
