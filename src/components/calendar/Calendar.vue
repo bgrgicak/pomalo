@@ -15,6 +15,7 @@ import { useNoticeStore } from '@/stores/notices';
 import { NoticeType } from '@/types/notice';
 import CalendarMain from './CalendarMain.vue';
 import { allViews, defaultView, defaultSmallView } from '@/plugins/vuecal';
+import { watch } from 'vue';
 
 const allowedViews = computed(() => {
     return structuredClone(allViews).filter(
@@ -45,6 +46,15 @@ const layoutStore = useLayoutStore();
 const activeView = ref(initialActiveView());
 
 const vuecalRef = ref(null);
+
+watch(
+    allowedViews,
+    (allowedViews) => {
+        if (!allowedViews.includes(activeView.value)) {
+            activeView.value = defaultSmallView;
+        }
+    }
+);
 
 const selectedDate = computed(() => {
     if (!router.currentRoute.value.query.date) {

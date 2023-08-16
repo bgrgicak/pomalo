@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { useTimerStore } from '@/stores/timer';
+import { getActivityLink } from '@/data/activities';
 const timerStore = useTimerStore();
 </script>
 <template>
-    <div class="timer v-card"
+    <div class="timer v-card pl-0"
          v-if="timerStore.active">
-        <span class=" pr-2 timer__label timer__label--title">
-            {{ timerStore.title }}
-        </span>
+        <v-btn class="timer__label--title"
+               variant="plain"
+               :to="timerStore.currentActivity ? getActivityLink(timerStore.currentActivity) : undefined">
+            Long name for a task
+        </v-btn>
         <span class="timer__label">
-            {{ timerStore.time }}h
+            {{ timerStore.time }}
         </span>
         <v-btn @click="timerStore.stop"
                class="timer__button"
@@ -18,17 +21,26 @@ const timerStore = useTimerStore();
                variant="text" />
     </div>
 </template>
-<style scoped lang="scss">
+<style lang="scss">
 .timer {
     padding-left: 12px;
+}
+
+.timer__label--title {
+    max-width: calc(100% - 115px);
+
+    .v-btn__content {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        text-align: left;
+        display: inline-block;
+    }
 }
 
 .timer__label {
     position: relative;
     top: 1px;
-
-    &.timer__label--title {
-        font-weight: 500;
-    }
+    opacity: var(--v-medium-emphasis-opacity);
 }
 </style>

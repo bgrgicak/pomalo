@@ -1,11 +1,14 @@
 import type Activity from "@/types/activity";
 import type { ActivityEvent, ActivityType } from "@/types/activity";
 import Router from '@/router/router';
-import { getLocalDate, getUtcTimestamp, maxDate, yearInMilliseconds } from "../helper/date";
+import { getLocalDate, getUtcTimestamp, maxDate } from "../helper/date";
 import { newId } from "./pouchdb";
 import type { ActivityDocument } from "@/types/activity-document";
-import { settings } from "@/helper/settings";
 import { calculateActivityPriority } from "./priority";
+
+export const getActivityLink = (activity: Activity): string => {
+    return `/${activity.type}/${activity._id}/`;
+};
 
 export const emptyActivity = (type: ActivityType): Activity => {
     return {

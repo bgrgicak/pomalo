@@ -43,6 +43,8 @@ export const useTimerStore = defineStore(
             return state.value.activity._id;
         });
 
+        const currentActivity = computed((): Activity | undefined => state.value.activity);
+
 
         const getCurrentActivity = (): Promise<void | Activity[]> => {
             const now = getUtcTimestamp();
@@ -67,7 +69,7 @@ export const useTimerStore = defineStore(
 
         const calculateTime = (forceActivityCheck: boolean = false) => {
             // TODO reduce calls to getCurrentActivity
-            if (forceActivityCheck || 0 === getLocalDate().getSeconds() % 10) {
+            if (forceActivityCheck || 0 === getLocalDate().getSeconds() % 60) {
                 getCurrentActivity().then(() => {
                     state.value.loading = false;
                 });
@@ -142,6 +144,7 @@ export const useTimerStore = defineStore(
             time,
             isLoading,
             activityId,
+            currentActivity,
             title,
             start,
             stop,
