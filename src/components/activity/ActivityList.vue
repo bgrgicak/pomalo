@@ -23,6 +23,9 @@ const layoutStore = useLayoutStore();
 const activityListStore = useActivityListStore();
 
 const activities = computed(() => {
+  if (!activityListStore.list) {
+    return [];
+  }
   return activityListStore.list.sort(
     (a, b) => {
       return b.priority - a.priority;
@@ -33,17 +36,8 @@ const activities = computed(() => {
 activityListStore.find(
   {
     selector: {
-      priority: {
-        $exists: true
-      },
       type,
     },
-    sort: [
-      {
-        priority: 'desc',
-        type: 'asc',
-      }
-    ],
   }
 );
 
