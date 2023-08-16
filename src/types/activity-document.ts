@@ -23,12 +23,14 @@ export interface ActivityDocument {
 
     completedDate?: number;
     dueDate?: number;
-    estimatedTime?: number;
+    estimatedHours?: number;
 
     eventFirstStart?: number;
     eventLastEnd?: number;
 
-    priority: number;
     aboveActivities: string[];
     belowActivities: string[];
+
+    calculatedEstimatedTime?: number;
+    calculatedTimeSpent?: number;
 }

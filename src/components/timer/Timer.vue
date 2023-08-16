@@ -9,7 +9,7 @@ const timerStore = useTimerStore();
         <v-btn class="timer__label--title"
                variant="plain"
                :to="timerStore.currentActivity ? getActivityLink(timerStore.currentActivity) : undefined">
-            Long name for a task
+            {{ timerStore.title }}
         </v-btn>
         <span class="timer__label">
             {{ timerStore.time }}

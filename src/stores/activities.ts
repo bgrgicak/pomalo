@@ -80,6 +80,25 @@ export const useActivityStore = defineStore(
       });
     };
 
+    const getPriorityView = (store: boolean = true): Promise<Activity[] | void> => {
+      return database.query(
+        'priority/type',
+        {
+          endkey: ['task'],
+          startkey: ['task', {}],
+          include_docs: true,
+          descending: true
+        }
+      ).then((result) => {
+        return result.rows.map(
+          (row: any) =>
+            store ? addActivityDocument(row.doc) : prepareActivityFromDocument(row.doc)
+        );
+      }).catch((error) => {
+        log(error, LogType.Error);
+      });
+    };
+
     // Internal function to put an activity into the database and calculate computed fields
     const put = (activity: Activity) => {
       return database.put(
@@ -146,6 +165,7 @@ export const useActivityStore = defineStore(
     return {
       activities,
       find,
+      getPriorityView,
       add,
       get,
       update,

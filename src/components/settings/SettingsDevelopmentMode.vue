@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { recalculateAllPriorities } from '@/data/priority';
 import SettingEdit from './SettingEdit.vue';
 import { SettingType, type Setting } from '@/types/setting';
 import __ from '@/helper/translations';
 import { removeAllIndexes } from '@/data/pouchdb';
 import database from '@/data/pouchdb';
+import { reParseAllDocuments } from '@/data/activities';
 
 const removeAllIndexesFromDatabase = () => removeAllIndexes(database);
 
 const actions: Setting[] = [
     {
-        id: 'recalculatePriorities',
-        label: __('Recalculate task priorities'),
+        id: 'reParseAllDocuments',
+        label: __('Recalculate all documents'),
         name: __('Recalculate'),
-        action: recalculateAllPriorities,
+        action: reParseAllDocuments,
         type: SettingType.Button,
     },
     {

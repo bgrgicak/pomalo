@@ -22,8 +22,8 @@ export const useActivityListStore = defineStore(
         });
     }, { deep: true });
 
-    const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
-      return activityStore.find(request).then((response) => {
+    const find = (): Promise<Activity[] | void> => {
+      return activityStore.getPriorityView().then((response: any) => {
         activityList.value = response as Activity[];
         return response;
       });

@@ -12,7 +12,7 @@ const onChange = (value: string | undefined) => {
     const newValue = value ? parseInt(value) : undefined;
     activityStore.updateField(
         props.activity._id,
-        'estimatedTime',
+        'estimatedHours',
         newValue,
     ).then(() => {
         emit('change', newValue);
@@ -21,10 +21,10 @@ const onChange = (value: string | undefined) => {
 </script>
 <template>
     <v-text-field :label="__('Estimated hours')"
-                  :model-value="props.activity.estimatedTime"
+                  :model-value="props.activity.estimatedHours"
                   @update:modelValue="onChange"
                   type="number" />
-    <v-alert v-if="props.activity.estimatedTime > settings.recommendedMaxHoursPerTask"
+    <v-alert v-if="props.activity.estimatedHours > settings.recommendedMaxHoursPerTask"
              color="primary"
              class="mb-8"
              :text="__('It\'s recommended to split large tasks into smaller ones.')" />

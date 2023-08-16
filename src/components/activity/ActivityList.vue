@@ -8,7 +8,6 @@ import __ from '@/helper/translations';
 import { useActivityListStore } from '@/stores/activity-list';
 import { toLocaleDateString } from '@/helper/date';
 import TimerToggle from '../timer/TimerToggle.vue';
-import { computed } from 'vue';
 
 const props = defineProps(['type', 'items']);
 const type = props.type as ActivityType;
@@ -22,30 +21,7 @@ const newActivity: Ref<Activity> = ref(emptyActivity(type));
 const layoutStore = useLayoutStore();
 const activityListStore = useActivityListStore();
 
-const activities = computed(() => {
-  return activityListStore.list.sort(
-    (a, b) => {
-      return b.priority - a.priority;
-    }
-  );
-});
-
-activityListStore.find(
-  {
-    selector: {
-      priority: {
-        $exists: true
-      },
-      type,
-    },
-    sort: [
-      {
-        priority: 'desc',
-        type: 'asc',
-      }
-    ],
-  }
-);
+activityListStore.find();
 
 const addActivity = (title?: string) => {
   if (!title) {
@@ -99,7 +75,7 @@ const openActivity = (activity: Activity) => {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in activities"
+      <tr v-for="item in activityListStore.list"
           :key="item._id">
         <td @click="() => showActivitySidebar(item)"
             @dblclick="() => openActivity(item)"
@@ -110,7 +86,7 @@ const openActivity = (activity: Activity) => {
           {{ item.dueDate ? toLocaleDateString(item.dueDate) : '' }}
         </td>
         <td class="activity-list__item d-none d-sm-table-cell">
-          {{ item.estimatedTime }}
+          {{ item.estimatedHours }}
         </td>
         <td class="activity-list__item activity-list__item--actions">
           <TimerToggle :activity="item" />

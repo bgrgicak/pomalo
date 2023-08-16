@@ -3,7 +3,7 @@ import __ from '@/helper/translations';
 import ActivityClose from '../activity/ActivityClose.vue';
 import ActivityCompleted from './TaskCompleted.vue';
 import ActivityDueDate from '../activity/ActivityDueDate.vue';
-import ActivityEstimatedTime from './TaskEstimatedTime.vue';
+import TaskEstimatedHours from './TaskEstimatedHours.vue';
 import ActivityTimer from '../activity/ActivityTimer.vue';
 import ActivitySchedule from '../activity/ActivitySchedule.vue';
 import ActivityParent from '../activity/ActivityParent.vue';
@@ -38,8 +38,8 @@ const onFieldChange = (key: string, value: any) => {
     <v-divider class="mb-8" />
     <ActivityDueDate :activity="props.activity"
                      @change="(value: any) => onFieldChange('dueDate', value)" />
-    <ActivityEstimatedTime :activity="props.activity"
-                           @change="(value: any) => onFieldChange('estimatedTime', value)" />
+    <TaskEstimatedHours :activity="props.activity"
+                        @change="(value: any) => onFieldChange('estimatedHours', value)" />
     <v-divider class="mb-2" />
     <ActivityParent :activity="props.activity"
                     @change="(value: any) => onFieldChange('parent', value)" />

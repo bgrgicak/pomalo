@@ -4,7 +4,8 @@ import Router from '@/router/router';
 import { getLocalDate, getUtcTimestamp, maxDate } from "../helper/date";
 import { newId } from "./pouchdb";
 import type { ActivityDocument } from "@/types/activity-document";
-import { calculateActivityPriority } from "./priority";
+import { getEstimatedHours, getWorkedTime } from "./priority";
+import { useActivityStore } from "@/stores/activities";
 
 export const getActivityLink = (activity: Activity): string => {
     return `/${activity.type}/${activity._id}/`;
@@ -19,9 +20,10 @@ export const emptyActivity = (type: ActivityType): Activity => {
         created: new Date(),
         members: [],
         events: [],
-        priority: 0,
         aboveActivities: [],
         belowActivities: [],
+        calculatedEstimatedTime: 0,
+        calculatedTimeSpent: 0,
     };
 };
 
@@ -95,9 +97,9 @@ export const calculateActivity = (activity: Activity): Activity => {
     computedActivity.eventFirstStart = eventFirstStart;
     computedActivity.eventLastEnd = eventLastEnd;
 
-    computedActivity.priority = calculateActivityPriority(activity);
-
     computedActivity.timerRunning = isTimerRunning(activity);
+    computedActivity.calculatedEstimatedTime = getEstimatedHours(activity);
+    computedActivity.calculatedTimeSpent = getWorkedTime(activity);
     return computedActivity;
 };
 
@@ -109,14 +111,14 @@ export const parseDocumentToActivity = (doc: ActivityDocument): Activity => {
         dueDate: doc.dueDate ? getLocalDate(doc.dueDate) : undefined,
         eventFirstStart: doc.eventFirstStart ? getLocalDate(doc.eventFirstStart) : undefined,
         eventLastEnd: doc.eventLastEnd ? getLocalDate(doc.eventLastEnd) : undefined,
-        events: doc.events.map((event) => {
+        events: doc.events ? doc.events.map((event) => {
             return {
                 ...event,
                 start: getLocalDate(event.start),
                 end: event.end ? getLocalDate(event.end) : undefined,
                 repeatEnd: event.repeatEnd ? getLocalDate(event.repeatEnd) : undefined,
             };
-        }),
+        }) : [],
     };
 };
 
@@ -128,13 +130,31 @@ export const parseActivityToDocument = (activity: Activity): ActivityDocument =>
         dueDate: activity.dueDate ? getUtcTimestamp(activity.dueDate) : undefined,
         eventFirstStart: activity.eventFirstStart ? getUtcTimestamp(activity.eventFirstStart) : undefined,
         eventLastEnd: activity.eventLastEnd ? getUtcTimestamp(activity.eventLastEnd) : undefined,
-        events: activity.events.map((event) => {
+        events: activity.events ? activity.events.map((event) => {
             return {
                 ...event,
                 start: getUtcTimestamp(event.start),
                 end: event.end ? getUtcTimestamp(event.end) : undefined,
                 repeatEnd: event.repeatEnd ? getUtcTimestamp(event.repeatEnd) : undefined,
             };
-        }),
+        }) : [],
     };
+};
+
+export const reParseAllDocuments = () => {
+    const activityStore = useActivityStore();
+    activityStore.find({
+        selector: {
+            'type': {
+                '$exists': true
+            }
+        },
+    }).then((documents) => {
+        if (!documents) {
+            return;
+        }
+        documents.forEach((document) => {
+            activityStore.update(document);
+        });
+    });
 };

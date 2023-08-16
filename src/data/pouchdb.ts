@@ -6,13 +6,19 @@ import PouchDBFind from 'pouchdb-find';
 import { getUtcTimestamp } from '@/helper/date';
 import { useSettingsStore } from '@/stores/settings';
 import { error } from '@/helper/logs';
+// @ts-ignore-next-line
+import { createPriorityView } from './views/priority';
 
 export declare function emit (key: any): void;
 export declare function emit (key: any, value: any): void;
 
 export const removeAllIndexes = (database: PouchDB.Database) => {
+  database.viewCleanup();
   database.getIndexes().then(function (indexesResult) {
     indexesResult.indexes.forEach(function (index: any) {
+      if (!index.ddoc) {
+        return;
+      }
       return database.deleteIndex(index);
     });
   }).then(function (result) {
@@ -66,30 +72,9 @@ const createIndexes = (database: PouchDB.Database) => {
   });
 };
 
-// const createViews = (database: PouchDB.Database) => {
-//   const priority_view = {
-//     _id: '_design/priority',
-//     views: {
-//       by_priority: {
-//         map: (function (document: ActivityDocument) {
-//           // This doesn't work because CouchDB doesn't have context of calculateActivityPriority...
-//           // To fix all conde needs to be inside the map function
-//           const priority = calculateActivityPriority(
-//             parseDocumentToActivity(document)
-//           );
-//           emit(
-//             [
-//               priority,
-//               document.type,
-//             ],
-//           );
-//         }).toString()
-//       }
-//     },
-//     stale: 'update_after'
-//   };
-//   database.put(priority_view);
-// };
+const createViews = (database: PouchDB.Database) => {
+  createPriorityView(database);
+};
 
 const database = new PouchDB(constants.databaseName);
 PouchDB.plugin(PouchDBFind);
@@ -97,7 +82,7 @@ PouchDB.plugin(PouchDBFind);
 database.info().then(() => {
   maybeSyncRemote(database);
   createIndexes(database);
-  // createViews(database);
+  createViews(database);
 });
 
 export default database;

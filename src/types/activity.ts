@@ -116,13 +116,15 @@ export default interface Activity {
 
     completedDate?: Date;
     dueDate?: Date;
-    estimatedTime?: number;
+    estimatedHours?: number;
 
     eventFirstStart?: Date;
     eventLastEnd?: Date;
     timerRunning?: boolean;
 
-    priority: number;
     aboveActivities: string[];
     belowActivities: string[];
+
+    calculatedEstimatedTime?: number;
+    calculatedTimeSpent?: number;
 }

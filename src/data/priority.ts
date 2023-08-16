@@ -19,35 +19,35 @@ const getTimeLeftUntilDueDate = (activity: Activity): number => {
     return dueDate - currentTimestamp;
 };
 
-const getPercentageOfUsedTime = (activity: Activity, estimatedTime: number, workedTime: number): number => {
+const getPercentageOfUsedTime = (activity: Activity, estimatedHours: number, workedTime: number): number => {
     const timeLeftUntilDueDate: number = getTimeLeftUntilDueDate(activity);
     return 100 - (
         (
-            timeLeftUntilDueDate - estimatedTime + workedTime
+            timeLeftUntilDueDate - estimatedHours + workedTime
         ) / timeLeftUntilDueDate
     ) * 100;
 };
 
 
-const multiplyEstimate = (estimatedTime: number): number => {
-    return estimatedTime * settings.estimateMultiplier;
+const multiplyEstimate = (estimatedHours: number): number => {
+    return estimatedHours * settings.estimateMultiplier;
 };
 
-const getEstimateBucket = (estimatedTime: number): number => {
-    if (estimatedTime <= 1) {
+const getEstimateBucket = (estimatedHours: number): number => {
+    if (estimatedHours <= 1) {
         return 1;
-    } else if (estimatedTime <= 3) {
+    } else if (estimatedHours <= 3) {
         return 3;
-    } else if (estimatedTime <= 5) {
+    } else if (estimatedHours <= 5) {
         return 5;
-    } else if (estimatedTime <= 8) {
+    } else if (estimatedHours <= 8) {
         return 8;
-    } else if (estimatedTime <= 16) {
+    } else if (estimatedHours <= 16) {
         return 16;
-    } else if (estimatedTime <= 32) {
+    } else if (estimatedHours <= 32) {
         return 32;
     } else {
-        return estimatedTime;
+        return estimatedHours;
     }
 };
 
@@ -57,95 +57,38 @@ const getEstimateBucket = (estimatedTime: number): number => {
  * @param activity
  * @returns estimated time in milliseconds
  */
-const getEstimatedTime = (activity: Activity): number => {
-    if (!activity.estimatedTime) {
+export const getEstimatedHours = (activity: Activity): number => {
+    if (!activity.estimatedHours) {
         return dayInMilliseconds;
     }
     return multiplyEstimate(
         (
             getEstimateBucket(
-                activity.estimatedTime
+                activity.estimatedHours
             ) / settings.workingHoursPerDay
         ) * dayInMilliseconds
     );
 };
 
-const getWorkedTime = (activity: Activity): number => {
+export const getWorkedTime = (activity: Activity): number => {
     if (!activity.events.length) {
         return 0;
     }
     return activity.events.reduce((total, event) => {
-        const end = event.end ?? getLocalDate();
-        if (event.start > end) {
+        if (!event.end) {
+            return total;
+        }
+        if (event.start > event.end) {
             warning('Event start is after end for activity ' + activity.title, event);
         }
         return total + (
-            getUtcTimestamp(end) - getUtcTimestamp(event.start)
+            getUtcTimestamp(event.end) - getUtcTimestamp(event.start)
         );
     }, 0);
 };
 
-const getCompletePercentage = (estimatedTime: number, workedTime: number): number => {
+const getCompletePercentage = (estimatedHours: number, workedTime: number): number => {
     return (
-        workedTime / estimatedTime
+        workedTime / estimatedHours
     ) * 100;
-};
-
-
-export const calculateActivityPriority = (activity: Activity): number => {
-    const estimatedTime: number = getEstimatedTime(activity);
-    const workedTime = getWorkedTime(activity);
-
-    // Is current task
-    const isCurrentTask: number = !!activity.timerRunning ? 100 : 0;
-    // Is completed
-    const notCompleted: number = undefined === activity.completedDate ? 100 : 0;
-    // Is in progress
-    const isInProgress: number = 0 < activity.events.length ? 100 : 0;
-    // Percentage of available time task will require to complete
-    const percentageOfUsedTime: number = getPercentageOfUsedTime(activity, estimatedTime, workedTime);
-    // Estimated complete percentage
-    const completePercentage: number = getCompletePercentage(estimatedTime, workedTime);
-
-    debug(
-        activity.title,
-        {
-            isCurrentTask,
-            notCompleted,
-            isInProgress,
-            percentageOfUsedTime,
-            completePercentage,
-            workedTime,
-            estimatedTime,
-        }
-    );
-    return [
-        isCurrentTask * 10,
-        notCompleted * 10,
-        isInProgress * 5,
-        percentageOfUsedTime * 5,
-        completePercentage * 5,
-    ].reduce((total, value) => total + value, 0);
-};
-
-export const recalculateAllPriorities = () => {
-    const activityStore = useActivityStore();
-    activityStore.find(
-        {
-            selector: {
-                type: ActivityType.Task
-            },
-        }
-    ).then((activities) => {
-        if (!activities) {
-            return;
-        }
-        activities.forEach((activity) => {
-            activityStore.updateField(
-                activity._id,
-                'priority',
-                calculateActivityPriority(activity)
-            );
-        });
-    });
 };
