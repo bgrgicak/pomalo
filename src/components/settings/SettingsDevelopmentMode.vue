@@ -3,6 +3,10 @@ import { recalculateAllPriorities } from '@/data/priority';
 import SettingEdit from './SettingEdit.vue';
 import { SettingType, type Setting } from '@/types/setting';
 import __ from '@/helper/translations';
+import { removeAllIndexes } from '@/data/pouchdb';
+import database from '@/data/pouchdb';
+
+const removeAllIndexesFromDatabase = () => removeAllIndexes(database);
 
 const actions: Setting[] = [
     {
@@ -10,6 +14,13 @@ const actions: Setting[] = [
         label: __('Recalculate task priorities'),
         name: __('Recalculate'),
         action: recalculateAllPriorities,
+        type: SettingType.Button,
+    },
+    {
+        id: 'removeAllIndexes',
+        label: __('Remove all indexes'),
+        name: __('Remove'),
+        action: removeAllIndexesFromDatabase,
         type: SettingType.Button,
     },
 ];
