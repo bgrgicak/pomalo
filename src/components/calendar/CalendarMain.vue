@@ -65,14 +65,9 @@ const eventUnfocus = () => {
     layoutStore.hideRightSidebar();
 };
 
-const eventFocus = (event: any) => {
-    if (event.eventId) {
-        calendarStore.focusEvent(event.eventId);
-    }
-};
-
-const eventDoubleClick = (event: any) => {
-    if (event.id) {
+const eventClick = (event: any) => {
+    // If already focused, it's a double click.
+    if (event.eventId === calendarStore.focusedEvent?.eventId) {
         layoutStore.showRightSidebar(
             event.id,
             {
@@ -81,6 +76,10 @@ const eventDoubleClick = (event: any) => {
                 end: event.end,
             }
         );
+    }
+    calendarStore.focusEvent(event.eventId);
+    if (event.id) {
+        deleteOlderNewEvents();
     }
 };
 
@@ -125,12 +124,6 @@ const fetchEvents = (options: any) => {
     }
 
     emit('fetchEvents', options.startDate, options.endDate);
-};
-
-const eventClick = (event: any) => {
-    if (event.id) {
-        deleteOlderNewEvents();
-    }
 };
 
 const eventDragCreate = (event: any) => {
@@ -216,8 +209,6 @@ const onReady = (options: any) => {
              :disable-views="disabledViews"
              :events="calendarStore.events"
              @event-click="eventClick"
-             @event-dblclick="eventDoubleClick"
-             @event-focus="eventFocus"
              @cell-click="cellClick"
              @cell-dblclick="cellDoubleClick"
              :click-to-navigate="false"
