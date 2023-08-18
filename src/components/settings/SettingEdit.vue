@@ -26,6 +26,9 @@ const onChange = (value: unknown) => {
                    class="mt-4">
                 {{ props.setting.name }}
             </v-btn>
+            <v-textarea v-else-if="SettingType.Textarea === props.setting.type"
+                        :model-value="props.setting.value"
+                        @update:model-value="onChange" />
             <v-text-field v-else
                           :model-value="props.setting.value"
                           :type="props.setting.type"

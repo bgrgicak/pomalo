@@ -127,13 +127,20 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
                 .forEach((event) => {
                     const isCurrentActivity = currentActivityId === activity._id;
                     const endDay = event.end ? event.end : getLocalDate();
+                    const isEditable = !isCurrentActivity && true !== activity.readonly;
+
+                    let className = 'v-card calendar-event__' + activity.type;
+                    if (true === activity.readonly) {
+                        className += ' calendar-event__readonly';
+                    }
                     const eventData = {
                         id: activity._id,
                         title: activity.title,
                         content: '',
-                        class: 'v-card calendar-event__' + activity.type,
+                        class: className,
                         deletable: false,
-                        resizable: !isCurrentActivity,
+                        resizable: isEditable,
+                        draggable: isEditable,
                         background: false,
                         eventId: event.id,
                         allDay: event.allDay,

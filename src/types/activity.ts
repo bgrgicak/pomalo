@@ -53,26 +53,6 @@ export const RepeatLabels: Object = {
         label: __('Yearly'),
     },
 };
-export enum FrequencyInterval {
-    Daily = 'daily',
-    Weekly = 'weekly',
-    Monthly = 'monthly',
-    Yearly = 'yearly',
-}
-export const FrequencyLabels: Object = {
-    [RepeatInterval.Daily]: {
-        label: __('Daily'),
-    },
-    [RepeatInterval.Weekly]: {
-        label: __('Weekly'),
-    },
-    [RepeatInterval.Monthly]: {
-        label: __('Monthly'),
-    },
-    [RepeatInterval.Yearly]: {
-        label: __('Yearly'),
-    },
-};
 
 export interface ActivityEvent {
     id: string;
@@ -111,6 +91,9 @@ export default interface Activity {
     type: ActivityType;
     parent?: string;
 
+    readonly?: boolean;
+    remoteId?: string;
+
     members: ActivityMembers[];
     events: ActivityEvent[];
 
@@ -118,12 +101,14 @@ export default interface Activity {
     dueDate?: Date;
     estimatedHours?: number;
 
+    aboveActivities: string[];
+    belowActivities: string[];
+
+    // Calculated values
+
     eventFirstStart?: Date;
     eventLastEnd?: Date;
     timerRunning?: boolean;
-
-    aboveActivities: string[];
-    belowActivities: string[];
 
     calculatedEstimatedTime?: number;
     calculatedTimeSpent?: number;

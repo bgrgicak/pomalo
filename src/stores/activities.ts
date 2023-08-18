@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import type Activity from "@/types/activity";
 import __ from "@/helper/translations";
-import log from "@/helper/logs";
+import log, { debug } from "@/helper/logs";
 import { LogType } from "@/types/log";
 import database from "@/data/pouchdb";
 import { ref, type Ref } from "vue";
@@ -130,6 +130,25 @@ export const useActivityStore = defineStore(
       });
     };
 
+    const addOrUpdate = (activity: Activity) => {
+      const updatedDocument = Object.assign({}, activity);
+      return get(updatedDocument._id as string).then((document) => {
+        if (!document) {
+          return add(activity);
+        }
+        if (JSON.stringify(document) === JSON.stringify(updatedDocument)) {
+          debug("Activity not changed", activity);
+          return Promise.resolve();
+        }
+        return put({
+          ...updatedDocument,
+          _rev: document ? document._rev : undefined,
+        });
+      }).catch((error) => {
+        log(error, LogType.Error);
+      });
+    };
+
     const updateFields = (activityId: string, fields: Object) => {
       return get(activityId).then((document: any) => {
         const newDocument = Object.assign({}, document);
@@ -169,6 +188,7 @@ export const useActivityStore = defineStore(
       add,
       get,
       update,
+      addOrUpdate,
       updateField,
       updateFields,
       remove,

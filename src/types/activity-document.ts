@@ -18,6 +18,9 @@ export interface ActivityDocument {
     description: string;
     type: ActivityType;
 
+    readonly?: boolean;
+    remoteId?: string;
+
     members: ActivityMembers[];
     events: ActivityDocumentEvent[];
 

@@ -1,3 +1,4 @@
+import { settings } from "@/helper/settings";
 import __ from "@/helper/translations";
 import { SettingType, type SettingsStructure } from "@/types/setting";
 
@@ -25,6 +26,22 @@ const settingsStructure: SettingsStructure = {
                     'name': __('Remote CouchDB password'),
                     'type': SettingType.Password,
                 },
+            ]
+        },
+        calendar: {
+            title: __('Calendar'),
+            settings: [
+                {
+                    'id': 'calendarSyncInterval',
+                    'name': __('Calendar sync interval'),
+                    'type': SettingType.Number,
+                    'defaultValue': settings.calendar.syncIntervalMinutes,
+                },
+                {
+                    'id': 'calendarIcalUrls',
+                    'name': __('Calendar iCal urls (one per line)'),
+                    'type': SettingType.Textarea,
+                }
             ]
         }
     }

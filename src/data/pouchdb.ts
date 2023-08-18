@@ -7,7 +7,7 @@ import { getUtcTimestamp } from '@/helper/date';
 import { useSettingsStore } from '@/stores/settings';
 import { error } from '@/helper/logs';
 // @ts-ignore-next-line
-import { createPriorityView } from './views/priority';
+import { priorityView } from './views/priority';
 
 export declare function emit (key: any): void;
 export declare function emit (key: any, value: any): void;
@@ -72,8 +72,23 @@ const createIndexes = (database: PouchDB.Database) => {
   });
 };
 
-const createViews = (database: PouchDB.Database) => {
-  createPriorityView(database);
+const createViews = async (database: PouchDB.Database) => {
+  const views = [priorityView];
+  for (const view of views) {
+    const viewId = '_design/' + view.name;
+    const viewDocument = await database.get(viewId)
+      .catch(err => error(err));
+    database.put({
+      _id: viewId,
+      _rev: viewDocument?._rev,
+      views: {
+        ...view.views
+      },
+      stale: 'update_after',
+      update_seq: true,
+      force: true
+    });
+  }
 };
 
 const database = new PouchDB(constants.databaseName);

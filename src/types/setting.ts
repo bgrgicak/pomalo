@@ -5,6 +5,7 @@ export enum SettingType {
     Password = "password",
     Button = "button",
     Url = "url",
+    Textarea = "textarea",
 };
 
 export interface Setting {
@@ -14,6 +15,7 @@ export interface Setting {
     value?: any;
     type: SettingType;
     action?: Function;
+    defaultValue?: any;
 };
 
 export interface SettingsState {

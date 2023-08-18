@@ -17,12 +17,12 @@ const onChange = (id: string, value: any) => {
 const prepareSetting = (setting: Setting) => {
     return addDefaultsToSetting({
         ...setting,
-        value: settingsStore.settings[setting.id as keyof typeof settingsStore.settings],
+        value: settingsStore.settings[setting.id as keyof typeof settingsStore.settings] ?? setting.defaultValue,
     });
 };
 </script>
 <template>
-    <v-container>
+    <v-container class="settings">
         <v-row v-for="(group, groupKey) in settingsStructure"
                :key="groupKey">
             <v-col cols="12">
@@ -53,3 +53,15 @@ const prepareSetting = (setting: Setting) => {
         </v-row>
     </v-container>
 </template>
+<style lang="scss">
+.settings.v-container {
+    overflow-y: auto;
+    max-height: 100%;
+    max-width: 100%;
+
+    .v-list {
+        max-width: 1000px;
+        width: 100%;
+    }
+}
+</style>

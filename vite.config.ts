@@ -15,8 +15,17 @@ export default defineConfig({
     vuetify({ styles: { configFile: 'src/styles/vuetify-settings.scss' } }),
     VitePWA({
       injectRegister: 'auto',
+      registerType: 'autoUpdate',
+      strategies: 'injectManifest',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}'],
+        clientsClaim: true,
+        skipWaiting: true,
+        cleanupOutdatedCaches: true,
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module',
       },
       manifest: {
         icons: [
@@ -33,8 +42,11 @@ export default defineConfig({
         ],
         "theme_color": "#ffffff",
         "background_color": "#ffffff",
-        "display": "standalone"
-      }
+        "display": "standalone",
+        "name": "Pomalo"
+      },
+      filename: 'sw.ts',
+      srcDir: 'src/service-worker',
     })
   ],
   resolve: {

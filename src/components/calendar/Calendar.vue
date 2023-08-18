@@ -267,6 +267,10 @@ const fetch = (start: Date, end: Date) => {
     &.calendar-event__project {
         @include event-colors(var(--v-theme-project), var(--v-theme-project-darken-4));
     }
+
+    &.calendar-event__readonly {
+        opacity: var(--v-high-emphasis-opacity);
+    }
 }
 
 .vuecal__cell--selected,

@@ -10,6 +10,8 @@ import "./styles/main.scss";
 
 import 'vue-cal/dist/vuecal.css';
 
+import '@/service-worker/register';
+
 const app = createApp(App);
 
 app.use(createPinia());
