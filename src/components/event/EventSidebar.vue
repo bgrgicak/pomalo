@@ -10,13 +10,17 @@ const onFieldChange = (key: string, value: any) => {
 };
 </script>
 <template>
-    <ActivitySchedule :activity="props.activity"
-                      :event="props.event"
-                      :small="props.small"
-                      @fieldChange="(value) => onFieldChange('events', value)" />
-    <v-divider />
-    <ActivityClose :activity="props.activity"
-                   class=" mt-4" />
+  <ActivitySchedule
+    :activity="props.activity"
+    :event="props.event"
+    :small="props.small"
+    @fieldChange="(value) => onFieldChange('events', value)"
+  />
+  <v-divider />
+  <ActivityClose
+    :activity="props.activity"
+    class=" mt-4"
+  />
 </template>
 <style lang="scss">
 .right-sidebar .date-picker--has-time {

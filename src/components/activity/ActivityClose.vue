@@ -31,11 +31,13 @@ const closeActivity = (activity: Activity) => {
 };
 </script>
 <template>
-    <v-btn color="error"
-           class="activity-close"
-           @click="closeActivity(props.activity)"
-           :readonly="props.activity.readonly"
-           variant="text">
-        {{ buttonLabel }}
-    </v-btn>
+  <v-btn
+    color="error"
+    class="activity-close"
+    :readonly="props.activity.readonly"
+    variant="text"
+    @click="closeActivity(props.activity)"
+  >
+    {{ buttonLabel }}
+  </v-btn>
 </template>

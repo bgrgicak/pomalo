@@ -22,36 +22,44 @@ const prepareSetting = (setting: Setting) => {
 };
 </script>
 <template>
-    <v-container class="settings">
-        <v-row v-for="(group, groupKey) in settingsStructure"
-               :key="groupKey">
-            <v-col cols="12">
-                <h2>{{ group.title }}</h2>
-            </v-col>
-            <v-col cols="12">
-                <v-row v-for="(section, sectionKey) in group">
-                    <v-list v-if="'title' !== sectionKey"
-                            class="d-flex flex-column">
-                        <SettingEdit v-for="setting in section.settings"
-                                     :key="setting.id"
-                                     :setting="prepareSetting(setting)"
-                                     @onChange="onChange" />
-                    </v-list>
-                </v-row>
-                <v-spacer />
-            </v-col>
-            <v-spacer />
+  <v-container class="settings">
+    <v-row
+      v-for="(group, groupKey) in settingsStructure"
+      :key="groupKey"
+    >
+      <v-col cols="12">
+        <h2>{{ group.title }}</h2>
+      </v-col>
+      <v-col cols="12">
+        <v-row v-for="(section, sectionKey) in group">
+          <v-list
+            v-if="'title' !== sectionKey"
+            class="d-flex flex-column"
+          >
+            <SettingEdit
+              v-for="setting in section.settings"
+              :key="setting.id"
+              :setting="prepareSetting(setting)"
+              @onChange="onChange"
+            />
+          </v-list>
         </v-row>
-        <SettingsDevelopmentMode v-if="constants.environment.development" />
-        <v-row class="mt-12">
-            <v-col cols="12">
-                <v-btn @click="settingsStore.save"
-                       color="primary">
-                    {{ __('Save') }}
-                </v-btn>
-            </v-col>
-        </v-row>
-    </v-container>
+        <v-spacer />
+      </v-col>
+      <v-spacer />
+    </v-row>
+    <SettingsDevelopmentMode v-if="constants.environment.development" />
+    <v-row class="mt-12">
+      <v-col cols="12">
+        <v-btn
+          color="primary"
+          @click="settingsStore.save"
+        >
+          {{ __('Save') }}
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <style lang="scss">
 .settings.v-container {

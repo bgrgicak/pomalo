@@ -122,56 +122,72 @@ const onClear = () => {
 };
 </script>
 <template>
-    <v-autocomplete v-if="searchVisible"
-                    v-click-outside="hide"
-                    :label="props.label"
-                    ref="searchRef"
-                    v-bind:placeholder="props.placeholder ?? __('Search')"
-                    :items="searchStore.activities"
-                    v-model:model-value="props.value"
-                    v-model:search="searchText"
-                    @update:search="onSearch"
-                    :variant="props.variant"
-                    density="compact"
-                    class="search"
-                    :append-inner-icon="props.hideIcon ? '' : 'mdi-magnify'"
-                    menu-icon=""
-                    :hide-no-data="noInput"
-                    :focused="searchVisible"
-                    :autofocus="props.autofocus"
-                    :clearable="props.clearable"
-                    @click:clear="onClear">
-        <template v-slot:item="{ props, item }">
-            <v-list-item>
-                <v-btn class="search__result-title"
-                       variant="plain"
-                       @click="() => openActivity(item.raw)">
-                    {{ item.raw.title }}
-                </v-btn>
-                <template #append
-                          v-if="!hideTimer">
-                    <TimerToggle :activity="item.raw"
-                                 @change="() => timerToggle(item.raw)" />
-                </template>
-            </v-list-item>
+  <v-autocomplete
+    v-if="searchVisible"
+    ref="searchRef"
+    v-model:model-value="props.value"
+    v-model:search="searchText"
+    v-click-outside="hide"
+    :label="props.label"
+    :placeholder="props.placeholder ?? __('Search')"
+    :items="searchStore.activities"
+    :variant="props.variant"
+    density="compact"
+    class="search"
+    :append-inner-icon="props.hideIcon ? '' : 'mdi-magnify'"
+    menu-icon=""
+    :hide-no-data="noInput"
+    :focused="searchVisible"
+    :autofocus="props.autofocus"
+    :clearable="props.clearable"
+    @update:search="onSearch"
+    @click:clear="onClear"
+  >
+    <template #item="{ props, item }">
+      <v-list-item>
+        <v-btn
+          class="search__result-title"
+          variant="plain"
+          @click="() => openActivity(item.raw)"
+        >
+          {{ item.raw.title }}
+        </v-btn>
+        <template
+          v-if="!hideTimer"
+          #append
+        >
+          <TimerToggle
+            :activity="item.raw"
+            @change="() => timerToggle(item.raw)"
+          />
         </template>
-        <template #append-item
-                  v-if="!noInput">
-            <v-list-item v-for="(newType, newTypeIndex) in newTypes"
-                         :key="newTypeIndex">
-                <v-btn variant="plain"
-                       color="primary"
-                       class="search-action--add text-left"
-                       @click="() => add(newType)">
-                    {{ __('Create') + ' ' + newType }}
-                </v-btn>
-            </v-list-item>
-        </template>
-        <template #no-data></template>
-    </v-autocomplete>
-    <v-btn v-else
-           icon="mdi-magnify"
-           @click="showSearch" />
+      </v-list-item>
+    </template>
+    <template
+      v-if="!noInput"
+      #append-item
+    >
+      <v-list-item
+        v-for="(newType, newTypeIndex) in newTypes"
+        :key="newTypeIndex"
+      >
+        <v-btn
+          variant="plain"
+          color="primary"
+          class="search-action--add text-left"
+          @click="() => add(newType)"
+        >
+          {{ __('Create') + ' ' + newType }}
+        </v-btn>
+      </v-list-item>
+    </template>
+    <template #no-data />
+  </v-autocomplete>
+  <v-btn
+    v-else
+    icon="mdi-magnify"
+    @click="showSearch"
+  />
 </template>
 <style lang="scss">
 @import '@/styles/variables.scss';

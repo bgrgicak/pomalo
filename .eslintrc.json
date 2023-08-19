@@ -1,7 +1,6 @@
 {
     "parserOptions": {
-        "parser": "@babel/eslint-parser",
-        "requireConfigFile": false
+        "parser": "@typescript-eslint/parser"
     },
     "extends": [
         "plugin:vue/vue3-recommended"

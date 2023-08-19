@@ -50,25 +50,29 @@ const onChangeTime = (newValue: string) => {
 };
 </script>
 <template>
-    <div :class="{ 'date-picker': true, 'date-picker--has-time': showTime }">
-        <v-text-field :label="label"
-                      :value="dateValue"
-                      class="date-picker__date"
-                      @update:modelValue="onChangeDate"
-                      type="date"
-                      :readonly="props.readonly"
-                      :pattern="systemDateFormat"
-                      :hint="props.hint"
-                      :variant="props.variant" />
-        <v-text-field v-if="showTime"
-                      :value="timeValue"
-                      class="date-picker__time"
-                      @update:modelValue="onChangeTime"
-                      type="time"
-                      :readonly="props.readonly"
-                      pattern="[0-9]{2}:[0-9]{2}"
-                      :variant="props.variant" />
-    </div>
+  <div :class="{ 'date-picker': true, 'date-picker--has-time': showTime }">
+    <v-text-field
+      :label="label"
+      :value="dateValue"
+      class="date-picker__date"
+      type="date"
+      :readonly="props.readonly"
+      :pattern="systemDateFormat"
+      :hint="props.hint"
+      :variant="props.variant"
+      @update:modelValue="onChangeDate"
+    />
+    <v-text-field
+      v-if="showTime"
+      :value="timeValue"
+      class="date-picker__time"
+      type="time"
+      :readonly="props.readonly"
+      pattern="[0-9]{2}:[0-9]{2}"
+      :variant="props.variant"
+      @update:modelValue="onChangeTime"
+    />
+  </div>
 </template>
 <style lang="scss">
 .date-picker {

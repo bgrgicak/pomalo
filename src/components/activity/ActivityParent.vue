@@ -40,18 +40,20 @@ const onClick = (activity: Activity) => {
 };
 </script>
 <template>
-    <Search :types="parentTypes"
-            :value="parentTitle"
-            :newTypes="parentTypes"
-            :label="__('Project')"
-            :placeholder="__('Select a project')"
-            :visible="true"
-            :hideTimer="true"
-            :hideIcon="true"
-            :preventDefault="true"
-            :clearable="true"
-            class="activity-parent"
-            @click="onClick" />
+  <Search
+    :types="parentTypes"
+    :value="parentTitle"
+    :new-types="parentTypes"
+    :label="__('Project')"
+    :placeholder="__('Select a project')"
+    :visible="true"
+    :hide-timer="true"
+    :hide-icon="true"
+    :prevent-default="true"
+    :clearable="true"
+    class="activity-parent"
+    @click="onClick"
+  />
 </template>
 <style lang="scss">
 .activity-parent {

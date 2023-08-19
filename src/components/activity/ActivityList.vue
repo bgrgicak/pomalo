@@ -52,11 +52,15 @@ const openActivity = (activity: Activity) => {
         {{ type + 's' }}
       </h2>
     </v-col>
-    <v-col cols="2"
-           align="right">
-      <v-btn icon
-             variant="text"
-             @click="() => addActivity()">
+    <v-col
+      cols="2"
+      align="right"
+    >
+      <v-btn
+        icon
+        variant="text"
+        @click="() => addActivity()"
+      >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </v-col>
@@ -65,21 +69,29 @@ const openActivity = (activity: Activity) => {
     <thead>
       <tr>
         <th>{{ __('Title') }}</th>
-        <th v-for="(headerItem, headerIndex) in props.items"
-            :key="headerIndex">
+        <th
+          v-for="(headerItem, headerIndex) in props.items"
+          :key="headerIndex"
+        >
           {{ headerItem.name }}
         </th>
         <th>{{ __('Due Date') }}</th>
-        <th class="d-none d-sm-table-cell">{{ __('Estimated hours') }}</th>
-        <th></th>
+        <th class="d-none d-sm-table-cell">
+          {{ __('Estimated hours') }}
+        </th>
+        <th />
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in activityListStore.list"
-          :key="item._id">
-        <td @click="() => showActivitySidebar(item)"
-            @dblclick="() => openActivity(item)"
-            :class="['activity-list__item', 'activity-list__link', item.completedDate ? 'activity-list__link--completed' : '']">
+      <tr
+        v-for="item in activityListStore.list"
+        :key="item._id"
+      >
+        <td
+          :class="['activity-list__item', 'activity-list__link', item.completedDate ? 'activity-list__link--completed' : '']"
+          @click="() => showActivitySidebar(item)"
+          @dblclick="() => openActivity(item)"
+        >
           {{ item.title }}
         </td>
         <td class="activity-list__item">
@@ -94,10 +106,12 @@ const openActivity = (activity: Activity) => {
       </tr>
       <tr>
         <td>
-          <v-text-field v-model="newActivity.title"
-                        :placeholder="__('Add a ') + newActivity.type"
-                        variant="plain"
-                        @keyup.enter="addActivity" />
+          <v-text-field
+            v-model="newActivity.title"
+            :placeholder="__('Add a ') + newActivity.type"
+            variant="plain"
+            @keyup.enter="addActivity"
+          />
         </td>
       </tr>
     </tbody>

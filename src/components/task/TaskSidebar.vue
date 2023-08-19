@@ -21,29 +21,43 @@ const onFieldChange = (key: string, value: any) => {
 };
 </script>
 <template>
-    <ActivityTimer :activity="props.activity" />
-    <div v-if="showSchedulerInSidebar"
-         class="mt-8">
-        <ActivitySchedule :activity="props.activity"
-                          :event="props.event"
-                          :small="props.small"
-                          :repeat="false"
-                          :allDay="false"
-                          @fieldChange="(value: any) => onFieldChange('events', value)" />
-        <v-divider class="mb-2 mt-10" />
-    </div>
-    <ActivityCompleted :activity="props.activity"
-                       class="pb-0"
-                       @change="(value: any) => onFieldChange('completedDate', value)" />
-    <v-divider class="mb-8" />
-    <ActivityDueDate :activity="props.activity"
-                     @change="(value: any) => onFieldChange('dueDate', value)" />
-    <TaskEstimatedHours :activity="props.activity"
-                        @change="(value: any) => onFieldChange('estimatedHours', value)" />
-    <v-divider class="mb-2" />
-    <ActivityParent :activity="props.activity"
-                    @change="(value: any) => onFieldChange('parent', value)" />
-    <v-divider class="mb-2" />
-    <ActivityClose :activity="props.activity"
-                   class=" mt-4" />
+  <ActivityTimer :activity="props.activity" />
+  <div
+    v-if="showSchedulerInSidebar"
+    class="mt-8"
+  >
+    <ActivitySchedule
+      :activity="props.activity"
+      :event="props.event"
+      :small="props.small"
+      :repeat="false"
+      :all-day="false"
+      @fieldChange="(value: any) => onFieldChange('events', value)"
+    />
+    <v-divider class="mb-2 mt-10" />
+  </div>
+  <ActivityCompleted
+    :activity="props.activity"
+    class="pb-0"
+    @change="(value: any) => onFieldChange('completedDate', value)"
+  />
+  <v-divider class="mb-8" />
+  <ActivityDueDate
+    :activity="props.activity"
+    @change="(value: any) => onFieldChange('dueDate', value)"
+  />
+  <TaskEstimatedHours
+    :activity="props.activity"
+    @change="(value: any) => onFieldChange('estimatedHours', value)"
+  />
+  <v-divider class="mb-2" />
+  <ActivityParent
+    :activity="props.activity"
+    @change="(value: any) => onFieldChange('parent', value)"
+  />
+  <v-divider class="mb-2" />
+  <ActivityClose
+    :activity="props.activity"
+    class=" mt-4"
+  />
 </template>

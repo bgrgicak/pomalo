@@ -56,34 +56,44 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
 };
 </script>
 <template>
-    <div @keydown="updateOnCommandEnter">
-        <v-row>
-            <v-col cols="12">
-                <v-text-field @keyup="onKeyup"
-                              v-model="state.activity.title"
-                              :readonly="state.activity.readonly"
-                              class="activity-title" />
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12"
-                   class="pb-0">
-                <v-textarea @keyup="onKeyup"
-                            v-model="state.activity.description"
-                            :readonly="state.activity.readonly"
-                            rows="5" />
-            </v-col>
-        </v-row>
-        <v-row v-show="state.isEditing"
-               v-if="!state.activity.readonly"
-               class="mt-0 mb-4">
-            <v-col cols="12">
-                <v-btn color="success"
-                       block
-                       @click="save">
-                    {{ __('Save') }}
-                </v-btn>
-            </v-col>
-        </v-row>
-    </div>
+  <div @keydown="updateOnCommandEnter">
+    <v-row>
+      <v-col cols="12">
+        <v-text-field
+          v-model="state.activity.title"
+          :readonly="state.activity.readonly"
+          class="activity-title"
+          @keyup="onKeyup"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        class="pb-0"
+      >
+        <v-textarea
+          v-model="state.activity.description"
+          :readonly="state.activity.readonly"
+          rows="5"
+          @keyup="onKeyup"
+        />
+      </v-col>
+    </v-row>
+    <v-row
+      v-show="state.isEditing"
+      v-if="!state.activity.readonly"
+      class="mt-0 mb-4"
+    >
+      <v-col cols="12">
+        <v-btn
+          color="success"
+          block
+          @click="save"
+        >
+          {{ __('Save') }}
+        </v-btn>
+      </v-col>
+    </v-row>
+  </div>
 </template>

@@ -222,21 +222,27 @@ const fetch = (start: Date, end: Date) => {
 };
 </script>
 <template>
-    <v-card class="calendar pa-4"
-            @keydown="onKeyboardEvent">
-        <CalendarHeader v-model:active-view="activeView"
-                        :vuecal="vuecal"
-                        :views="allowedViews"
-                        @addEvent="addEvent" />
-        <CalendarMain v-model:active-view="activeView"
-                      ref="vuecalRef"
-                      :views="allowedViews"
-                      :vuecal="vuecal"
-                      @addEvent="addEvent"
-                      @updateEvent="updateEvent"
-                      @fetchEvents="fetch"
-                      :selectedDate="selectedDate" />
-    </v-card>
+  <v-card
+    class="calendar pa-4"
+    @keydown="onKeyboardEvent"
+  >
+    <CalendarHeader
+      v-model:active-view="activeView"
+      :vuecal="vuecal"
+      :views="allowedViews"
+      @addEvent="addEvent"
+    />
+    <CalendarMain
+      ref="vuecalRef"
+      v-model:active-view="activeView"
+      :views="allowedViews"
+      :vuecal="vuecal"
+      :selected-date="selectedDate"
+      @addEvent="addEvent"
+      @updateEvent="updateEvent"
+      @fetchEvents="fetch"
+    />
+  </v-card>
 </template>
 <style lang="scss">
 @mixin event-colors($background, $text) {

@@ -201,37 +201,38 @@ const onReady = (options: any) => {
 };
 </script>
 <template>
-    <vue-cal style="height: calc(100vh - 48px - 8px - 72px - 80px);"
-             ref="vuecal"
-             :selected-date="selectedDate"
-             class="v-card calendar"
-             :active-view="activeView"
-             :disable-views="disabledViews"
-             :events="calendarStore.events"
-             @event-click="eventClick"
-             @cell-click="cellClick"
-             @cell-dblclick="cellDoubleClick"
-             :click-to-navigate="false"
-             :dblclick-to-navigate="['year', 'month'].includes(activeView)"
-             :snap-to-time="15"
-             hide-view-selector
-             hide-title-bar
-             watch-realtime="true"
-             :show-all-day-events="true"
-             :editable-events="editingOptions"
-             @ready="onReady"
-             @view-change="fetchEvents"
-             @event-duration-change="eventDurationChange"
-             @event-drop="eventDurationChange"
-             @event-drag-create="eventDragCreate">
-
-        <template #event="{ event, view }">
-            <v-card-title>
-                {{ event.title }}
-            </v-card-title>
-            <v-card-subtitle>
-                {{ event.start.formatTime('h:m') + ' - ' + event.end.formatTime('h:m') }}
-            </v-card-subtitle>
-        </template>
-    </vue-cal>
+  <vue-cal
+    ref="vuecal"
+    style="height: calc(100vh - 48px - 8px - 72px - 80px);"
+    :selected-date="selectedDate"
+    class="v-card calendar"
+    :active-view="activeView"
+    :disable-views="disabledViews"
+    :events="calendarStore.events"
+    :click-to-navigate="false"
+    :dblclick-to-navigate="['year', 'month'].includes(activeView)"
+    :snap-to-time="15"
+    hide-view-selector
+    hide-title-bar
+    watch-realtime="true"
+    :show-all-day-events="true"
+    :editable-events="editingOptions"
+    @event-click="eventClick"
+    @cell-click="cellClick"
+    @cell-dblclick="cellDoubleClick"
+    @ready="onReady"
+    @view-change="fetchEvents"
+    @event-duration-change="eventDurationChange"
+    @event-drop="eventDurationChange"
+    @event-drag-create="eventDragCreate"
+  >
+    <template #event="{ event, view }">
+      <v-card-title>
+        {{ event.title }}
+      </v-card-title>
+      <v-card-subtitle>
+        {{ event.start.formatTime('h:m') + ' - ' + event.end.formatTime('h:m') }}
+      </v-card-subtitle>
+    </template>
+  </vue-cal>
 </template>

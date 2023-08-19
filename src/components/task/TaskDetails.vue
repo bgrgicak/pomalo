@@ -42,38 +42,49 @@ const events = computed(
 );
 </script>
 <template>
-    <v-row v-if="!small">
-        <v-col cols="12"
-               class="event-list">
-            <v-timeline side="end"
-                        align="start">
-                <v-timeline-item v-for="event in events"
-                                 size="small"
-                                 dot-color="transparent"
-                                 :icon="event.icon">
-
-                    <template v-slot:opposite>
-                        <v-chip v-if="'event' === event.type"
-                                color="primary"
-                                small>
-                            {{ __('Worked for ') }}
-                            {{ event.duration }}{{ __(' hours') }}
-                        </v-chip>
-                        <v-chip v-if="'completed' === event.type"
-                                color="success"
-                                small>
-                            {{ __('Completed ') + props.activity.type }}
-                        </v-chip>
-                        <v-chip v-else-if="'created' === event.type"
-                                small>
-                            {{ __('Created ') + props.activity.type }}
-                        </v-chip>
-                    </template>
-                    <strong>
-                        {{ event.date }}
-                    </strong>
-                </v-timeline-item>
-            </v-timeline>
-        </v-col>
-    </v-row>
+  <v-row v-if="!small">
+    <v-col
+      cols="12"
+      class="event-list"
+    >
+      <v-timeline
+        side="end"
+        align="start"
+      >
+        <v-timeline-item
+          v-for="event in events"
+          size="small"
+          dot-color="transparent"
+          :icon="event.icon"
+        >
+          <template #opposite>
+            <v-chip
+              v-if="'event' === event.type"
+              color="primary"
+              small
+            >
+              {{ __('Worked for ') }}
+              {{ event.duration }}{{ __(' hours') }}
+            </v-chip>
+            <v-chip
+              v-if="'completed' === event.type"
+              color="success"
+              small
+            >
+              {{ __('Completed ') + props.activity.type }}
+            </v-chip>
+            <v-chip
+              v-else-if="'created' === event.type"
+              small
+            >
+              {{ __('Created ') + props.activity.type }}
+            </v-chip>
+          </template>
+          <strong>
+            {{ event.date }}
+          </strong>
+        </v-timeline-item>
+      </v-timeline>
+    </v-col>
+  </v-row>
 </template>

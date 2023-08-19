@@ -21,6 +21,8 @@ watch(() => route.params._id, (newId) => {
 });
 </script>
 <template>
-   <ActivityMain v-if="activityStore.activities[activityId]"
-                 :activity="activityStore.activities[activityId]" />
+  <ActivityMain
+    v-if="activityStore.activities[activityId]"
+    :activity="activityStore.activities[activityId]"
+  />
 </template>

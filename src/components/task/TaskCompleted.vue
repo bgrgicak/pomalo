@@ -20,9 +20,11 @@ const onChange = (event: any) => {
 };
 </script>
 <template>
-    <v-switch color="success"
-              class="pa-4"
-              :model-value="!!props.activity.completedDate"
-              @change="onChange"
-              :label="__('Completed')" />
+  <v-switch
+    color="success"
+    class="pa-4"
+    :model-value="!!props.activity.completedDate"
+    :label="__('Completed')"
+    @change="onChange"
+  />
 </template>

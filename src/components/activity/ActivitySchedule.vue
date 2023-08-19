@@ -84,90 +84,119 @@ const onEventFieldChange = (field: string, value: any) => {
 };
 </script>
 <template>
-    <v-row v-if="false !== props.allDay">
-        <v-col cols="12"
-               class="pb-0">
-            <v-switch :model-value="event.allDay"
-                      :readonly="props.activity.readonly"
-                      color="primary"
-                      @change="(event: any) => onEventFieldChange('allDay', event.target.checked)"
-                      class="activity-schedule__all-day"
-                      label="All day" />
-        </v-col>
-    </v-row>
+  <v-row v-if="false !== props.allDay">
+    <v-col
+      cols="12"
+      class="pb-0"
+    >
+      <v-switch
+        :model-value="event.allDay"
+        :readonly="props.activity.readonly"
+        color="primary"
+        class="activity-schedule__all-day"
+        label="All day"
+        @change="(event: any) => onEventFieldChange('allDay', event.target.checked)"
+      />
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col
+      cols="12"
+      :sm="props.small ? 12 : 6"
+      md="12"
+    >
+      <DatePicker
+        :label="__('Starts')"
+        :readonly="props.activity.readonly"
+        :value="event.start"
+        :time="!event.allDay"
+        @change="(value: string) => onEventFieldChange('start', value)"
+      />
+    </v-col>
+    <v-col
+      cols="12"
+      :sm="props.small ? 12 : 6"
+      md="12"
+    >
+      <DatePicker
+        :label="__('Ends')"
+        :readonly="props.activity.readonly"
+        :value="event.end"
+        :time="!event.allDay"
+        @change="(value: string) => onEventFieldChange('end', value)"
+      />
+    </v-col>
+  </v-row>
+  <template v-if="false !== props.repeat">
     <v-row>
-        <v-col cols="12"
-               :sm="props.small ? 12 : 6"
-               md="12">
-            <DatePicker :label="__('Starts')"
-                        :readonly="props.activity.readonly"
-                        :value="event.start"
-                        @change="(value: string) => onEventFieldChange('start', value)"
-                        :time="!event.allDay" />
-        </v-col>
-        <v-col cols="12"
-               :sm="props.small ? 12 : 6"
-               md="12">
-            <DatePicker :label="__('Ends')"
-                        :readonly="props.activity.readonly"
-                        :value="event.end"
-                        @change="(value: string) => onEventFieldChange('end', value)"
-                        :time="!event.allDay" />
-        </v-col>
+      <v-col
+        cols="12"
+        class="pb-0"
+      >
+        <v-select
+          :label="__('Repeat')"
+          :readonly="props.activity.readonly"
+          :items="repeatOptions"
+          :model-value="event.repeat"
+          item-title="text"
+          item-value="value"
+          @update:modelValue="(value: string) => onEventFieldChange('repeat', value)"
+        />
+      </v-col>
     </v-row>
-    <template v-if="false !== props.repeat">
-        <v-row>
-            <v-col cols="12"
-                   class="pb-0">
-                <v-select :label="__('Repeat')"
-                          :readonly="props.activity.readonly"
-                          :items="repeatOptions"
-                          :model-value="event.repeat"
-                          item-title="text"
-                          item-value="value"
-                          @update:modelValue="(value: string) => onEventFieldChange('repeat', value)" />
-            </v-col>
-        </v-row>
-        <v-row v-if="isRepeatActivity">
-
-            <v-col cols="3">
-                <v-text-field :label="__('Interval')"
-                              :readonly="props.activity.readonly"
-                              :model-value="event.repeatInterval ?? 1"
-                              type="number"
-                              min="1"
-                              @update:modelValue="(value: string) => onEventFieldChange('repeatInterval', parseInt(value))" />
-            </v-col>
-            <v-col cols="9">
-                <DatePicker :label="__('Repeat ends')"
-                            :readonly="props.activity.readonly"
-                            :value="event.repeatEnd"
-                            @change="(value: string) => onEventFieldChange('repeatEnd', value)" />
-            </v-col>
-        </v-row>
-        <v-row v-if="RepeatInterval.Weekly === event.repeat">
-            <v-col cols="12"
-                   class="pb-8">
-                <v-label class="activity-schedule__weekly-label">{{ __('Repeat on days') }}</v-label>
-                <v-field class="activity-schedule__weekly-repeat-days"
-                         variant="plain">
-                    <v-btn-toggle @update:modelValue="(value: string) => onEventFieldChange('repeatDays', value)"
-                                  :model-value="event.repeatDays"
-                                  :readonly="props.activity.readonly"
-                                  variant="text"
-                                  multiple
-                                  group>
-                        <v-btn v-for="day in repeatDaysOfWeekOptions"
-                               :readonly="props.activity.readonly"
-                               :key="day.value"
-                               :value="day.value">
-                            {{ day.text[0] }}
-                        </v-btn>
-                    </v-btn-toggle>
-                </v-field>
-            </v-col>
-        </v-row>
-    </template>
+    <v-row v-if="isRepeatActivity">
+      <v-col cols="3">
+        <v-text-field
+          :label="__('Interval')"
+          :readonly="props.activity.readonly"
+          :model-value="event.repeatInterval ?? 1"
+          type="number"
+          min="1"
+          @update:modelValue="(value: string) => onEventFieldChange('repeatInterval', parseInt(value))"
+        />
+      </v-col>
+      <v-col cols="9">
+        <DatePicker
+          :label="__('Repeat ends')"
+          :readonly="props.activity.readonly"
+          :value="event.repeatEnd"
+          @change="(value: string) => onEventFieldChange('repeatEnd', value)"
+        />
+      </v-col>
+    </v-row>
+    <v-row v-if="RepeatInterval.Weekly === event.repeat">
+      <v-col
+        cols="12"
+        class="pb-8"
+      >
+        <v-label class="activity-schedule__weekly-label">
+          {{ __('Repeat on days') }}
+        </v-label>
+        <v-field
+          class="activity-schedule__weekly-repeat-days"
+          variant="plain"
+        >
+          <v-btn-toggle
+            :model-value="event.repeatDays"
+            :readonly="props.activity.readonly"
+            variant="text"
+            multiple
+            group
+            @update:modelValue="(value: string) => onEventFieldChange('repeatDays', value)"
+          >
+            <v-btn
+              v-for="day in repeatDaysOfWeekOptions"
+              :key="day.value"
+              :readonly="props.activity.readonly"
+              :value="day.value"
+            >
+              {{ day.text[0] }}
+            </v-btn>
+          </v-btn-toggle>
+        </v-field>
+      </v-col>
+    </v-row>
+  </template>
 </template>
 <style scoped lang="scss">
 .activity-schedule__all-day {

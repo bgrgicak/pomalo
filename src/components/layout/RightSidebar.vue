@@ -28,30 +28,38 @@ const hide = () => {
 watch(route, hide);
 </script>
 <template>
-    <v-navigation-drawer location="right"
-                         v-bind:width="350"
-                         v-if="layoutStore.isRightSidebarVisible"
-                         :model-value="layoutStore.isRightSidebarVisible"
-                         @update:model-value="hide"
-                         class="right-sidebar">
-        <header class="right-sidebar__header">
-            <v-btn icon="mdi-arrow-expand"
-                   variant="plain"
-                   size="56"
-                   class="right-sidebar__expand ml-2"
-                   @click="() => openActivityPage(activity)" />
-            <v-spacer />
-            <v-btn icon="mdi-close"
-                   variant="plain"
-                   size="56"
-                   class="right-sidebar__close mr-2"
-                   @click="hide" />
-        </header>
-        <ActivityMain :activity="activity"
-                      :event="event"
-                      :type="newType"
-                      small="true" />
-    </v-navigation-drawer>
+  <v-navigation-drawer
+    v-if="layoutStore.isRightSidebarVisible"
+    location="right"
+    :width="350"
+    :model-value="layoutStore.isRightSidebarVisible"
+    class="right-sidebar"
+    @update:model-value="hide"
+  >
+    <header class="right-sidebar__header">
+      <v-btn
+        icon="mdi-arrow-expand"
+        variant="plain"
+        size="56"
+        class="right-sidebar__expand ml-2"
+        @click="() => openActivityPage(activity)"
+      />
+      <v-spacer />
+      <v-btn
+        icon="mdi-close"
+        variant="plain"
+        size="56"
+        class="right-sidebar__close mr-2"
+        @click="hide"
+      />
+    </header>
+    <ActivityMain
+      :activity="activity"
+      :event="event"
+      :type="newType"
+      small="true"
+    />
+  </v-navigation-drawer>
 </template>
 <style lang="scss">
 @import '@/styles/variables.scss';
