@@ -52,7 +52,7 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
             );
             activityEvent.id = 'activityEvent' + event.uid;
             activityEvent.allDay = isAllDayEvent(activityEvent);
-            if (activityEvent.allDay) {
+            if (activityEvent.allDay && activityEvent.end) {
                 activityEvent.end = addMilliseconds(activityEvent.end, - 1);
             }
             if (event.isRecurring()) {
