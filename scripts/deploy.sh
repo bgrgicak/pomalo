@@ -11,6 +11,7 @@ git checkout production
 git pull
 git merge --no-edit main
 
+npm ci
 npm run build
 
 git add -f public
