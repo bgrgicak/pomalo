@@ -22,16 +22,20 @@ const stop = () => {
 };
 </script>
 <template v-if="!timerStore.isLoading">
-    <v-btn v-if="!isActive"
-           color="primary"
-           class="timer-toggle activity-start"
-           variant="text"
-           @click="start"
-           icon="mdi-play-circle-outline" />
-    <v-btn v-else
-           class="timer-toggle activity-stop"
-           variant="text"
-           @click="stop"
-           color="error"
-           icon="mdi-stop-circle-outline" />
+  <v-btn
+    v-if="!isActive"
+    color="primary"
+    class="timer-toggle activity-start"
+    variant="text"
+    icon="mdi-play-circle-outline"
+    @click="start"
+  />
+  <v-btn
+    v-else
+    class="timer-toggle activity-stop"
+    variant="text"
+    color="error"
+    icon="mdi-stop-circle-outline"
+    @click="stop"
+  />
 </template>

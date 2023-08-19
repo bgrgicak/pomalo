@@ -7,27 +7,29 @@ import { useLayoutStore } from '@/stores/layout';
 const layoutStore = useLayoutStore();
 </script>
 <template>
-    <v-navigation-drawer :color="constants.colors.menuBackground"
-                         :rail="!display.mobile.value"
-                         :model-value="layoutStore.isMenuVisible"
-                         @update:model-value="layoutStore.updateMenuVisibility"
-                         class="navigation">
-
-        <v-list nav
-                class="pa-0">
-            <v-list-item v-for="item in mainMenu"
-                         :key="item.name"
-                         :prepend-icon="item.icon"
-                         :value="item.name"
-                         :title="item.name"
-                         :to="item.path"
-                         class="navigation-item pa-4">
-            </v-list-item>
-        </v-list>
-        <template v-for="item in mainMenu">
-
-        </template>
-    </v-navigation-drawer>
+  <v-navigation-drawer
+    :color="constants.colors.menuBackground"
+    :rail="!display.mobile.value"
+    :model-value="layoutStore.isMenuVisible"
+    class="navigation"
+    @update:model-value="layoutStore.updateMenuVisibility"
+  >
+    <v-list
+      nav
+      class="pa-0"
+    >
+      <v-list-item
+        v-for="item in mainMenu"
+        :key="item.name"
+        :prepend-icon="item.icon"
+        :value="item.name"
+        :title="item.name"
+        :to="item.path"
+        class="navigation-item pa-4"
+      />
+    </v-list>
+    <template v-for="item in mainMenu" />
+  </v-navigation-drawer>
 </template>
 <style scoped lang="scss">
 @import '@/styles/variables.scss';

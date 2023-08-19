@@ -12,19 +12,23 @@ const isActive = computed(() => {
 });
 </script>
 <template v-if="!timerStore.isLoading">
-    <v-btn v-if="isActive"
-           class="activity-stop"
-           @click="timerStore.stop"
-           append-icon="mdi-stop-circle-outline">
-        {{ __('Stop timer') }}
-    </v-btn>
-    <v-btn v-else
-           color="primary"
-           class="activity-start"
-           @click="() => timerStore.start(props.activity._id)"
-           append-icon="mdi-play-circle-outline">
-        {{ __('Start timer') }}
-    </v-btn>
+  <v-btn
+    v-if="isActive"
+    class="activity-stop"
+    append-icon="mdi-stop-circle-outline"
+    @click="timerStore.stop"
+  >
+    {{ __('Stop timer') }}
+  </v-btn>
+  <v-btn
+    v-else
+    color="primary"
+    class="activity-start"
+    append-icon="mdi-play-circle-outline"
+    @click="() => timerStore.start(props.activity._id)"
+  >
+    {{ __('Start timer') }}
+  </v-btn>
 </template>
 <style scoped lang="scss">
 .activity-start,

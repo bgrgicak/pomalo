@@ -6,15 +6,17 @@ const props = defineProps(['event', 'openInSidebar', 'type', 'visible']);
 
 </script>
 <template>
-    <v-row class="new-activity">
-        <v-col cols="12">
-            <Search :openInSidebar="props.openInSidebar"
-                    :event="props.event"
-                    :newTypes="props.type ? [props.type] : undefined"
-                    :autofocus="true"
-                    :placeholder="__('Title')"
-                    :visible="true"
-                    :hideIcon="true" />
-        </v-col>
-    </v-row>
+  <v-row class="new-activity">
+    <v-col cols="12">
+      <Search
+        :open-in-sidebar="props.openInSidebar"
+        :event="props.event"
+        :new-types="props.type ? [props.type] : undefined"
+        :autofocus="true"
+        :placeholder="__('Title')"
+        :visible="true"
+        :hide-icon="true"
+      />
+    </v-col>
+  </v-row>
 </template>

@@ -5,6 +5,6 @@ import ActivityList from "../components/activity/ActivityList.vue";
 
 <template>
   <main>
-    <ActivityList :type="ActivityType.Task"/>
+    <ActivityList :type="ActivityType.Task" />
   </main>
 </template>

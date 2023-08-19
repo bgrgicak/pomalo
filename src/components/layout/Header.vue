@@ -12,45 +12,55 @@ const toggleMenu = () => {
 };
 </script>
 <template>
-    <v-app-bar density="compact"
-               :color="constants.colors.headerBackground"
-               class="header">
-        <v-app-bar-nav-icon variant="text"
-                            class="ml-1 d-lg-none"
-                            @click.stop="toggleMenu"></v-app-bar-nav-icon>
-        <v-app-bar-title class="d-none d-lg-inline-flex ml-1">
-            <v-btn class="header__logo"
-                   to="/calendar"
-                   :icon="constants.icons.logo" />
-        </v-app-bar-title>
-        <v-spacer />
-        <v-divider vertical />
+  <v-app-bar
+    density="compact"
+    :color="constants.colors.headerBackground"
+    class="header"
+  >
+    <v-app-bar-nav-icon
+      variant="text"
+      class="ml-1 d-lg-none"
+      @click.stop="toggleMenu"
+    />
+    <v-app-bar-title class="d-none d-lg-inline-flex ml-1">
+      <v-btn
+        class="header__logo"
+        to="/calendar"
+        :icon="constants.icons.logo"
+      />
+    </v-app-bar-title>
+    <v-spacer />
+    <v-divider vertical />
 
-        <Timer />
+    <Timer />
 
-        <v-divider vertical />
+    <v-divider vertical />
 
-        <Search variant="solo-filled" />
+    <Search variant="solo-filled" />
 
-        <v-divider vertical />
+    <v-divider vertical />
 
-        <v-menu>
-            <template v-slot:activator="{ props }">
-                <v-btn icon="mdi-dots-vertical"
-                       v-bind="props"></v-btn>
-            </template>
-            <v-list>
-                <v-list-item v-for="(item, i) in headerMenu"
-                             :key="i"
-                             :to="item.path">
-                    <template v-slot:append>
-                        <v-icon :icon="item.icon"></v-icon>
-                    </template>
-                    <v-list-item-title>{{ item.name }}</v-list-item-title>
-                </v-list-item>
-            </v-list>
-        </v-menu>
-    </v-app-bar>
+    <v-menu>
+      <template #activator="{ props }">
+        <v-btn
+          icon="mdi-dots-vertical"
+          v-bind="props"
+        />
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, i) in headerMenu"
+          :key="i"
+          :to="item.path"
+        >
+          <template #append>
+            <v-icon :icon="item.icon" />
+          </template>
+          <v-list-item-title>{{ item.name }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </v-app-bar>
 </template>
 <style lang="scss">
 @import '@/styles/variables.scss';

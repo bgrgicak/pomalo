@@ -2,9 +2,9 @@
 import { RouterView } from "vue-router";
 </script>
 <template>
-    <v-main class="main">
-        <RouterView />
-    </v-main>
+  <v-main class="main">
+    <RouterView />
+  </v-main>
 </template>
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';

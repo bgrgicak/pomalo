@@ -2,5 +2,5 @@
 import Settings from '@/components/settings/Settings.vue';
 </script>
 <template>
-    <Settings />
+  <Settings />
 </template>

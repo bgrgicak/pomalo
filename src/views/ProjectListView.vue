@@ -4,7 +4,7 @@ import ActivityList from "../components/activity/ActivityList.vue";
 </script>
 
 <template>
-    <main>
-        <ActivityList :type="ActivityType.Project" />
-    </main>
+  <main>
+    <ActivityList :type="ActivityType.Project" />
+  </main>
 </template>
