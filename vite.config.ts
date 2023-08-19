@@ -17,6 +17,7 @@ export default defineConfig({
       injectRegister: 'auto',
       registerType: 'autoUpdate',
       strategies: 'injectManifest',
+      injectManifest: { injectionPoint: undefined },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}'],
         clientsClaim: true,
@@ -73,6 +74,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
     outDir: 'public',
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       plugins: [
         // Enable rollup polyfills plugin
