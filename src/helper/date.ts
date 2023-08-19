@@ -1,3 +1,5 @@
+import exp from "constants";
+
 export const getSystemDateFormat = () => {
     let customDate = new Date(2222, 11, 18);
     let strDate = customDate.toLocaleDateString();
@@ -94,4 +96,8 @@ export const weeksBetweenDates = (start: Date, end: Date) => {
 
 export const isValidDate = (date: any) => {
     return date instanceof Date && !isNaN(date as any);
+};
+
+export const addMilliseconds = (date: Date, milliseconds: number) => {
+    return new Date(getUtcTimestamp(date) + milliseconds);
 };

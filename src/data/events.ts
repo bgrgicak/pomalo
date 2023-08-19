@@ -151,7 +151,10 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
                             startTime.getTime() > event.start.getTime()
                                 ? startTime : event.start
                         );
-                        const lastDay = event.repeatEnd ?? endTime;
+                        let lastDay = event.repeatEnd;
+                        if (!lastDay || lastDay > endTime) {
+                            lastDay = endTime;
+                        }
                         while (iteratorDay <= lastDay) {
                             if (isDayInRepeatCycle(iteratorDay, event)) {
                                 const eventStart = structuredClone(iteratorDay);
@@ -186,4 +189,28 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
         });
     };
     return events;
+};
+
+export const getEventEndFromRepeatCount = (start: Date, repeat?: RepeatInterval, repeatCount: number = 1): Date => {
+    const end = structuredClone(start);
+    if (repeat === RepeatInterval.Daily) {
+        return new Date(end.setDate(end.getDate() + repeatCount));
+    } else if (repeat === RepeatInterval.Weekly) {
+        return new Date(end.setDate(end.getDate() + repeatCount * 7));
+    } else if (repeat === RepeatInterval.Monthly) {
+        return new Date(end.setMonth(end.getMonth() + repeatCount));
+    } else if (repeat === RepeatInterval.Yearly) {
+        return new Date(end.setFullYear(end.getFullYear() + repeatCount));
+    }
+    return end;
+};
+
+export const isAllDayEvent = (event: ActivityEvent): boolean => {
+    if (!event.end) {
+        return false;
+    }
+    return event.start.getHours() === 0
+        && event.start.getMinutes() === 0
+        && event.end.getHours() === 0
+        && event.end.getMinutes() === 0;
 };
