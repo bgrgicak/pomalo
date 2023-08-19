@@ -88,6 +88,7 @@ const onEventFieldChange = (field: string, value: any) => {
         <v-col cols="12"
                class="pb-0">
             <v-switch :model-value="event.allDay"
+                      :readonly="props.activity.readonly"
                       color="primary"
                       @change="(event: any) => onEventFieldChange('allDay', event.target.checked)"
                       class="activity-schedule__all-day"
@@ -99,6 +100,7 @@ const onEventFieldChange = (field: string, value: any) => {
                :sm="props.small ? 12 : 6"
                md="12">
             <DatePicker :label="__('Starts')"
+                        :readonly="props.activity.readonly"
                         :value="event.start"
                         @change="(value: string) => onEventFieldChange('start', value)"
                         :time="!event.allDay" />
@@ -107,6 +109,7 @@ const onEventFieldChange = (field: string, value: any) => {
                :sm="props.small ? 12 : 6"
                md="12">
             <DatePicker :label="__('Ends')"
+                        :readonly="props.activity.readonly"
                         :value="event.end"
                         @change="(value: string) => onEventFieldChange('end', value)"
                         :time="!event.allDay" />
@@ -117,6 +120,7 @@ const onEventFieldChange = (field: string, value: any) => {
             <v-col cols="12"
                    class="pb-0">
                 <v-select :label="__('Repeat')"
+                          :readonly="props.activity.readonly"
                           :items="repeatOptions"
                           :model-value="event.repeat"
                           item-title="text"
@@ -128,6 +132,7 @@ const onEventFieldChange = (field: string, value: any) => {
 
             <v-col cols="3">
                 <v-text-field :label="__('Interval')"
+                              :readonly="props.activity.readonly"
                               :model-value="event.repeatInterval ?? 1"
                               type="number"
                               min="1"
@@ -135,6 +140,7 @@ const onEventFieldChange = (field: string, value: any) => {
             </v-col>
             <v-col cols="9">
                 <DatePicker :label="__('Repeat ends')"
+                            :readonly="props.activity.readonly"
                             :value="event.repeatEnd"
                             @change="(value: string) => onEventFieldChange('repeatEnd', value)" />
             </v-col>
@@ -147,10 +153,12 @@ const onEventFieldChange = (field: string, value: any) => {
                          variant="plain">
                     <v-btn-toggle @update:modelValue="(value: string) => onEventFieldChange('repeatDays', value)"
                                   :model-value="event.repeatDays"
+                                  :readonly="props.activity.readonly"
                                   variant="text"
                                   multiple
                                   group>
                         <v-btn v-for="day in repeatDaysOfWeekOptions"
+                               :readonly="props.activity.readonly"
                                :key="day.value"
                                :value="day.value">
                             {{ day.text[0] }}

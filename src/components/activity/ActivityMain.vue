@@ -32,6 +32,14 @@ const onFieldChange = (key: string, value: any) => {
 <template>
     <v-card class="activity-details pa-4">
         <v-container>
+            <v-row no-gutters
+                   v-if="!!activity.readonly">
+                <v-col cols="12">
+                    <v-alert class="mb-8"
+                             color="primary"
+                             :text="__('This item is imported and can\'t be edited.')" />
+                </v-col>
+            </v-row>
             <v-row no-gutters>
                 <v-col :md="props.small ? '12' : '8'"
                        cols="12">

@@ -269,7 +269,7 @@ const fetch = (start: Date, end: Date) => {
     }
 
     &.calendar-event__readonly {
-        opacity: var(--v-high-emphasis-opacity);
+        opacity: var(--v-medium-emphasis-opacity);
     }
 }
 

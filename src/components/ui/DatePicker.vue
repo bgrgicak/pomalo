@@ -2,7 +2,7 @@
 import { getSystemDateFormat, toInputDateString, getLocalDate } from '@/helper/date';
 import { computed } from 'vue';
 
-const props = defineProps(['value', 'label', 'time', 'hint', 'variant']);
+const props = defineProps(['value', 'label', 'time', 'hint', 'variant', 'readonly']);
 
 const emit = defineEmits(['change']);
 
@@ -56,6 +56,7 @@ const onChangeTime = (newValue: string) => {
                       class="date-picker__date"
                       @update:modelValue="onChangeDate"
                       type="date"
+                      :readonly="props.readonly"
                       :pattern="systemDateFormat"
                       :hint="props.hint"
                       :variant="props.variant" />
@@ -64,6 +65,7 @@ const onChangeTime = (newValue: string) => {
                       class="date-picker__time"
                       @update:modelValue="onChangeTime"
                       type="time"
+                      :readonly="props.readonly"
                       pattern="[0-9]{2}:[0-9]{2}"
                       :variant="props.variant" />
     </div>

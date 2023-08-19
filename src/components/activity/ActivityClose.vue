@@ -34,6 +34,7 @@ const closeActivity = (activity: Activity) => {
     <v-btn color="error"
            class="activity-close"
            @click="closeActivity(props.activity)"
+           :readonly="props.activity.readonly"
            variant="text">
         {{ buttonLabel }}
     </v-btn>
