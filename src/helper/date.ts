@@ -1,5 +1,3 @@
-import exp from "constants";
-
 export const getSystemDateFormat = () => {
     let customDate = new Date(2222, 11, 18);
     let strDate = customDate.toLocaleDateString();
