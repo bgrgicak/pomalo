@@ -53,7 +53,7 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
             activityEvent.id = 'activityEvent' + event.uid;
             activityEvent.allDay = isAllDayEvent(activityEvent);
             if (activityEvent.allDay) {
-                activityEvent.end = addMilliseconds(event.end, - 1);
+                activityEvent.end = addMilliseconds(activityEvent.end, - 1);
             }
             if (event.isRecurring()) {
                 const repeatRules = event.component.getFirstPropertyValue('rrule');
@@ -115,36 +115,51 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
                 }
             }
             activity.events = [activityEvent];
-            if (lastCalendarSync && lastModified < lastCalendarSync) {
-                return;
-            }
             debug('Adding activity', activity);
             useActivityStore().addOrUpdate(activity);
         });
     });
 };
 
-const syncAllCalendars = async () => {
-    debug('Syncing all calendars');
-    const settingsStore = useSettingsStore();
+const lastCalendarSyncSettingsKey = (calendarUrl: string) => {
+    return 'lastCalendarSync' + btoa(calendarUrl);
+};
+
+const getLastCalendarSync = (calendarUrl: string): Date | undefined => {
     let lastCalendarSync: Date | undefined = new Date(
-        settingsStore.get('lastCalendarSync')
+        useSettingsStore().get(
+            lastCalendarSyncSettingsKey(calendarUrl)
+        )
     );
     if (!isValidDate(lastCalendarSync)) {
         lastCalendarSync = undefined;
     }
+    return lastCalendarSync;
+};
 
-    const calendars = getCalendarUrls();
-    calendars.forEach(async (calendarUrl) => {
-        await syncCalendar(calendarUrl, lastCalendarSync);
-    });
-    settingsStore.update('lastCalendarSync', getUtcTimestamp());
+const updateLastCalendarSync = (calendarUrl: string) => {
+    const settingsStore = useSettingsStore();
+    settingsStore.update(
+        lastCalendarSyncSettingsKey(calendarUrl),
+        getUtcTimestamp()
+    );
     settingsStore.save();
+};
+
+const syncAllCalendars = async () => {
+    debug('Syncing all calendars');
+    getCalendarUrls().forEach(async (calendarUrl) => {
+        syncCalendar(
+            calendarUrl,
+            getLastCalendarSync(calendarUrl)
+        );
+        updateLastCalendarSync(calendarUrl);
+    });
 
 };
 
 const startIcalSync = () => {
-    const interval = setInterval(
+    setInterval(
         syncAllCalendars,
         syncIntervalMilliseconds()
     );

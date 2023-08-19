@@ -14,9 +14,9 @@ const appTheme: ThemeDefinition = {
         warning: '#d4cb1c',
         error: '#eb2838',
         info: '#2b96da',
-        task: '#36bc2c',
-        event: '#bc2c7e',
-        project: '#bcb22c',
+        task: '#1069B3',
+        event: '#FF854A',
+        project: '#FFD317',
     }
 };
 
