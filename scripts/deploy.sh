@@ -16,6 +16,6 @@ npm run build
 
 git add -f ../public/
 git commit -m "Deploying to production"
-git push --force
+git push
 
 git checkout $CURRENT_BRANCH
