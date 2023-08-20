@@ -75,7 +75,7 @@ const vuecal = computed(() => {
     if (!vuecalRef.value) {
         return undefined;
     }
-    return (vuecalRef.value as any).$refs.vuecal;
+    return (vuecalRef.value as any).$refs.vuecalRef;
 });
 
 const onKeyboardEvent = (keyboardEvent: any) => {

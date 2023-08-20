@@ -6,7 +6,14 @@ import type { ActivityState } from '@/types/activity';
 import type Activity from '@/types/activity';
 import { ref, watch, type Ref } from 'vue';
 
-const props = defineProps(['activity']);
+import type { PropType } from 'vue';
+
+const props = defineProps({
+  activity: {
+    type: Object as PropType<Activity>,
+    required: true,
+  }
+});
 
 const state: Ref<ActivityState> = ref({
     activity: Object.assign({}, props.activity) as Activity,

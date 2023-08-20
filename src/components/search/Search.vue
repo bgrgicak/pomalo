@@ -5,27 +5,71 @@ import { openActivityPage, emptyActivity } from '@/data/activities';
 import { useActivityStore } from '@/stores/activities';
 import { useSearchStore } from '@/stores/search';
 import type Activity from '@/types/activity';
-import { ActivityType } from '@/types/activity';
+import { ActivityType, type ActivityEvent } from '@/types/activity';
 import __ from '@/helper/translations';
 import TimerToggle from '../timer/TimerToggle.vue';
 import { addEventToActivity } from '@/data/events';
+import type { PropType } from 'vue';
 
-const props = defineProps([
-    'value',
-    'label',
-    'openInSidebar',
-    'types',
-    'newTypes',
-    'visible',
-    'event',
-    'autofocus',
-    'variant',
-    'placeholder',
-    'preventDefault',
-    'hideTimer',
-    'hideIcon',
-    'clearable',
-]);
+
+const props = defineProps({
+  value: {
+    type: String,
+    default: '',
+  },
+  label: {
+    type: String,
+    default: '',
+  },
+  openInSidebar: {
+    type: Boolean,
+    default: false,
+  },
+  types: {
+    type: Array as PropType<ActivityType[]>,
+    default: () => [ActivityType.Task, ActivityType.Event],
+  },
+  newTypes: {
+    type: Array as PropType<ActivityType[]>,
+    default: () => [ActivityType.Task, ActivityType.Event],
+  },
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+  event: {
+    type: Object as PropType<ActivityEvent>,
+    default: undefined,
+  },
+  autofocus: {
+    type: Boolean,
+    default: false,
+  },
+  variant: {
+    type: String as PropType<any>,
+    default: undefined,
+  },
+  placeholder: {
+    type: String,
+    default: undefined,
+  },
+  preventDefault: {
+    type: Boolean,
+    default: false,
+  },
+  hideTimer: {
+    type: Boolean,
+    default: false,
+  },
+  hideIcon: {
+    type: Boolean,
+    default: false,
+  },
+  clearable: {
+    type: Boolean,
+    default: false,
+  },
+});
 const emit = defineEmits(['hideSearch', 'click']);
 
 const searchVisible = ref(!!props.visible);
@@ -101,12 +145,12 @@ const showSearch = async () => {
     toggleFocus();
 };
 
-const toggleFocus = () => {
+const toggleFocus = (state?: boolean) => {
     if (null !== searchRef.value) {
         const element: any = searchRef.value;
-        if (element.focused) {
+        if (element.focused || state === false) {
             element.blur();
-        } else {
+        } else if (!element.focused || state === true) {
             element.focus();
         }
     }
@@ -125,9 +169,9 @@ const onClear = () => {
   <v-autocomplete
     v-if="searchVisible"
     ref="searchRef"
-    v-model:model-value="props.value"
     v-model:search="searchText"
     v-click-outside="hide"
+    :model-value="props.value"
     :label="props.label"
     :placeholder="props.placeholder ?? __('Search')"
     :items="searchStore.activities"
@@ -143,7 +187,7 @@ const onClear = () => {
     @update:search="onSearch"
     @click:clear="onClear"
   >
-    <template #item="{ props, item }">
+    <template #item="{ item }">
       <v-list-item>
         <v-btn
           class="search__result-title"

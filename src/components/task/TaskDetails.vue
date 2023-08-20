@@ -4,12 +4,23 @@ import __ from '@/helper/translations';
 import { computed } from 'vue';
 import { toLocaleDateString } from '@/helper/date';
 import { getTimePassed } from '@/helper/date';
+import type Activity from '@/types/activity';
+import type { PropType } from 'vue';
 
-const props = defineProps(['activity', 'small']);
+const props = defineProps({
+    activity: {
+        type: Object as PropType<Activity>,
+        required: true
+    },
+    small: {
+        type: Boolean,
+        default: false
+    }
+});
 
 const events = computed(
     () => {
-        const events = props.activity.events
+        const events: any[] = props.activity.events
             .filter((event: ActivityEvent) => event.end)
             .map((event: ActivityEvent) => {
                 return {
@@ -35,7 +46,7 @@ const events = computed(
                 }
             );
         }
-        return events.sort((a: any, b: any) => a.date < b.date);
+        return events.sort((a: any, b: any) => a.date < b.date ? 1 : 0);
     }
 
 
@@ -53,6 +64,7 @@ const events = computed(
       >
         <v-timeline-item
           v-for="event in events"
+          :key="event.date"
           size="small"
           dot-color="transparent"
           :icon="event.icon"

@@ -1,11 +1,11 @@
-import type Activity from "@/types/activity";
-import { defineStore } from "pinia";
-import { computed, ref, type Ref } from "vue";
-import { useActivityStore } from "./activities";
-import type { SearchState } from "@/types/search";
+import type Activity from '@/types/activity';
+import { defineStore } from 'pinia';
+import { computed, ref, type Ref } from 'vue';
+import { useActivityStore } from './activities';
+import type { SearchState } from '@/types/search';
 
 export const useSearchStore = defineStore(
-    "search",
+    'search',
     () => {
         const state: Ref<SearchState> = ref({
             activities: [],

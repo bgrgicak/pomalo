@@ -1,6 +1,6 @@
 enum MenuType {
-    Main = "main",
-    Header = "header",
+    Main = 'main',
+    Header = 'header',
 };
 
 export { MenuType };

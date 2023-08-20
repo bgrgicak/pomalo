@@ -1,15 +1,33 @@
 <script setup lang="ts">
-import { ActivityType } from '@/types/activity';
+import { ActivityType, type ActivityEvent } from '@/types/activity';
 import __ from '@/helper/translations';
 import TaskDetails from '../task/TaskDetails.vue';
 import TaskSidebar from '../task/TaskSidebar.vue';
-import { computed } from 'vue';
+import { computed, type PropType } from 'vue';
 import ActivityContent from './ActivityContent.vue';
 import ActivityNew from './ActivityNew.vue';
 import EventSidebar from '@/components/event/EventSidebar.vue';
 import ProjectSidebar from '@/components/project/ProjectSidebar.vue';
+import type Activity from '@/types/activity';
 
-const props = defineProps(['activity', 'event', 'small', 'type']);
+const props = defineProps({
+    activity: {
+        type: Object as PropType<Activity>,
+        default: undefined,
+    },
+    event: {
+        type: Object as PropType<ActivityEvent>,
+        default: undefined,
+    },
+    small: {
+        type: Boolean,
+        default: false,
+    },
+    type: {
+        type: String,
+        default: undefined,
+    },
+});
 
 const isNew = computed(() => {
     return undefined === props.activity;
@@ -33,7 +51,7 @@ const onFieldChange = (key: string, value: any) => {
   <v-card class="activity-details pa-4">
     <v-container>
       <v-row
-        v-if="!!activity.readonly"
+        v-if="!!activity?.readonly"
         no-gutters
       >
         <v-col cols="12">
@@ -53,14 +71,14 @@ const onFieldChange = (key: string, value: any) => {
             v-if="isNew"
             :event="props.event"
             :type="props.type"
-            open-in-sidebar="true"
+            :open-in-sidebar="true"
           />
           <ActivityContent
-            v-else
+            v-else-if="props.activity"
             :activity="props.activity"
           />
           <TaskDetails
-            v-if="isTask"
+            v-if="isTask && props.activity"
             :activity="props.activity"
             :small="props.small"
             class="mt-6 d-none d-md-block"

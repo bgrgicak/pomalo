@@ -1,11 +1,11 @@
-import constants from "@/helper/constants";
-import type { SettingsState, Setting } from "@/types/setting";
-import { defineStore } from "pinia";
-import { computed, ref, type Ref } from "vue";
+import constants from '@/helper/constants';
+import type { SettingsState, Setting } from '@/types/setting';
+import { defineStore } from 'pinia';
+import { computed, ref, type Ref } from 'vue';
 
 
 export const useSettingsStore = defineStore(
-    "settings",
+    'settings',
     () => {
         const state: Ref<SettingsState> = ref({
             settings: {},

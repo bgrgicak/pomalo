@@ -4,9 +4,24 @@ import ActivityClose from '../activity/ActivityClose.vue';
 import ActivityDueDate from '../activity/ActivityDueDate.vue';
 import ActivityTimer from '../activity/ActivityTimer.vue';
 import ActivitySchedule from '../activity/ActivitySchedule.vue';
-import { computed } from 'vue';
+import { computed, type PropType } from 'vue';
+import type Activity from '@/types/activity';
+import type { ActivityEvent } from '@/types/activity';
 
-const props = defineProps(['activity', 'small', 'event']);
+const props = defineProps({
+    activity: {
+        type: Object as PropType<Activity>,
+        default: null,
+    },
+    event: {
+        type: Object as PropType<ActivityEvent>,
+        default: null,
+    },
+    small: {
+        type: Boolean,
+        default: false,
+    },
+});
 const emit = defineEmits(['fieldChange']);
 
 const showSchedulerInSidebar = computed(() => {

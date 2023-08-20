@@ -31,7 +31,10 @@ const actions: Setting[] = [
       <h2>{{ __('Debug') }}</h2>
     </v-col>
     <v-col cols="12">
-      <v-row v-for="action in actions">
+      <v-row
+        v-for="action in actions"
+        :key="action.id"
+      >
         <v-list class="d-flex flex-column">
           <SettingEdit :setting="action" />
         </v-list>

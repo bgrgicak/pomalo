@@ -1,6 +1,6 @@
-import { settings } from "@/helper/settings";
-import __ from "@/helper/translations";
-import { SettingType, type SettingsStructure } from "@/types/setting";
+import { settings } from '@/helper/settings';
+import __ from '@/helper/translations';
+import { SettingType, type SettingsStructure } from '@/types/setting';
 
 const settingsStructure: SettingsStructure = {
     general: {

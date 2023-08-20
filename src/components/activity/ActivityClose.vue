@@ -6,8 +6,14 @@ import router from '@/router/router';
 import { useLayoutStore } from '@/stores/layout';
 import { ActivityType } from '@/types/activity';
 import { computed } from 'vue';
+import type { PropType } from 'vue';
 
-const props = defineProps(['activity']);
+const props = defineProps({
+  activity: {
+    type: Object as PropType<Activity>,
+    required: true,
+  }
+});
 
 const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();

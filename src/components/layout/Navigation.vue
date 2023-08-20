@@ -28,7 +28,6 @@ const layoutStore = useLayoutStore();
         class="navigation-item pa-4"
       />
     </v-list>
-    <template v-for="item in mainMenu" />
   </v-navigation-drawer>
 </template>
 <style scoped lang="scss">

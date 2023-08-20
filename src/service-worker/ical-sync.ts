@@ -1,11 +1,11 @@
-import { emptyActivity } from "@/data/activities";
-import { getEventEndFromRepeatCount, isAllDayEvent, newEvent } from "@/data/events";
-import { addMilliseconds, getUtcTimestamp, isValidDate } from "@/helper/date";
-import { debug } from "@/helper/logs";
-import { settings } from "@/helper/settings";
-import { useActivityStore } from "@/stores/activities";
-import { useSettingsStore } from "@/stores/settings";
-import { ActivityType, RepeatInterval } from "@/types/activity";
+import { emptyActivity } from '@/data/activities';
+import { getEventEndFromRepeatCount, isAllDayEvent, newEvent } from '@/data/events';
+import { addMilliseconds, getUtcTimestamp, isValidDate } from '@/helper/date';
+import { debug } from '@/helper/logs';
+import { settings } from '@/helper/settings';
+import { useActivityStore } from '@/stores/activities';
+import { useSettingsStore } from '@/stores/settings';
+import { ActivityType, RepeatInterval } from '@/types/activity';
 // @ts-ignore-next-line
 import ICAL from 'ical.js';
 

@@ -1,16 +1,16 @@
-import type Activity from "@/types/activity";
-import { defineStore } from "pinia";
-import { computed, ref, watch, type Ref } from "vue";
-import { useActivityStore, type ActivityMap } from "./activities";
-import { parseEventsFromActivities } from "@/data/events";
-import { getUtcTimestamp } from "@/helper/date";
-import { useTimerStore } from "./timer";
-import type { CalendarState, CalendarEvent, CalendarClipboardType, CalendarClipboard } from "@/types/calendar";
-import { display } from "@/plugins/vuetify";
+import type Activity from '@/types/activity';
+import { defineStore } from 'pinia';
+import { computed, ref, watch, type Ref } from 'vue';
+import { useActivityStore, type ActivityMap } from './activities';
+import { parseEventsFromActivities } from '@/data/events';
+import { getUtcTimestamp } from '@/helper/date';
+import { useTimerStore } from './timer';
+import type { CalendarState, CalendarEvent, CalendarClipboardType, CalendarClipboard } from '@/types/calendar';
+import { display } from '@/plugins/vuetify';
 
 
 export const useCalendarStore = defineStore(
-    "calendar",
+    'calendar',
     () => {
         const state: Ref<CalendarState> = ref({
             events: [],
@@ -48,12 +48,12 @@ export const useCalendarStore = defineStore(
             state.value.startTime = start;
             state.value.endTime = end;
             return activityStore.find({
-                "selector": {
-                    "eventFirstStart": {
-                        "$lte": getUtcTimestamp(state.value.endTime)
+                'selector': {
+                    'eventFirstStart': {
+                        '$lte': getUtcTimestamp(state.value.endTime)
                     },
-                    "eventLastEnd": {
-                        "$gte": getUtcTimestamp(state.value.startTime)
+                    'eventLastEnd': {
+                        '$gte': getUtcTimestamp(state.value.startTime)
                     },
                 },
             }).then((activities) => {

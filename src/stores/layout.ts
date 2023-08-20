@@ -1,10 +1,10 @@
-import type { ActivityEvent, ActivityType } from "@/types/activity";
-import type { LayoutState } from "@/types/layout";
-import { defineStore } from "pinia";
-import { type Ref, computed, ref } from "vue";
+import type { ActivityEvent, ActivityType } from '@/types/activity';
+import type { LayoutState } from '@/types/layout';
+import { defineStore } from 'pinia';
+import { type Ref, computed, ref } from 'vue';
 
 export const useLayoutStore = defineStore(
-    "layout",
+    'layout',
     () => {
         const state: Ref<LayoutState> = ref({
             leftSidebarVisibility: false,

@@ -1,5 +1,5 @@
-import type Notice from "@/types/notice";
-import { defineStore } from "pinia";
+import type Notice from '@/types/notice';
+import { defineStore } from 'pinia';
 
 interface NoticeState {
     notices: Notice[]
@@ -7,7 +7,7 @@ interface NoticeState {
 
 // TODO Show notices in the UI
 export const useNoticeStore = defineStore(
-    "notices",
+    'notices',
     {
         state: (): NoticeState => {
             return {

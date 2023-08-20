@@ -2,9 +2,9 @@ export const getSystemDateFormat = () => {
     let customDate = new Date(2222, 11, 18);
     let strDate = customDate.toLocaleDateString();
     let format = strDate
-        .replace("12", "MM")
-        .replace("18", "DD")
-        .replace("2222", "yyyy");
+        .replace('12', 'MM')
+        .replace('18', 'DD')
+        .replace('2222', 'yyyy');
     return format;
 };
 
@@ -61,9 +61,9 @@ export const getTimePassed = (start: Date | string | number, end?: Date | string
     const hours = Math.floor(diff / 1000 / 60 / 60);
     const minutes = Math.floor((diff / 1000 / 60) % 60);
     const seconds = Math.floor((diff / 1000) % 60);
-    return `${hours.toString().padStart(2, "0")}:${minutes
+    return `${hours.toString().padStart(2, '0')}:${minutes
         .toString()
-        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
 export const getWeekStartAndEnd = (date?: Date | string | number) => {

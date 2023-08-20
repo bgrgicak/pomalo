@@ -1,4 +1,4 @@
-import type { RepeatInterval, ActivityType, ActivityMembers } from "./activity";
+import type { RepeatInterval, ActivityType, ActivityMembers } from './activity';
 
 export interface ActivityDocumentEvent {
     id: string;

@@ -3,7 +3,14 @@ import { useActivityStore } from '@/stores/activities';
 import __ from '@/helper/translations';
 import { settings } from '@/helper/settings';
 
-const props = defineProps(['activity']);
+import type { PropType } from 'vue';
+
+const props = defineProps({
+  activity: {
+    type: Object as PropType<Activity>,
+    required: true,
+  }
+});
 const emit = defineEmits(['change']);
 
 const activityStore = useActivityStore();

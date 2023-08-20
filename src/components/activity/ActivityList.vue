@@ -8,8 +8,18 @@ import __ from '@/helper/translations';
 import { useActivityListStore } from '@/stores/activity-list';
 import { toLocaleDateString } from '@/helper/date';
 import TimerToggle from '../timer/TimerToggle.vue';
+import type { PropType } from 'vue';
 
-const props = defineProps(['type', 'items']);
+const props = defineProps({
+  type: {
+    type: String,
+    required: true,
+  },
+  items: {
+    type: Array as PropType<any[]>,
+    default: () => [],
+  }
+});
 const type = props.type as ActivityType;
 
 if (!type) {

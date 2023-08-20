@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import VueCal, { type VueCalEvent } from 'vue-cal';
+import VueCal, { type VueCalEvent, type VueCalView } from 'vue-cal';
 import { newEvent } from '@/data/events';
 import { getLocalDate } from '@/helper/date';
 import { useCalendarStore } from '@/stores/calendar';
@@ -12,11 +12,29 @@ import type { Ref } from 'vue';
 import type { CalendarEvent } from '@/types/calendar';
 import { nextTick } from 'vue';
 import { watch } from 'vue';
+import type { PropType } from 'vue';
 
-const props = defineProps(['vuecal', 'activeView', 'selectedDate', 'views']);
+const props = defineProps({
+    vuecal: {
+        type: Object as PropType<any>,
+        default: null
+    },
+    activeView: {
+        type: String,
+        default: 'week'
+    },
+    selectedDate: {
+        type: Date,
+        default: undefined
+    },
+    views: {
+        type: Array as PropType<string[]>,
+        default: () => []
+    }
+});
 const emit = defineEmits(['update:activeView', 'addEvent', 'updateEvent', 'fetchEvents']);
 
-const vuecal: Ref<any> = ref(null);
+const vuecalRef: Ref<VueCal | null> = ref(null);
 
 const calendarStore = useCalendarStore();
 const layoutStore = useLayoutStore();
@@ -113,8 +131,10 @@ const deleteOlderNewEvents = (date?: Date) => {
             return;
         }
         props.vuecal.emitWithEvent('event-delete', event);
-        props.vuecal.mutableEvents = props.vuecal.mutableEvents.filter((e: VueCalEvent) => e._eid !== event._eid);
-        props.vuecal.view.events = props.vuecal.view.events.filter((e: VueCalEvent) => e._eid !== event._eid);
+        if (vuecalRef.value) {
+            vuecalRef.value.mutableEvents = props.vuecal.mutableEvents.filter((e: VueCalEvent) => e._eid !== event._eid);
+            vuecalRef.value.view.events = props.vuecal.view.events.filter((e: VueCalEvent) => e._eid !== event._eid);
+        }
     });
 };
 
@@ -202,7 +222,7 @@ const onReady = (options: any) => {
 </script>
 <template>
   <vue-cal
-    ref="vuecal"
+    ref="vuecalRef"
     style="height: calc(100vh - 48px - 8px - 72px - 80px);"
     :selected-date="selectedDate"
     class="v-card calendar"
@@ -226,7 +246,7 @@ const onReady = (options: any) => {
     @event-drop="eventDurationChange"
     @event-drag-create="eventDragCreate"
   >
-    <template #event="{ event, view }">
+    <template #event="{ event }">
       <v-card-title>
         {{ event.title }}
       </v-card-title>

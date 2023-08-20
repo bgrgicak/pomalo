@@ -6,9 +6,31 @@ import { computed } from 'vue';
 import DatePicker from '@/components/ui/DatePicker.vue';
 import { RepeatInterval, RepeatLabels } from '@/types/activity';
 import { updateEventFieldInActivity } from '@/data/events';
+import type Activity from '@/types/activity';
+import type { PropType } from 'vue';
 
-
-const props = defineProps(['activity', 'event', 'repeat', 'allDay', 'small']);
+const props = defineProps({
+    activity: {
+        type: Object as PropType<Activity>,
+        required: true,
+    },
+    event: {
+        type: Object as PropType<ActivityEvent>,
+        default: undefined,
+    },
+    repeat: {
+        type: Boolean,
+        default: false,
+    },
+    allDay: {
+        type: Boolean,
+        default: false,
+    },
+    small: {
+        type: Boolean,
+        default: false,
+    },
+});
 const emit = defineEmits(['fieldChange']);
 
 const event = computed(() => {
@@ -18,7 +40,7 @@ const event = computed(() => {
 
     if (props.event) {
         const newEvent = props.activity.events.find((eventIteration: ActivityEvent) => {
-            return eventIteration.id === props.event.id;
+            return eventIteration.id === props.event?.id;
         });
         if (newEvent) {
             return newEvent;

@@ -1,4 +1,4 @@
-import __ from "@/helper/translations";
+import __ from '@/helper/translations';
 
 export enum Importance {
     NotImportant = 1,

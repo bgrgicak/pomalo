@@ -1,11 +1,11 @@
 export enum SettingType {
-    Text = "text",
-    Number = "number",
-    Boolean = "boolean",
-    Password = "password",
-    Button = "button",
-    Url = "url",
-    Textarea = "textarea",
+    Text = 'text',
+    Number = 'number',
+    Boolean = 'boolean',
+    Password = 'password',
+    Button = 'button',
+    Url = 'url',
+    Textarea = 'textarea',
 };
 
 export interface Setting {

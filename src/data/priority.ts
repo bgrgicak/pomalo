@@ -1,9 +1,9 @@
-import { dayInMilliseconds, getLocalDate, getUtcTimestamp, yearInMilliseconds } from "@/helper/date";
-import { debug, warning } from "@/helper/logs";
-import { settings } from "@/helper/settings";
-import { useActivityStore } from "@/stores/activities";
-import type Activity from "@/types/activity";
-import { ActivityType } from "@/types/activity";
+import { dayInMilliseconds, getLocalDate, getUtcTimestamp, yearInMilliseconds } from '@/helper/date';
+import { debug, warning } from '@/helper/logs';
+import { settings } from '@/helper/settings';
+import { useActivityStore } from '@/stores/activities';
+import type Activity from '@/types/activity';
+import { ActivityType } from '@/types/activity';
 
 /**
  * Get the number of milliseconds left until due date

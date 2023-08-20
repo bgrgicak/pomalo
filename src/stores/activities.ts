@@ -1,20 +1,20 @@
-import { defineStore } from "pinia";
-import type Activity from "@/types/activity";
-import __ from "@/helper/translations";
-import log, { debug } from "@/helper/logs";
-import { LogType } from "@/types/log";
-import database from "@/data/pouchdb";
-import { ref, type Ref } from "vue";
-import { addDefaultsToActivity, calculateActivity, parseActivityToDocument, parseDocumentToActivity } from "@/data/activities";
-import type { ActivityDocument } from "@/types/activity-document";
-import constants from "@/helper/constants";
+import { defineStore } from 'pinia';
+import type Activity from '@/types/activity';
+import __ from '@/helper/translations';
+import log, { debug } from '@/helper/logs';
+import { LogType } from '@/types/log';
+import database from '@/data/pouchdb';
+import { ref, type Ref } from 'vue';
+import { addDefaultsToActivity, calculateActivity, parseActivityToDocument, parseDocumentToActivity } from '@/data/activities';
+import type { ActivityDocument } from '@/types/activity-document';
+import constants from '@/helper/constants';
 
 export interface ActivityMap {
   [key: string]: Activity;
 }
 
 export const useActivityStore = defineStore(
-  "activities",
+  'activities',
   () => {
     let activities: Ref<ActivityMap> = ref({});
 
@@ -71,7 +71,7 @@ export const useActivityStore = defineStore(
       }
       return database.get(activityId).then((response) => {
         if (!response) {
-          return Promise.reject(__("Activity not found"));
+          return Promise.reject(__('Activity not found'));
         }
         addActivityDocument(response as ActivityDocument);
         return activities.value[activityId];
@@ -119,7 +119,7 @@ export const useActivityStore = defineStore(
       const updatedDocument = Object.assign({}, activity);
       return get(updatedDocument._id as string).then((document) => {
         if (!document) {
-          return Promise.reject(__("Activity not found"));
+          return Promise.reject(__('Activity not found'));
         }
         return put({
           ...updatedDocument,
@@ -137,7 +137,7 @@ export const useActivityStore = defineStore(
           return add(activity);
         }
         if (JSON.stringify(document) === JSON.stringify(updatedDocument)) {
-          debug("Activity not changed", activity);
+          debug('Activity not changed', activity);
           return Promise.resolve();
         }
         return put({

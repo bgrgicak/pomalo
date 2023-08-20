@@ -1,11 +1,11 @@
-import type Activity from "@/types/activity";
-import type { ActivityEvent, ActivityType } from "@/types/activity";
+import type Activity from '@/types/activity';
+import type { ActivityEvent, ActivityType } from '@/types/activity';
 import Router from '@/router/router';
-import { getLocalDate, getUtcTimestamp, maxDate } from "../helper/date";
-import { newId } from "./pouchdb";
-import type { ActivityDocument } from "@/types/activity-document";
-import { getEstimatedHours, getWorkedTime } from "./priority";
-import { useActivityStore } from "@/stores/activities";
+import { getLocalDate, getUtcTimestamp, maxDate } from '../helper/date';
+import { newId } from './pouchdb';
+import type { ActivityDocument } from '@/types/activity-document';
+import { getEstimatedHours, getWorkedTime } from './priority';
+import { useActivityStore } from '@/stores/activities';
 
 export const getActivityLink = (activity: Activity): string => {
     return `/${activity.type}/${activity._id}/`;

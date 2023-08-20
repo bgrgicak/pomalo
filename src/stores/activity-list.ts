@@ -1,10 +1,10 @@
-import { defineStore } from "pinia";
-import type Activity from "@/types/activity";
-import { computed, ref, watch, type Ref } from "vue";
-import { useActivityStore, type ActivityMap } from "./activities";
+import { defineStore } from 'pinia';
+import type Activity from '@/types/activity';
+import { computed, ref, watch, type Ref } from 'vue';
+import { useActivityStore, type ActivityMap } from './activities';
 
 export const useActivityListStore = defineStore(
-  "activity-list",
+  'activity-list',
   () => {
     const activityList: Ref<Activity[]> = ref([]);
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Header from "./components/layout/Header.vue";
-import Navigation from "./components/layout/Navigation.vue";
-import LeftSidebar from "./components/layout/LeftSidebar.vue";
-import RightSidebar from "./components/layout/RightSidebar.vue";
-import Main from "./components/layout/Main.vue";
+import Header from './components/layout/Header.vue';
+import Navigation from './components/layout/Navigation.vue';
+import LeftSidebar from './components/layout/LeftSidebar.vue';
+import RightSidebar from './components/layout/RightSidebar.vue';
+import Main from './components/layout/Main.vue';
 </script>
 
 <template>

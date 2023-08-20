@@ -1,6 +1,6 @@
 
-import { registerSW } from "virtual:pwa-register";
-import startIcalSync from "./ical-sync";
+import { registerSW } from 'virtual:pwa-register';
+import startIcalSync from './ical-sync';
 
 registerSW({
     onRegisteredSW (swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {

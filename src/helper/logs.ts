@@ -1,5 +1,5 @@
-import { LogType } from "@/types/log";
-import constants from "./constants";
+import { LogType } from '@/types/log';
+import constants from './constants';
 
 const log = (value: string | Object, type?: LogType, context?: Object) => {
     if (constants.environment.production) return;

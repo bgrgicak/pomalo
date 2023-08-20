@@ -1,10 +1,10 @@
-import type Activity from "@/types/activity";
-import { defineStore } from "pinia";
-import { computed, ref, type Ref } from "vue";
-import { useActivityStore } from "./activities";
-import { getTimePassed, getLocalDate, getUtcTimestamp } from "@/helper/date";
-import { newId } from "@/data/pouchdb";
-import { addEventToActivity, updateEventInActivity } from "@/data/events";
+import type Activity from '@/types/activity';
+import { defineStore } from 'pinia';
+import { computed, ref, type Ref } from 'vue';
+import { useActivityStore } from './activities';
+import { getTimePassed, getLocalDate, getUtcTimestamp } from '@/helper/date';
+import { newId } from '@/data/pouchdb';
+import { addEventToActivity, updateEventInActivity } from '@/data/events';
 
 interface TimerState {
     activity: Activity | undefined;
@@ -13,7 +13,7 @@ interface TimerState {
 }
 
 export const useTimerStore = defineStore(
-    "timer",
+    'timer',
     () => {
         const state: Ref<TimerState> = ref({
             activity: undefined,
@@ -49,14 +49,14 @@ export const useTimerStore = defineStore(
         const getCurrentActivity = (): Promise<void | Activity[]> => {
             const now = getUtcTimestamp();
             return activityStore.find({
-                "selector": {
-                    "eventFirstStart": {
-                        "$lte": now
+                'selector': {
+                    'eventFirstStart': {
+                        '$lte': now
                     },
-                    "eventLastEnd": {
-                        "$exists": true
+                    'eventLastEnd': {
+                        '$exists': true
                     },
-                    "timerRunning": true,
+                    'timerRunning': true,
                 },
             }).then((activities) => {
                 if (activities && activities.length > 0) {

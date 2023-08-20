@@ -1,8 +1,33 @@
 <script setup lang="ts">
 import { getSystemDateFormat, toInputDateString, getLocalDate } from '@/helper/date';
+import type { PropType } from 'vue';
 import { computed } from 'vue';
-
-const props = defineProps(['value', 'label', 'time', 'hint', 'variant', 'readonly']);
+const props = defineProps({
+    value: {
+        type: Date,
+        default: null,
+    },
+    label: {
+        type: String,
+        default: '',
+    },
+    time: {
+        type: Boolean,
+        default: false,
+    },
+    hint: {
+        type: String,
+        default: '',
+    },
+    variant: {
+        type: String as PropType<any>,
+        default: undefined,
+    },
+    readonly: {
+        type: Boolean,
+        default: false,
+    },
+});
 
 const emit = defineEmits(['change']);
 

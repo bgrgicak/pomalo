@@ -31,7 +31,10 @@ const prepareSetting = (setting: Setting) => {
         <h2>{{ group.title }}</h2>
       </v-col>
       <v-col cols="12">
-        <v-row v-for="(section, sectionKey) in group">
+        <v-row
+          v-for="(section, sectionKey) in group"
+          :key="sectionKey"
+        >
           <v-list
             v-if="'title' !== sectionKey"
             class="d-flex flex-column"

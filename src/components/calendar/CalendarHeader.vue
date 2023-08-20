@@ -1,8 +1,24 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
 import { defaultView } from '@/plugins/vuecal';
+import type { PropType } from 'vue';
+import type VueCal from 'vue-cal';
 
-const props = defineProps(['vuecal', 'activeView', 'views']);
+// const props = defineProps(['vuecal', 'activeView', 'views']);
+const props = defineProps({
+    vuecal: {
+        type: Object as PropType<VueCal>,
+        required: true,
+    },
+    activeView: {
+        type: String,
+        default: defaultView,
+    },
+    views: {
+        type: Array as PropType<string[]>,
+        default: () => [],
+    },
+});
 const emit = defineEmits(['update:activeView', 'addEvent']);
 
 const previous = () => {
@@ -38,6 +54,7 @@ const today = () => {
       >
         <v-btn
           v-for="view in props.views"
+          :key="view"
           :value="view"
         >
           {{ view }}

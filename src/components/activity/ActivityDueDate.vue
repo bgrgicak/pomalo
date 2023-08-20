@@ -4,7 +4,14 @@ import __ from '@/helper/translations';
 import DatePicker from '@/components/ui/DatePicker.vue';
 import { getLocalDate } from '@/helper/date';
 
-const props = defineProps(['activity']);
+import type { PropType } from 'vue';
+
+const props = defineProps({
+  activity: {
+    type: Object as PropType<Activity>,
+    required: true,
+  }
+});
 const emit = defineEmits(['change']);
 
 const activityStore = useActivityStore();
@@ -24,6 +31,7 @@ const onChange = (value: string | undefined) => {
   <DatePicker
     :label="__('Due date')"
     :value="props.activity.dueDate"
+    :readonly="props.activity.readonly"
     @change="onChange"
   />
 </template>

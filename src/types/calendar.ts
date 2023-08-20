@@ -24,8 +24,8 @@ export interface CalendarState {
 }
 
 export enum CalendarClipboardType {
-    Copy = "copy",
-    Cut = "cut",
+    Copy = 'copy',
+    Cut = 'cut',
 }
 
 

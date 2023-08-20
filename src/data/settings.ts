@@ -1,4 +1,4 @@
-import { SettingType, type Setting } from "@/types/setting";
+import { SettingType, type Setting } from '@/types/setting';
 
 export const addDefaultsToSetting = (setting?: Setting): Setting => {
     return {
