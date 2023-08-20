@@ -80,7 +80,7 @@ const createViews = async (database: PouchDB.Database) => {
       .catch(err => error(err));
     database.put({
       _id: viewId,
-      _rev: viewDocument?._rev,
+      _rev: viewDocument ? viewDocument._rev : undefined,
       views: {
         ...view.views
       },

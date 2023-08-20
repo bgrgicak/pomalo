@@ -6,7 +6,7 @@ export enum Importance {
     Important = 5,
     VeryImportant = 7,
     ExtremelyImportant = 9,
-}
+};
 
 export const ImportanceLabels: Object = {
     [Importance.NotImportant]: {
@@ -34,7 +34,7 @@ export enum RepeatInterval {
     Monthly = 'monthly',
     Yearly = 'yearly',
     Custom = 'custom',
-}
+};
 export const RepeatLabels: Object = {
     [RepeatInterval.NoRepeat]: {
         label: __('Don\'t Repeat'),
@@ -55,61 +55,62 @@ export const RepeatLabels: Object = {
 };
 
 export interface ActivityEvent {
-    id: string;
-    start: Date;
-    end?: Date;
-    allDay?: boolean;
-    repeat?: RepeatInterval;
-    repeatEnd?: Date;
-    repeatDays?: number[];
-    repeatInterval?: number;
-}
+    id: string,
+    start: Date,
+    end?: Date,
+    allDay?: boolean,
+    repeat?: RepeatInterval,
+    repeatEnd?: Date,
+    repeatDays?: number[],
+    repeatInterval?: number,
+};
 
 export interface ActivityMembers {
-    email: string;
-    status: string;
-}
+    email: string,
+    status: string,
+};
 
 export enum ActivityType {
     Task = 'task',
     Event = 'event',
     Project = 'project',
     New = 'new', // used for creating new activities
-}
+};
 
 export interface ActivityState {
-    activity: Activity;
-    isEditing: boolean;
-}
+    activity: Activity,
+    isEditing: boolean,
+};
+interface Activity {
+    _id: string,
+    _rev?: string,
+    title: string,
+    created: Date,
+    description: string,
+    type: ActivityType,
+    parent?: string,
 
-export default interface Activity {
-    _id: string;
-    _rev?: string;
-    title: string;
-    created: Date;
-    description: string;
-    type: ActivityType;
-    parent?: string;
+    readonly?: boolean,
+    remoteId?: string,
 
-    readonly?: boolean;
-    remoteId?: string;
+    members: ActivityMembers[],
+    events: ActivityEvent[],
 
-    members: ActivityMembers[];
-    events: ActivityEvent[];
+    completedDate?: Date,
+    dueDate?: Date,
+    estimatedHours?: number,
 
-    completedDate?: Date;
-    dueDate?: Date;
-    estimatedHours?: number;
-
-    aboveActivities: string[];
-    belowActivities: string[];
+    aboveActivities: string[],
+    belowActivities: string[],
 
     // Calculated values
 
-    eventFirstStart?: Date;
-    eventLastEnd?: Date;
-    timerRunning?: boolean;
+    eventFirstStart?: Date,
+    eventLastEnd?: Date,
+    timerRunning?: boolean,
 
-    calculatedEstimatedTime?: number;
-    calculatedTimeSpent?: number;
-}
+    calculatedEstimatedTime?: number,
+    calculatedTimeSpent?: number,
+};
+
+export default Activity;

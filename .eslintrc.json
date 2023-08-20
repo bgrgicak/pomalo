@@ -13,6 +13,14 @@
             "error",
             "single"
         ],
-        "prefer-arrow-callback": "error"
+        "prefer-arrow-callback": "error",
+        "semi": [
+            "error",
+            "always"
+        ],
+        "comma-dangle": [
+            "error",
+            "only-multiline"
+        ]
     }
 }

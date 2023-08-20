@@ -2,12 +2,14 @@ export enum NoticeType {
     Info = 'info',
     Warning = 'warning',
     Error = 'error',
-    Success = 'success'
+    Success = 'success',
 };
 
-export default interface Notice {
-    _id?: string;
-    title: string;
-    description?: string;
-    type?: NoticeType;
+interface Notice {
+    _id?: string,
+    title: string,
+    description?: string,
+    type?: NoticeType,
 };
+
+export default Notice;
