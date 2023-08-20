@@ -47,7 +47,7 @@ export const useActivityStore = defineStore(
 			return activities.value[activityDocument._id as string];
 		};
 
-		const find = (request?: PouchDB.Find.FindRequest<{}> | undefined, store: boolean = true): Promise<Activity[] | void> => {
+		const find = (request?: PouchDB.Find.FindRequest<{}> | undefined, store: boolean = true, removed: boolean = false): Promise<Activity[] | void> => {
 			if (constants.environment.development) {
 				(database as any).explain(request).then((result: any) => {
 					log(result, LogType.Debug);
@@ -59,7 +59,9 @@ export const useActivityStore = defineStore(
 				return response.map(
 					(activity: ActivityDocument) =>
 						store ? addActivityDocument(activity) : prepareActivityFromDocument(activity)
-				);
+				).filter((activity: Activity) => {
+					return removed ? true : !activity.removed;
+				});
 			}).catch((error) => {
 				log(error, LogType.Error);
 			});
@@ -97,7 +99,7 @@ export const useActivityStore = defineStore(
 					if (parent) {
 						return activity.parent === parent;
 					}
-					return true;
+					return true !== activity.removed;
 				});
 			}).catch((error) => {
 				log(error, LogType.Error);
@@ -180,7 +182,16 @@ export const useActivityStore = defineStore(
 
 		const remove = (activityId: string) => {
 			return get(activityId).then((document) => {
-				return database.remove(document as any);
+				if (!document) {
+					return Promise.reject(__('Activity not found'));
+				}
+				const updatedDocument = Object.assign({}, document);
+				updatedDocument.removed = true;
+				updatedDocument.readonly = true;
+				return put({
+					...updatedDocument,
+					_rev: document._rev,
+				});
 			}).catch(error => {
 				log(error, LogType.Error);
 			});

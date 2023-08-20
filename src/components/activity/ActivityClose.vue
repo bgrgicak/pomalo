@@ -49,6 +49,7 @@ const closeActivity = (activity: Activity) => {
 </script>
 <template>
   <v-btn
+    v-if="!props.activity.removed && !props.activity.readonly"
     color="error"
     class="activity-close"
     :class="{ 'activity-close--small': props.small }"

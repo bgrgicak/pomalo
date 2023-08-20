@@ -52,7 +52,19 @@ const onFieldChange = (key: string, value: any) => {
   <v-card class="activity-details pa-4">
     <v-container>
       <v-row
-        v-if="!!activity?.readonly"
+        v-if="!!activity?.removed"
+        no-gutters
+      >
+        <v-col cols="12">
+          <v-alert
+            class="mb-8"
+            color="primary"
+            :text="__('This item is removed and can\'t be edited.')"
+          />
+        </v-col>
+      </v-row>
+      <v-row
+        v-else-if="!!activity?.readonly"
         no-gutters
       >
         <v-col cols="12">

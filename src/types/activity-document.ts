@@ -1,39 +1,18 @@
-import type { RepeatInterval, ActivityType, ActivityMembers } from './activity';
+import type { ActivityEvent } from './activity';
+import type Activity from './activity';
 
-export interface ActivityDocumentEvent {
-    id: string;
+export interface ActivityDocumentEvent extends Omit<ActivityEvent, 'start' | 'end' | 'repeatEnd'> {
     start: number;
     end?: number;
-    allDay?: boolean;
-    repeat?: RepeatInterval;
     repeatEnd?: number;
-    repeatDays?: number[];
-    repeatInterval?: number;
 }
-export interface ActivityDocument {
-    _id: string;
-    _rev?: string;
-    title: string;
+export interface ActivityDocument extends Omit<Activity, 'created' | 'events' | 'completedDate' | 'dueDate' | 'eventFirstStart' | 'eventLastEnd'> {
     created: number;
-    description: string;
-    type: ActivityType;
-
-    readonly?: boolean;
-    remoteId?: string;
-
-    members: ActivityMembers[];
     events: ActivityDocumentEvent[];
 
     completedDate?: number;
     dueDate?: number;
-    estimatedHours?: number;
 
     eventFirstStart?: number;
     eventLastEnd?: number;
-
-    aboveActivities: string[];
-    belowActivities: string[];
-
-    calculatedEstimatedTime?: number;
-    calculatedTimeSpent?: number;
 }

@@ -89,6 +89,7 @@ interface Activity {
     description: string,
     type: ActivityType,
     parent?: string,
+    removed?: boolean,
 
     readonly?: boolean,
     remoteId?: string,

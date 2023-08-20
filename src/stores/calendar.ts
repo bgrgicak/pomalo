@@ -56,7 +56,7 @@ export const useCalendarStore = defineStore(
 						'$gte': getUtcTimestamp(state.value.startTime)
 					},
 				},
-			}).then((activities) => {
+			}, true, true).then((activities) => {
 				if (!state.value.startTime || !state.value.endTime) {
 					return [];
 				}
