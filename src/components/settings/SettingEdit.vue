@@ -7,11 +7,11 @@ const props = defineProps<{
 const emit = defineEmits(['onChange']);
 
 const onChange = (value: unknown) => {
-    emit(
-        'onChange',
-        props.setting.id,
-        value,
-    );
+	emit(
+		'onChange',
+		props.setting.id,
+		value,
+	);
 };
 </script>
 <template>

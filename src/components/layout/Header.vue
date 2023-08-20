@@ -8,7 +8,7 @@ import { useLayoutStore } from '@/stores/layout';
 const layoutStore = useLayoutStore();
 
 const toggleMenu = () => {
-    layoutStore.updateMenuVisibility(!layoutStore.isMenuVisible);
+	layoutStore.updateMenuVisibility(!layoutStore.isMenuVisible);
 };
 </script>
 <template>

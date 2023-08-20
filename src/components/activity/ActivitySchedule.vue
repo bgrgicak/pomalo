@@ -10,99 +10,99 @@ import type Activity from '@/types/activity';
 import type { PropType } from 'vue';
 
 const props = defineProps({
-    activity: {
-        type: Object as PropType<Activity>,
-        required: true,
-    },
-    event: {
-        type: Object as PropType<ActivityEvent>,
-        default: undefined,
-    },
-    repeat: {
-        type: Boolean,
-        default: false,
-    },
-    allDay: {
-        type: Boolean,
-        default: false,
-    },
-    small: {
-        type: Boolean,
-        default: false,
-    },
+	activity: {
+		type: Object as PropType<Activity>,
+		required: true,
+	},
+	event: {
+		type: Object as PropType<ActivityEvent>,
+		default: undefined,
+	},
+	repeat: {
+		type: Boolean,
+		default: false,
+	},
+	allDay: {
+		type: Boolean,
+		default: false,
+	},
+	small: {
+		type: Boolean,
+		default: false,
+	},
 });
 const emit = defineEmits(['fieldChange']);
 
 const event = computed(() => {
-    if (0 === props.activity.events.length) {
-        return {} as ActivityEvent;
-    }
+	if (0 === props.activity.events.length) {
+		return {} as ActivityEvent;
+	}
 
-    if (props.event) {
-        const newEvent = props.activity.events.find((eventIteration: ActivityEvent) => {
-            return eventIteration.id === props.event?.id;
-        });
-        if (newEvent) {
-            return newEvent;
-        }
-    }
-    return props.activity.events[0];
+	if (props.event) {
+		const newEvent = props.activity.events.find((eventIteration: ActivityEvent) => {
+			return eventIteration.id === props.event?.id;
+		});
+		if (newEvent) {
+			return newEvent;
+		}
+	}
+	return props.activity.events[0];
 });
 
 const activityStore = useActivityStore();
 
 const repeatOptions = Object.keys(RepeatLabels).map((key) => {
-    return {
-        text: (RepeatLabels as any)[key].label,
-        value: key,
-    };
+	return {
+		text: (RepeatLabels as any)[key].label,
+		value: key,
+	};
 });
 
 const repeatDaysOfWeekOptions = [
-    {
-        text: __('Monday'),
-        value: 1,
-    },
-    {
-        text: __('Tuesday'),
-        value: 2,
-    },
-    {
-        text: __('Wednesday'),
-        value: 3,
-    },
-    {
-        text: __('Thursday'),
-        value: 4,
-    },
-    {
-        text: __('Friday'),
-        value: 5,
-    },
-    {
-        text: __('Saturday'),
-        value: 6,
-    },
-    {
-        text: __('Sunday'),
-        value: 0,
-    },
+	{
+		text: __('Monday'),
+		value: 1,
+	},
+	{
+		text: __('Tuesday'),
+		value: 2,
+	},
+	{
+		text: __('Wednesday'),
+		value: 3,
+	},
+	{
+		text: __('Thursday'),
+		value: 4,
+	},
+	{
+		text: __('Friday'),
+		value: 5,
+	},
+	{
+		text: __('Saturday'),
+		value: 6,
+	},
+	{
+		text: __('Sunday'),
+		value: 0,
+	},
 ];
 
 const isRepeatActivity = computed(() => {
-    return event.value.repeat;
+	return event.value.repeat;
 });
 
 const onEventFieldChange = (field: string, value: any) => {
-    const updatedActivity = updateEventFieldInActivity(
-        props.activity,
-        event.value,
-        field,
-        value,
-    );
-    activityStore.update(updatedActivity).then(() => {
-        emit('fieldChange', updatedActivity.events);
-    });
+	const updatedActivity = updateEventFieldInActivity(
+		props.activity,
+		event.value,
+		field,
+		value,
+	);
+	activityStore.update(updatedActivity).then(() => {
+		emit('fieldChange', updatedActivity.events);
+	});
 };
 </script>
 <template>

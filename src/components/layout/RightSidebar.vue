@@ -18,11 +18,11 @@ const event = computed(() => layoutStore.currentEvent ?? undefined);
 const newType = computed(() => layoutStore.newActivityType ?? undefined);
 
 if (activityId.value) {
-    activityStore.get(activityId.value);
+	activityStore.get(activityId.value);
 }
 
 const hide = () => {
-    layoutStore.hideRightSidebar();
+	layoutStore.hideRightSidebar();
 };
 
 watch(route, hide);

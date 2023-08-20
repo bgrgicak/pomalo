@@ -9,22 +9,22 @@ export enum Importance {
 };
 
 export const ImportanceLabels: Object = {
-    [Importance.NotImportant]: {
-        label: __('Not Important'),
-    },
-    [Importance.SomewhatImportant]: {
-        label: __('Somewhat Important'),
-        default: true,
-    },
-    [Importance.Important]: {
-        label: __('Important'),
-    },
-    [Importance.VeryImportant]: {
-        label: __('Very Important'),
-    },
-    [Importance.ExtremelyImportant]: {
-        label: __('Extremely Important'),
-    },
+	[Importance.NotImportant]: {
+		label: __('Not Important'),
+	},
+	[Importance.SomewhatImportant]: {
+		label: __('Somewhat Important'),
+		default: true,
+	},
+	[Importance.Important]: {
+		label: __('Important'),
+	},
+	[Importance.VeryImportant]: {
+		label: __('Very Important'),
+	},
+	[Importance.ExtremelyImportant]: {
+		label: __('Extremely Important'),
+	},
 };
 
 export enum RepeatInterval {
@@ -36,22 +36,22 @@ export enum RepeatInterval {
     Custom = 'custom',
 };
 export const RepeatLabels: Object = {
-    [RepeatInterval.NoRepeat]: {
-        label: __('Don\'t Repeat'),
-        default: true,
-    },
-    [RepeatInterval.Daily]: {
-        label: __('Daily'),
-    },
-    [RepeatInterval.Weekly]: {
-        label: __('Weekly'),
-    },
-    [RepeatInterval.Monthly]: {
-        label: __('Monthly'),
-    },
-    [RepeatInterval.Yearly]: {
-        label: __('Yearly'),
-    },
+	[RepeatInterval.NoRepeat]: {
+		label: __('Don\'t Repeat'),
+		default: true,
+	},
+	[RepeatInterval.Daily]: {
+		label: __('Daily'),
+	},
+	[RepeatInterval.Weekly]: {
+		label: __('Weekly'),
+	},
+	[RepeatInterval.Monthly]: {
+		label: __('Monthly'),
+	},
+	[RepeatInterval.Yearly]: {
+		label: __('Yearly'),
+	},
 };
 
 export interface ActivityEvent {

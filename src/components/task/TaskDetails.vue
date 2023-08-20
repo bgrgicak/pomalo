@@ -8,46 +8,46 @@ import type Activity from '@/types/activity';
 import type { PropType } from 'vue';
 
 const props = defineProps({
-    activity: {
-        type: Object as PropType<Activity>,
-        required: true
-    },
-    small: {
-        type: Boolean,
-        default: false
-    }
+	activity: {
+		type: Object as PropType<Activity>,
+		required: true
+	},
+	small: {
+		type: Boolean,
+		default: false
+	}
 });
 
 const events = computed(
-    () => {
-        const events: any[] = props.activity.events
-            .filter((event: ActivityEvent) => event.end)
-            .map((event: ActivityEvent) => {
-                return {
-                    date: toLocaleDateString(event.start),
-                    duration: getTimePassed(event.start, event.end),
-                    type: 'event',
-                    icon: 'mdi-timer-outline',
-                };
-            });
-        events.push(
-            {
-                date: toLocaleDateString(props.activity.created),
-                type: 'created',
-                icon: 'mdi-pencil-outline'
-            }
-        );
-        if (props.activity.completedDate) {
-            events.push(
-                {
-                    date: toLocaleDateString(props.activity.completedDate),
-                    type: 'completed',
-                    icon: 'mdi-check'
-                }
-            );
-        }
-        return events.sort((a: any, b: any) => a.date < b.date ? 1 : 0);
-    }
+	() => {
+		const events: any[] = props.activity.events
+			.filter((event: ActivityEvent) => event.end)
+			.map((event: ActivityEvent) => {
+				return {
+					date: toLocaleDateString(event.start),
+					duration: getTimePassed(event.start, event.end),
+					type: 'event',
+					icon: 'mdi-timer-outline',
+				};
+			});
+		events.push(
+			{
+				date: toLocaleDateString(props.activity.created),
+				type: 'created',
+				icon: 'mdi-pencil-outline'
+			}
+		);
+		if (props.activity.completedDate) {
+			events.push(
+				{
+					date: toLocaleDateString(props.activity.completedDate),
+					type: 'completed',
+					icon: 'mdi-check'
+				}
+			);
+		}
+		return events.sort((a: any, b: any) => a.date < b.date ? 1 : 0);
+	}
 
 
 );

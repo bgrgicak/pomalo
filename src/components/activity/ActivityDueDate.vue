@@ -8,24 +8,24 @@ import type { PropType } from 'vue';
 import type Activity from '@/types/activity';
 
 const props = defineProps({
-  activity: {
-    type: Object as PropType<Activity>,
-    required: true,
-  }
+	activity: {
+		type: Object as PropType<Activity>,
+		required: true,
+	}
 });
 const emit = defineEmits(['change']);
 
 const activityStore = useActivityStore();
 
 const onChange = (value: string | undefined) => {
-    const newValue = value ? getLocalDate(value) : undefined;
-    activityStore.updateField(
-        props.activity._id,
-        'dueDate',
-        newValue,
-    ).then(() => {
-        emit('change', newValue);
-    });
+	const newValue = value ? getLocalDate(value) : undefined;
+	activityStore.updateField(
+		props.activity._id,
+		'dueDate',
+		newValue,
+	).then(() => {
+		emit('change', newValue);
+	});
 };
 </script>
 <template>

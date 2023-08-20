@@ -11,14 +11,14 @@ import SettingsDevelopmentMode from './SettingsDevelopmentMode.vue';
 const settingsStore = useSettingsStore();
 
 const onChange = (id: string, value: any) => {
-    settingsStore.update(id, value);
+	settingsStore.update(id, value);
 };
 
 const prepareSetting = (setting: Setting) => {
-    return addDefaultsToSetting({
-        ...setting,
-        value: settingsStore.settings[setting.id as keyof typeof settingsStore.settings] ?? setting.defaultValue,
-    });
+	return addDefaultsToSetting({
+		...setting,
+		value: settingsStore.settings[setting.id as keyof typeof settingsStore.settings] ?? setting.defaultValue,
+	});
 };
 </script>
 <template>

@@ -6,23 +6,23 @@ import type Activity from '@/types/activity';
 import type { ActivityEvent } from '@/types/activity';
 
 const props = defineProps({
-    activity: {
-        type: Object as PropType<Activity>,
-        default: null
-    },
-    event: {
-        type: Object as PropType<ActivityEvent>,
-        default: null
-    },
-    small: {
-        type: Boolean,
-        default: false
-    }
+	activity: {
+		type: Object as PropType<Activity>,
+		default: null
+	},
+	event: {
+		type: Object as PropType<ActivityEvent>,
+		default: null
+	},
+	small: {
+		type: Boolean,
+		default: false
+	}
 });
 const emit = defineEmits(['fieldChange']);
 
 const onFieldChange = (key: string, value: any) => {
-    emit('fieldChange', key, value);
+	emit('fieldChange', key, value);
 };
 </script>
 <template>

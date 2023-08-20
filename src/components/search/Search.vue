@@ -13,62 +13,62 @@ import type { PropType } from 'vue';
 
 
 const props = defineProps({
-  value: {
-    type: String,
-    default: '',
-  },
-  label: {
-    type: String,
-    default: '',
-  },
-  openInSidebar: {
-    type: Boolean,
-    default: false,
-  },
-  types: {
-    type: Array as PropType<ActivityType[]>,
-    default: () => [ActivityType.Task, ActivityType.Event],
-  },
-  newTypes: {
-    type: Array as PropType<ActivityType[]>,
-    default: () => [ActivityType.Task, ActivityType.Event],
-  },
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-  event: {
-    type: Object as PropType<ActivityEvent>,
-    default: undefined,
-  },
-  autofocus: {
-    type: Boolean,
-    default: false,
-  },
-  variant: {
-    type: String as PropType<any>,
-    default: undefined,
-  },
-  placeholder: {
-    type: String,
-    default: undefined,
-  },
-  preventDefault: {
-    type: Boolean,
-    default: false,
-  },
-  hideTimer: {
-    type: Boolean,
-    default: false,
-  },
-  hideIcon: {
-    type: Boolean,
-    default: false,
-  },
-  clearable: {
-    type: Boolean,
-    default: false,
-  },
+	value: {
+		type: String,
+		default: '',
+	},
+	label: {
+		type: String,
+		default: '',
+	},
+	openInSidebar: {
+		type: Boolean,
+		default: false,
+	},
+	types: {
+		type: Array as PropType<ActivityType[]>,
+		default: () => [ActivityType.Task, ActivityType.Event],
+	},
+	newTypes: {
+		type: Array as PropType<ActivityType[]>,
+		default: () => [ActivityType.Task, ActivityType.Event],
+	},
+	visible: {
+		type: Boolean,
+		default: false,
+	},
+	event: {
+		type: Object as PropType<ActivityEvent>,
+		default: undefined,
+	},
+	autofocus: {
+		type: Boolean,
+		default: false,
+	},
+	variant: {
+		type: String as PropType<any>,
+		default: undefined,
+	},
+	placeholder: {
+		type: String,
+		default: undefined,
+	},
+	preventDefault: {
+		type: Boolean,
+		default: false,
+	},
+	hideTimer: {
+		type: Boolean,
+		default: false,
+	},
+	hideIcon: {
+		type: Boolean,
+		default: false,
+	},
+	clearable: {
+		type: Boolean,
+		default: false,
+	},
 });
 const emit = defineEmits(['hideSearch', 'click']);
 
@@ -82,88 +82,88 @@ const activityStore = useActivityStore();
 const searchStore = useSearchStore();
 
 const newTypes = computed(
-    () => {
-        return props.newTypes ?? [ActivityType.Task, ActivityType.Event];
-    }
+	() => {
+		return props.newTypes ?? [ActivityType.Task, ActivityType.Event];
+	}
 );
 
 const noInput = computed(
-    () => {
-        return searchText.value.length === 0;
-    }
+	() => {
+		return searchText.value.length === 0;
+	}
 );
 
 const hide = () => {
-    searchText.value = '';
-    searchStore.clear();
-    if (props.visible) {
-        return;
-    }
-    searchVisible.value = false;
-    emit('hideSearch');
+	searchText.value = '';
+	searchStore.clear();
+	if (props.visible) {
+		return;
+	}
+	searchVisible.value = false;
+	emit('hideSearch');
 };
 
 const openActivity = (activity: Activity) => {
-    if (props.preventDefault) {
-        emit('click', activity);
-        toggleFocus();
-    } else {
-        if (props.event) {
-            activityStore.update(
-                addEventToActivity(
-                    activity,
-                    props.event
-                )
-            );
-        }
-        if (props.openInSidebar) {
-            layoutStore.showRightSidebar(activity._id, props.event);
-        } else {
-            openActivityPage(activity);
-        }
-    }
-    hide();
+	if (props.preventDefault) {
+		emit('click', activity);
+		toggleFocus();
+	} else {
+		if (props.event) {
+			activityStore.update(
+				addEventToActivity(
+					activity,
+					props.event
+				)
+			);
+		}
+		if (props.openInSidebar) {
+			layoutStore.showRightSidebar(activity._id, props.event);
+		} else {
+			openActivityPage(activity);
+		}
+	}
+	hide();
 };
 
 const timerToggle = (activity: Activity) => {
-    if (props.openInSidebar) {
-        layoutStore.showRightSidebar(activity._id, props.event);
-    }
-    hide();
+	if (props.openInSidebar) {
+		layoutStore.showRightSidebar(activity._id, props.event);
+	}
+	hide();
 };
 
 const add = (type: ActivityType) => {
-    const newActivity = emptyActivity(type);
-    newActivity.title = searchText.value;
+	const newActivity = emptyActivity(type);
+	newActivity.title = searchText.value;
 
-    activityStore.add(newActivity).then(() => {
-        openActivity(newActivity);
-    });
+	activityStore.add(newActivity).then(() => {
+		openActivity(newActivity);
+	});
 };
 const showSearch = async () => {
-    searchVisible.value = true;
-    await nextTick();
-    toggleFocus();
+	searchVisible.value = true;
+	await nextTick();
+	toggleFocus();
 };
 
 const toggleFocus = (state?: boolean) => {
-    if (null !== searchRef.value) {
-        const element: any = searchRef.value;
-        if (element.focused || state === false) {
-            element.blur();
-        } else if (!element.focused || state === true) {
-            element.focus();
-        }
-    }
+	if (null !== searchRef.value) {
+		const element: any = searchRef.value;
+		if (element.focused || state === false) {
+			element.blur();
+		} else if (!element.focused || state === true) {
+			element.focus();
+		}
+	}
 };
 
 const onSearch = (searchText: string) => {
-    searchStore.search(searchText, props.types);
+	searchStore.search(searchText, props.types);
 };
 
 const onClear = () => {
-    emit('click', undefined);
-    hide();
+	emit('click', undefined);
+	hide();
 };
 </script>
 <template>

@@ -5,22 +5,22 @@ import type { PropType } from 'vue';
 import type { ActivityEvent, ActivityType } from '@/types/activity';
 
 const props = defineProps({
-  event: {
-    type: Object as PropType<ActivityEvent>,
-    default: undefined,
-  },
-  openInSidebar: {
-    type: Boolean,
-    default: false,
-  },
-  type: {
-    type: String as PropType<ActivityType>,
-    default: undefined,
-  },
-  visible: {
-    type: Boolean,
-    default: false,
-  },
+	event: {
+		type: Object as PropType<ActivityEvent>,
+		default: undefined,
+	},
+	openInSidebar: {
+		type: Boolean,
+		default: false,
+	},
+	type: {
+		type: String as PropType<ActivityType>,
+		default: undefined,
+	},
+	visible: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 </script>

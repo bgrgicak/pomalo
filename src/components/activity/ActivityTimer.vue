@@ -7,16 +7,16 @@ import { computed } from 'vue';
 import type { PropType } from 'vue';
 
 const props = defineProps({
-  activity: {
-    type: Object as PropType<Activity>,
-    required: true,
-  }
+	activity: {
+		type: Object as PropType<Activity>,
+		required: true,
+	}
 });
 
 const timerStore = useTimerStore();
 
 const isActive = computed(() => {
-    return timerStore.active && timerStore.activityId === props.activity._id;
+	return timerStore.active && timerStore.activityId === props.activity._id;
 });
 </script>
 <template v-if="!timerStore.isLoading">

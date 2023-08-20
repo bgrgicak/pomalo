@@ -7,26 +7,26 @@ import { computed } from 'vue';
 import type { PropType } from 'vue';
 
 const props = defineProps({
-  activity: {
-    type: Object as PropType<Activity>,
-    required: true,
-  }
+	activity: {
+		type: Object as PropType<Activity>,
+		required: true,
+	}
 });
 const emit = defineEmits(['change']);
 
 const timerStore = useTimerStore();
 
 const isActive = computed(() => {
-    return timerStore.active && timerStore.activityId === props.activity._id;
+	return timerStore.active && timerStore.activityId === props.activity._id;
 });
 
 const start = () => {
-    timerStore.start(props.activity._id);
-    emit('change', true, props.activity._id);
+	timerStore.start(props.activity._id);
+	emit('change', true, props.activity._id);
 };
 const stop = () => {
-    timerStore.stop();
-    emit('change', false, props.activity._id);
+	timerStore.stop();
+	emit('change', false, props.activity._id);
 };
 </script>
 <template v-if="!timerStore.isLoading">

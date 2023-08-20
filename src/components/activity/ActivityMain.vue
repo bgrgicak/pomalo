@@ -9,42 +9,43 @@ import ActivityNew from './ActivityNew.vue';
 import EventSidebar from '@/components/event/EventSidebar.vue';
 import ProjectSidebar from '@/components/project/ProjectSidebar.vue';
 import type Activity from '@/types/activity';
+import ProjectDetails from '../project/ProjectDetails.vue';
 
 const props = defineProps({
-    activity: {
-        type: Object as PropType<Activity>,
-        default: undefined,
-    },
-    event: {
-        type: Object as PropType<ActivityEvent>,
-        default: undefined,
-    },
-    small: {
-        type: Boolean,
-        default: false,
-    },
-    type: {
-        type: String as PropType<ActivityType>,
-        default: undefined,
-    },
+	activity: {
+		type: Object as PropType<Activity>,
+		default: undefined,
+	},
+	event: {
+		type: Object as PropType<ActivityEvent>,
+		default: undefined,
+	},
+	small: {
+		type: Boolean,
+		default: false,
+	},
+	type: {
+		type: String as PropType<ActivityType>,
+		default: undefined,
+	},
 });
 
 const isNew = computed(() => {
-    return undefined === props.activity;
+	return undefined === props.activity;
 });
 const isTask = computed(() => {
-    return props.activity && ActivityType.Task === props.activity.type;
+	return props.activity && ActivityType.Task === props.activity.type;
 });
 const isEvent = computed(() => {
-    return props.activity && ActivityType.Event === props.activity.type;
+	return props.activity && ActivityType.Event === props.activity.type;
 });
 
 const isProject = computed(() => {
-    return props.activity && ActivityType.Project === props.activity.type;
+	return props.activity && ActivityType.Project === props.activity.type;
 });
 
 const onFieldChange = (key: string, value: any) => {
-    (props.activity as any)[key] = value;
+	(props.activity as any)[key] = value;
 };
 </script>
 <template>
@@ -79,6 +80,12 @@ const onFieldChange = (key: string, value: any) => {
           />
           <TaskDetails
             v-if="isTask && props.activity"
+            :activity="props.activity"
+            :small="props.small"
+            class="mt-6 d-none d-md-block"
+          />
+          <ProjectDetails
+            v-if="isProject && props.activity"
             :activity="props.activity"
             :small="props.small"
             class="mt-6 d-none d-md-block"

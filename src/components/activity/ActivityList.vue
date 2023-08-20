@@ -9,49 +9,65 @@ import { useActivityListStore } from '@/stores/activity-list';
 import { toLocaleDateString } from '@/helper/date';
 import TimerToggle from '../timer/TimerToggle.vue';
 import type { PropType } from 'vue';
+import ActivityClose from './ActivityClose.vue';
 
 const props = defineProps({
-  type: {
-    type: String,
-    required: true,
-  },
-  items: {
-    type: Array as PropType<any[]>,
-    default: () => [],
-  }
+	type: {
+		type: String as PropType<ActivityType>,
+		required: true,
+	},
+	items: {
+		type: Array as PropType<any[]>,
+		default: () => [],
+	},
+	parent: {
+		type: String,
+		default: undefined,
+	},
+	addButton: {
+		type: Boolean,
+		default: true,
+	},
 });
-const type = props.type as ActivityType;
 
-if (!type) {
-  throw new Error('ActivityList requires a type prop');
+if (!props.type) {
+	throw new Error('ActivityList requires a type prop');
 }
 
-const newActivity: Ref<Activity> = ref(emptyActivity(type));
+const getNewActivity = () => {
+	const activity = emptyActivity(props.type);
+	if (props.parent) {
+		activity.parent = props.parent;
+	}
+	return activity;
+};
+
+const newActivity: Ref<Activity> = ref(getNewActivity());
 
 const layoutStore = useLayoutStore();
 const activityListStore = useActivityListStore();
 
-activityListStore.find();
+activityListStore.find(props.type, props.parent);
 
 const addActivity = (title?: string) => {
-  if (!title) {
-    layoutStore.showRightSidebarNewActivity(type);
-  } else {
-    activityListStore.add(newActivity.value as Activity).then(() => {
-      newActivity.value = emptyActivity(type);
-    });
-  }
+	if (!title) {
+		layoutStore.showRightSidebarNewActivity(props.type);
+	} else {
+		activityListStore.add(newActivity.value as Activity).then(() => {
+			newActivity.value = getNewActivity();
+		});
+	}
 };
 
 const showActivitySidebar = (activity: Activity) => {
-  layoutStore.showRightSidebar(activity._id);
+	layoutStore.showRightSidebar(activity._id);
 };
 const openActivity = (activity: Activity) => {
-  openActivityPage(activity).then(
-    () => {
-      layoutStore.hideRightSidebar();
-    }
-  );
+	openActivityPage(activity).then(
+		() => {
+			layoutStore.hideRightSidebar();
+		}
+	);
 };
 </script>
 
@@ -67,6 +83,7 @@ const openActivity = (activity: Activity) => {
       align="right"
     >
       <v-btn
+        v-if="props.addButton"
         icon
         variant="text"
         @click="() => addActivity()"
@@ -85,10 +102,6 @@ const openActivity = (activity: Activity) => {
         >
           {{ headerItem.name }}
         </th>
-        <th>{{ __('Due Date') }}</th>
-        <th class="d-none d-sm-table-cell">
-          {{ __('Estimated hours') }}
-        </th>
         <th />
       </tr>
     </thead>
@@ -104,18 +117,12 @@ const openActivity = (activity: Activity) => {
         >
           {{ item.title }}
         </td>
-        <td class="activity-list__item">
-          {{ item.dueDate ? toLocaleDateString(item.dueDate) : '' }}
-        </td>
-        <td class="activity-list__item d-none d-sm-table-cell">
-          {{ item.estimatedHours }}
-        </td>
         <td class="activity-list__item activity-list__item--actions">
           <TimerToggle :activity="item" />
         </td>
       </tr>
       <tr>
-        <td>
+        <td class="activity-list__new">
           <v-text-field
             v-model="newActivity.title"
             :placeholder="__('Add a ') + newActivity.type"
@@ -142,5 +149,8 @@ const openActivity = (activity: Activity) => {
 
 .activity-list__link--completed {
   text-decoration: line-through;
+}
+.activity-list__new {
+  width: 100%;
 }
 </style>

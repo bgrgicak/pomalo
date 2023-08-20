@@ -8,28 +8,28 @@ import type Activity from '@/types/activity';
 import { computed } from 'vue';
 
 const props = defineProps({
-  activity: {
-    type: Object as PropType<Activity>,
-    required: true,
-  }
+	activity: {
+		type: Object as PropType<Activity>,
+		required: true,
+	}
 });
 const emit = defineEmits(['change']);
 
 const activityStore = useActivityStore();
 
 const isAboveLimit = computed(() => {
-    return props.activity.estimatedHours && props.activity.estimatedHours > settings.recommendedMaxHoursPerTask;
+	return props.activity.estimatedHours && props.activity.estimatedHours > settings.recommendedMaxHoursPerTask;
 });
 
 const onChange = (value: string | undefined) => {
-    const newValue = value ? parseInt(value) : undefined;
-    activityStore.updateField(
-        props.activity._id,
-        'estimatedHours',
-        newValue,
-    ).then(() => {
-        emit('change', newValue);
-    });
+	const newValue = value ? parseInt(value) : undefined;
+	activityStore.updateField(
+		props.activity._id,
+		'estimatedHours',
+		newValue,
+	).then(() => {
+		emit('change', newValue);
+	});
 };
 </script>
 <template>

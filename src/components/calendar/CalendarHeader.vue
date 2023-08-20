@@ -6,31 +6,31 @@ import type VueCal from 'vue-cal';
 
 // const props = defineProps(['vuecal', 'activeView', 'views']);
 const props = defineProps({
-    vuecal: {
-        type: Object as PropType<VueCal>,
-        required: true,
-    },
-    activeView: {
-        type: String,
-        default: defaultView,
-    },
-    views: {
-        type: Array as PropType<string[]>,
-        default: () => [],
-    },
+	vuecal: {
+		type: Object as PropType<VueCal>,
+		required: true,
+	},
+	activeView: {
+		type: String,
+		default: defaultView,
+	},
+	views: {
+		type: Array as PropType<string[]>,
+		default: () => [],
+	},
 });
 const emit = defineEmits(['update:activeView', 'addEvent']);
 
 const previous = () => {
-    props.vuecal.previous();
+	props.vuecal.previous();
 };
 
 const next = () => {
-    props.vuecal.next();
+	props.vuecal.next();
 };
 
 const today = () => {
-    props.vuecal.switchView(props.activeView, new Date());
+	props.vuecal.switchView(props.activeView, new Date());
 };
 
 

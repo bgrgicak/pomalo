@@ -5,49 +5,49 @@ import { createVuetify, type ThemeDefinition } from 'vuetify';
 import { computed } from 'vue';
 
 const appTheme: ThemeDefinition = {
-    dark: false,
-    colors: {
-        primary: '#30A2FF',
-        secondary: '#7ebc2c',
-        accent: '#131416',
-        success: '#90d338',
-        warning: '#d4cb1c',
-        error: '#eb2838',
-        info: '#2b96da',
-        task: '#1069B3',
-        event: '#FF854A',
-        project: '#FFD317',
-    }
+	dark: false,
+	colors: {
+		primary: '#30A2FF',
+		secondary: '#7ebc2c',
+		accent: '#131416',
+		success: '#90d338',
+		warning: '#d4cb1c',
+		error: '#eb2838',
+		info: '#2b96da',
+		task: '#1069B3',
+		event: '#FF854A',
+		project: '#FFD317',
+	}
 };
 
 const vuetify = createVuetify({
-    theme: {
-        defaultTheme: 'appTheme',
-        variations: {
-            colors: ['primary', 'secondary', 'task', 'event', 'project'],
-            lighten: 3,
-            darken: 4,
-        },
-        themes: {
-            appTheme,
-        },
-    },
-    defaults: {
-        VBtn: {
-            rounded: 'sm',
-            variant: 'outlined',
-        },
-        VTextField: { variant: 'underlined' },
-        VSelect: { variant: 'underlined' },
-        VAlert: {
-            rounded: 'sm',
-            variant: 'outlined'
-        },
-        VAutocomplete: {
-            rounded: 'sm',
-            variant: 'underlined',
-        },
-    },
+	theme: {
+		defaultTheme: 'appTheme',
+		variations: {
+			colors: ['primary', 'secondary', 'task', 'event', 'project'],
+			lighten: 3,
+			darken: 4,
+		},
+		themes: {
+			appTheme,
+		},
+	},
+	defaults: {
+		VBtn: {
+			rounded: 'sm',
+			variant: 'outlined',
+		},
+		VTextField: { variant: 'underlined' },
+		VSelect: { variant: 'underlined' },
+		VAlert: {
+			rounded: 'sm',
+			variant: 'outlined'
+		},
+		VAutocomplete: {
+			rounded: 'sm',
+			variant: 'underlined',
+		},
+	},
 });
 
 export default vuetify;

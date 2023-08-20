@@ -10,14 +10,14 @@ const route = useRoute();
 const activityId = ref(route.params._id as string);
 
 if (activityId.value) {
-   activityStore.get(activityId.value);
+	activityStore.get(activityId.value);
 }
 
 watch(() => route.params._id, (newId) => {
-   activityId.value = newId as string;
-   if (activityId.value) {
-      activityStore.get(activityId.value);
-   }
+	activityId.value = newId as string;
+	if (activityId.value) {
+		activityStore.get(activityId.value);
+	}
 });
 </script>
 <template>

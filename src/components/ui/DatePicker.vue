@@ -3,30 +3,30 @@ import { getSystemDateFormat, toInputDateString, getLocalDate } from '@/helper/d
 import type { PropType } from 'vue';
 import { computed } from 'vue';
 const props = defineProps({
-    value: {
-        type: Date,
-        default: null,
-    },
-    label: {
-        type: String,
-        default: '',
-    },
-    time: {
-        type: Boolean,
-        default: false,
-    },
-    hint: {
-        type: String,
-        default: '',
-    },
-    variant: {
-        type: String as PropType<any>,
-        default: undefined,
-    },
-    readonly: {
-        type: Boolean,
-        default: false,
-    },
+	value: {
+		type: Date,
+		default: null,
+	},
+	label: {
+		type: String,
+		default: '',
+	},
+	time: {
+		type: Boolean,
+		default: false,
+	},
+	hint: {
+		type: String,
+		default: '',
+	},
+	variant: {
+		type: String as PropType<any>,
+		default: undefined,
+	},
+	readonly: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const emit = defineEmits(['change']);
@@ -37,40 +37,40 @@ const systemDateFormat = getSystemDateFormat();
 const showTime = computed(() => true === props.time);
 
 const dateValue = computed(() => {
-    if (!props.value) {
-        return undefined;
-    }
-    return toInputDateString(props.value);
+	if (!props.value) {
+		return undefined;
+	}
+	return toInputDateString(props.value);
 });
 
 const timeValue = computed(() => {
-    if (!props.value) {
-        return undefined;
-    }
-    return getLocalDate(props.value).toTimeString().substr(0, 5);
+	if (!props.value) {
+		return undefined;
+	}
+	return getLocalDate(props.value).toTimeString().substr(0, 5);
 });
 
 const onChangeDate = (newValue: string) => {
-    if (!newValue) {
-        emit('change', undefined);
-        return;
-    }
-    const newDate = new Date(newValue);
-    if (timeValue.value) {
-        const [hours, minutes] = timeValue.value.split(':');
-        newDate.setHours(parseInt(hours));
-        newDate.setMinutes(parseInt(minutes));
-    }
-    emit('change', newDate);
+	if (!newValue) {
+		emit('change', undefined);
+		return;
+	}
+	const newDate = new Date(newValue);
+	if (timeValue.value) {
+		const [hours, minutes] = timeValue.value.split(':');
+		newDate.setHours(parseInt(hours));
+		newDate.setMinutes(parseInt(minutes));
+	}
+	emit('change', newDate);
 };
 const onChangeTime = (newValue: string) => {
-    const timeSplit = newValue.split(':');
-    const hours = timeSplit[0] ? parseInt(timeSplit[0]) : 0;
-    const minutes = timeSplit[1] ? parseInt(timeSplit[1]) : 0;
-    const newDate = getLocalDate(props.value);
-    newDate.setHours(hours);
-    newDate.setMinutes(minutes);
-    emit('change', newDate);
+	const timeSplit = newValue.split(':');
+	const hours = timeSplit[0] ? parseInt(timeSplit[0]) : 0;
+	const minutes = timeSplit[1] ? parseInt(timeSplit[1]) : 0;
+	const newDate = getLocalDate(props.value);
+	newDate.setHours(hours);
+	newDate.setMinutes(minutes);
+	emit('change', newDate);
 
 };
 </script>

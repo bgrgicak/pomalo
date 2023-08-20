@@ -263,15 +263,15 @@ declare module 'vue-cal' {
     export interface VueCal extends Props { }
 
     export class VueCal extends Vue {
-        $on<T extends keyof Events> (event: T, callback: EventListeners[T]) {
-            return super.$on(event, callback);
-        }
+    	$on<T extends keyof Events> (event: T, callback: EventListeners[T]) {
+    		return super.$on(event, callback);
+    	}
 
-        //region: Data
-        ready: boolean; // Is vue-cal ready.
-        // Make texts reactive before a locale is loaded.
-        texts: any;
-        utils: {
+    	//region: Data
+    	ready: boolean; // Is vue-cal ready.
+    	// Make texts reactive before a locale is loaded.
+    	texts: any;
+    	utils: {
             // Remove prototypes ASAP if the user wants so.
             date: any;
             cell: any;
@@ -280,54 +280,54 @@ declare module 'vue-cal' {
             // const { eventInRange, createEventSegments } = this.utils.event
             event: any;
         };
-        modules: { dnd: null; };
+    	modules: { dnd: null; };
 
-        minutesAtCursor (e: MouseEvent);
+    	minutesAtCursor (e: MouseEvent);
 
-        // At any time this object will be filled with current view, visible events and selected date.
-        view: VueCalView;
-        eventIdIncrement: number; // Internal unique id.
-        // or updated at least on each cells rerender, in order to keep Today's date accurate.
-        now: Date;
+    	// At any time this object will be filled with current view, visible events and selected date.
+    	view: VueCalView;
+    	eventIdIncrement: number; // Internal unique id.
+    	// or updated at least on each cells rerender, in order to keep Today's date accurate.
+    	now: Date;
 
-        //endregion
-        // Useful when watchRealTime = true, 2 timeouts: 1 to snap to round minutes, then 1 every minute.
-        timeTickerIds: [any, any];
-        // An array of mutable events updated each time given external events array changes.
-        mutableEvents: any;
-        // Transition when switching view. left when going toward the past, right when going toward future.
-        transitionDirection: string;
+    	//endregion
+    	// Useful when watchRealTime = true, 2 timeouts: 1 to snap to round minutes, then 1 every minute.
+    	timeTickerIds: [any, any];
+    	// An array of mutable events updated each time given external events array changes.
+    	mutableEvents: any;
+    	// Transition when switching view. left when going toward the past, right when going toward future.
+    	transitionDirection: string;
 
-        //region: Methods
-        /**
+    	//region: Methods
+    	/**
          * Shorthand function for external call (via $refs).
          */
-        previous ();
+    	previous ();
 
-        /**
+    	/**
          * Shorthand function for external call (via $refs).
          */
-        next ();
+    	next ();
 
-        /**
+    	/**
          * On click on previous or next arrow, update the calendar visible date range.
          *
          * @param {Boolean} next
          */
-        previousNext (next = true);
+    	previousNext (next = true);
 
-        // Preset at now date on load, but updated every minute if watchRealTime,
+    	// Preset at now date on load, but updated every minute if watchRealTime,
 
-        /**
+    	/**
          * On click/dblclick of a cell go to a narrower view if available.
          * E.g. Click on month cell takes you to week view if not hidden, otherwise on day view if not hidden.
          *
          * @param {String | Date} date A starting date for the view, if none, fallbacks to the selected date,
          *                             If also empty fallbacks to the current view start date.
          */
-        switchToNarrowerView (date = null);
+    	switchToNarrowerView (date = null);
 
-        /**
+    	/**
          * Switches to the specified view on view selector click, or programmatically form external call (via $refs).
          * If a date is given, it will be selected and if the view does not contain it, it will go to that date.
          *
@@ -336,11 +336,11 @@ declare module 'vue-cal' {
          *                             If also empty fallbacks to the current view start date.
          * @param {Boolean} fromViewSelector to know if the caller is the built-in view selector.
          */
-        switchView (view: ViewEvents, date: Date = null, fromViewSelector: boolean = false);
+    	switchView (view: ViewEvents, date: Date = null, fromViewSelector: boolean = false);
 
-        // The events source of truth.
+    	// The events source of truth.
 
-        /**
+    	/**
          * Creates a new event in vue-cal memory (in the mutableEvents array) starting at the given date & time.
          * Proxy method to allow call from cell click & hold or external call (via $refs).
          * Notes: Event duration is by default 2 hours. You can override the event end through eventOptions.
@@ -351,16 +351,16 @@ declare module 'vue-cal' {
          *                              (can be any key allowed in an event object)
          * @return {Object} the created event.
          */
-        createEvent (dateTime: string | Date, duration: number, eventOptions: Events = {});
+    	createEvent (dateTime: string | Date, duration: number, eventOptions: Events = {});
 
-        /**
+    	/**
          * Only import locale on demand to keep a small library weight.
          *
          * @param {String|Object} locale the language user whishes to have on vue-cal.
          */
-        loadLocale (locale);
+    	loadLocale (locale);
 
-        //endregion
+    	//endregion
     }
 
     export default VueCal;

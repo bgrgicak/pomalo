@@ -9,20 +9,20 @@ import { reParseAllDocuments } from '@/data/activities';
 const removeAllIndexesFromDatabase = () => removeAllIndexes(database);
 
 const actions: Setting[] = [
-    {
-        id: 'reParseAllDocuments',
-        label: __('Recalculate all documents'),
-        name: __('Recalculate'),
-        action: reParseAllDocuments,
-        type: SettingType.Button,
-    },
-    {
-        id: 'removeAllIndexes',
-        label: __('Remove all indexes'),
-        name: __('Remove'),
-        action: removeAllIndexesFromDatabase,
-        type: SettingType.Button,
-    },
+	{
+		id: 'reParseAllDocuments',
+		label: __('Recalculate all documents'),
+		name: __('Recalculate'),
+		action: reParseAllDocuments,
+		type: SettingType.Button,
+	},
+	{
+		id: 'removeAllIndexes',
+		label: __('Remove all indexes'),
+		name: __('Remove'),
+		action: removeAllIndexesFromDatabase,
+		type: SettingType.Button,
+	},
 ];
 </script>
 <template>

@@ -10,10 +10,10 @@ import type { ComputedRef } from 'vue';
 import type { PropType } from 'vue';
 
 const props = defineProps({
-  activity: {
-    type: Object as PropType<Activity>,
-    required: true,
-  }
+	activity: {
+		type: Object as PropType<Activity>,
+		required: true,
+	}
 });
 const emit = defineEmits(['change']);
 
@@ -22,28 +22,28 @@ const parentTypes = [ActivityType.Project];
 const activityStore = useActivityStore();
 
 const parentTitle: ComputedRef<string | undefined> = computed(() => {
-    if (!props.activity.parent) {
-        return undefined;
-    }
-    activityStore.get(props.activity.parent);
-    if (!activityStore.activities[props.activity.parent]) {
-        return undefined;
-    }
-    return activityStore.activities[props.activity.parent].title;
+	if (!props.activity.parent) {
+		return undefined;
+	}
+	activityStore.get(props.activity.parent);
+	if (!activityStore.activities[props.activity.parent]) {
+		return undefined;
+	}
+	return activityStore.activities[props.activity.parent].title;
 });
 
 const onClick = (activity: Activity) => {
-    if (activity?._id) {
-        activityStore.get(activity._id);
-    }
-    const newValue = activity?._id;
-    activityStore.updateField(
-        props.activity._id,
-        'parent',
-        newValue,
-    ).then(() => {
-        emit('change', newValue);
-    });
+	if (activity?._id) {
+		activityStore.get(activity._id);
+	}
+	const newValue = activity?._id;
+	activityStore.updateField(
+		props.activity._id,
+		'parent',
+		newValue,
+	).then(() => {
+		emit('change', newValue);
+	});
 };
 </script>
 <template>

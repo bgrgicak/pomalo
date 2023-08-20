@@ -1,4 +1,4 @@
 const __ = (value: string) => {
-    return value;
+	return value;
 };
 export default __;
