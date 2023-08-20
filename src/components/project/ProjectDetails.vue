@@ -3,6 +3,7 @@ import { ActivityType } from '@/types/activity';
 import ActivityList from '../activity/ActivityList.vue';
 import type { PropType } from 'vue';
 import type Activity from '@/types/activity';
+import __ from '@/helper/translations';
 
 const props = defineProps({
 	activity: {
@@ -16,10 +17,23 @@ const props = defineProps({
 });
 </script>
 <template>
-  <ActivityList
-    :type="ActivityType.Task"
-    :add-button="false"
-    :parent="props.activity._id"
-    :items="[]"
-  />    
+  <v-row
+    class="pa-4 pb-0"
+  >
+    <v-col cols="12">
+      <h2 class="mb-0">
+        {{ __('Project tasks') }}
+      </h2>
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col cols="12">
+      <ActivityList
+        :type="ActivityType.Task"
+        :compact="true"
+        :parent="props.activity._id"
+        :items="[]"
+      />    
+    </v-col>
+  </v-row>
 </template>

@@ -34,6 +34,10 @@ const buttonLabel = computed(() => {
 	return __('Delete');
 });
 
+const buttonIcon = computed(() => {
+	return props.small ? 'mdi-delete' : undefined;
+});
+
 const closeActivity = (activity: Activity) => {
 	if (!confirm(__('Are you sure you want to close this ') + activity.type + '?')) return;
 	activityStore.remove(activity._id).then(() => {
@@ -47,11 +51,16 @@ const closeActivity = (activity: Activity) => {
   <v-btn
     color="error"
     class="activity-close"
+    :class="{ 'activity-close--small': props.small }"
     :readonly="props.activity.readonly"
     variant="text"
-    :icon="props.small ? 'mdi-delete' : undefined"
+    :icon="buttonIcon"
+    :text="buttonLabel"
     @click="closeActivity(props.activity)"
-  >
-    {{ buttonLabel }}
-  </v-btn>
+  />
 </template>
+<style scoped lang="scss">
+.activity-close--small {
+  
+}
+</style>

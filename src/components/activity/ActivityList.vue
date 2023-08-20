@@ -24,9 +24,9 @@ const props = defineProps({
 		type: String,
 		default: undefined,
 	},
-	addButton: {
+	compact: {
 		type: Boolean,
-		default: true,
+		default: false,
 	},
 });
 
@@ -72,7 +72,10 @@ const openActivity = (activity: Activity) => {
 </script>
 
 <template>
-  <v-row class="pa-4 pb-0">
+  <v-row
+    v-if="!props.compact"
+    class="pa-4 pb-0"
+  >
     <v-col cols="10">
       <h2 class="activity-list__title mb-0">
         {{ type + 's' }}
@@ -83,7 +86,6 @@ const openActivity = (activity: Activity) => {
       align="right"
     >
       <v-btn
-        v-if="props.addButton"
         icon
         variant="text"
         @click="() => addActivity()"
@@ -93,7 +95,7 @@ const openActivity = (activity: Activity) => {
     </v-col>
   </v-row>
   <v-table class="activity-list">
-    <thead>
+    <thead v-if="!props.compact">
       <tr>
         <th>{{ __('Title') }}</th>
         <th
@@ -119,6 +121,10 @@ const openActivity = (activity: Activity) => {
         </td>
         <td class="activity-list__item activity-list__item--actions">
           <TimerToggle :activity="item" />
+          <ActivityClose
+            :activity="item"
+            :small="true"
+          />
         </td>
       </tr>
       <tr>
@@ -141,6 +147,8 @@ const openActivity = (activity: Activity) => {
 
 .activity-list__item--actions {
   text-align: end;
+  grid-auto-flow: column;
+  display: grid;
 }
 
 .activity-list__link {
