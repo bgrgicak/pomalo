@@ -14,7 +14,7 @@ git merge --no-edit main
 npm ci
 npm run build
 
-git add -f public
+git add -f public/*
 git commit -m "Deploying to production"
 git push
 
