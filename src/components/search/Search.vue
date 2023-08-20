@@ -95,6 +95,7 @@ const noInput = computed(
 
 const hide = () => {
     searchText.value = '';
+    searchStore.clear();
     if (props.visible) {
         return;
     }

@@ -43,11 +43,17 @@ export const useSearchStore = defineStore(
             });
         };
 
+        const clear = () => {
+            state.value.activities = [];
+            state.value.searchText = '';
+        };
+
         return {
             state,
             isLoading,
             activities,
             search,
+            clear,
         };
     }
 );
