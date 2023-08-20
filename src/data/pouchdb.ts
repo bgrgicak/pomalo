@@ -14,16 +14,16 @@ export declare function emit (key: any, value: any): void;
 
 export const removeAllIndexes = (database: PouchDB.Database) => {
   database.viewCleanup();
-  database.getIndexes().then(function (indexesResult) {
-    indexesResult.indexes.forEach(function (index: any) {
+  database.getIndexes().then((indexesResult) => {
+    indexesResult.indexes.forEach((index: any) => {
       if (!index.ddoc) {
         return;
       }
       return database.deleteIndex(index);
     });
-  }).then(function (result) {
+  }).then((result) => {
     // handle result
-  }).catch(function (err) {
+  }).catch((err) => {
     error(err);
   });
 };

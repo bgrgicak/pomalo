@@ -12,6 +12,7 @@
         "quotes": [
             "error",
             "single"
-        ]
+        ],
+        "prefer-arrow-callback": "error"
     }
 }
