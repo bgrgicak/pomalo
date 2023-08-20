@@ -16,6 +16,7 @@ import { NoticeType } from '@/types/notice';
 import CalendarMain from './CalendarMain.vue';
 import { allViews, defaultView, defaultSmallView } from '@/plugins/vuecal';
 import { watch } from 'vue';
+import { display } from '@/plugins/vuetify';
 
 const allowedViews = computed(() => {
 	return structuredClone(allViews).filter(
@@ -23,7 +24,7 @@ const allowedViews = computed(() => {
 			if ('years' === view) {
 				return false;
 			}
-			if (calendarStore.small && 'week' === view) {
+			if (display.value.mobile.value && 'week' === view) {
 				return false;
 			}
 			return true;

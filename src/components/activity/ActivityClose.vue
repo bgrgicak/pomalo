@@ -17,6 +17,10 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
+	redirectAfterRemove: {
+		type: Boolean,
+		default: true,
+	},
 });
 
 const activityStore = useActivityStore();
@@ -41,6 +45,9 @@ const buttonIcon = computed(() => {
 const closeActivity = (activity: Activity) => {
 	if (!confirm(__('Are you sure you want to close this ') + activity.type + '?')) return;
 	activityStore.remove(activity._id).then(() => {
+		if (!props.redirectAfterRemove) {
+			return;
+		}
 		layoutStore.hideRightSidebar();
 		if (router.currentRoute.value.path.startsWith('/task/'))
 			router.push('/' + activity.type + 's');

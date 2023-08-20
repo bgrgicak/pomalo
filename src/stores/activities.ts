@@ -4,7 +4,7 @@ import __ from '@/helper/translations';
 import log, { debug } from '@/helper/logs';
 import { LogType } from '@/types/log';
 import database from '@/data/pouchdb';
-import { ref, type Ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 import { addDefaultsToActivity, calculateActivity, parseActivityToDocument, parseDocumentToActivity } from '@/data/activities';
 import type { ActivityDocument } from '@/types/activity-document';
 import constants from '@/helper/constants';
@@ -23,13 +23,9 @@ export const useActivityStore = defineStore(
 			live: true,
 			include_docs: true
 		}).on('change', (change) => {
-			if (change.deleted && activities.value[change.id]) {
-				delete activities.value[change.id];
-			} else {
-				activities.value[change.id] = prepareActivityFromDocument(
-          change.doc as ActivityDocument
-				);
-			}
+			activities.value[change.id] = prepareActivityFromDocument(
+				change.doc as ActivityDocument
+			);
 		}).catch((error) => {
 			log(error);
 		});
@@ -46,6 +42,10 @@ export const useActivityStore = defineStore(
 			);
 			return activities.value[activityDocument._id as string];
 		};
+
+		const list = computed((): Activity[] => {
+			return Object.values(activities.value);
+		});
 
 		const find = (request?: PouchDB.Find.FindRequest<{}> | undefined, store: boolean = true, removed: boolean = false): Promise<Activity[] | void> => {
 			if (constants.environment.development) {
@@ -67,6 +67,16 @@ export const useActivityStore = defineStore(
 			});
 		};
 
+		const query = (view: string, options: PouchDB.Query.Options<{},{}> | undefined): Promise<Activity[] | void> => {
+			return database.query(view, options).then((result) => {
+				return result.rows.map(
+					(row: any) => addActivityDocument(row.doc)
+				);
+			}).catch((error) => {
+				log(error, LogType.Error);
+			});
+		};
+
 		const get = (activityId: string): Promise<Activity | void> => {
 			if (activities.value[activityId]) {
 				return Promise.resolve(activities.value[activityId]);
@@ -77,30 +87,6 @@ export const useActivityStore = defineStore(
 				}
 				addActivityDocument(response as ActivityDocument);
 				return activities.value[activityId];
-			}).catch((error) => {
-				log(error, LogType.Error);
-			});
-		};
-
-		const getPriorityView = (store: boolean = true, parent?: String): Promise<Activity[] | void> => {
-			return database.query(
-				'priority/type',
-				{
-					endkey: ['task'],
-					startkey: ['task', {}],
-					include_docs: true,
-					descending: true
-				}
-			).then((result) => {
-				return result.rows.map(
-					(row: any) =>
-						store ? addActivityDocument(row.doc) : prepareActivityFromDocument(row.doc)
-				).filter((activity: Activity) => {
-					if (parent) {
-						return activity.parent === parent;
-					}
-					return true !== activity.removed;
-				});
 			}).catch((error) => {
 				log(error, LogType.Error);
 			});
@@ -191,6 +177,8 @@ export const useActivityStore = defineStore(
 				return put({
 					...updatedDocument,
 					_rev: document._rev,
+				}).then(() => {
+					delete activities.value[activityId];
 				});
 			}).catch(error => {
 				log(error, LogType.Error);
@@ -199,8 +187,9 @@ export const useActivityStore = defineStore(
 
 		return {
 			activities,
+			list,
 			find,
-			getPriorityView,
+			query,
 			add,
 			get,
 			update,

@@ -124,6 +124,7 @@ const openActivity = (activity: Activity) => {
           <ActivityClose
             :activity="item"
             :small="true"
+            :redirect-after-remove="false"
           />
         </td>
       </tr>

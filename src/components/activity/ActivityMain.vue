@@ -94,13 +94,11 @@ const onFieldChange = (key: string, value: any) => {
             v-if="isTask && props.activity"
             :activity="props.activity"
             :small="props.small"
-            class="mt-6 d-none d-md-block"
           />
           <ProjectDetails
             v-if="isProject && props.activity"
             :activity="props.activity"
             :small="props.small"
-            class="mt-6 d-none d-md-block"
           />
         </v-col>
         <v-col

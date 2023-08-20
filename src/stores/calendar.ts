@@ -28,8 +28,6 @@ export const useCalendarStore = defineStore(
 		const focusedEvent = computed((): CalendarEvent | undefined => state.value.focusedEvent);
 		const clipboard = computed((): CalendarClipboard | undefined => state.value.clipboard);
 		const focusedCell = computed((): Date | undefined => state.value.focusedCell);
-		const small = computed((): boolean => display.value.smAndDown.value);
-		const mobile = computed((): boolean => display.value.mobile.value);
 
 
 		watch(() => activityStore.activities, (updatedActivities: ActivityMap) => {
@@ -105,8 +103,6 @@ export const useCalendarStore = defineStore(
 			focusedEvent,
 			focusedCell,
 			clipboard,
-			small,
-			mobile,
 			load,
 			focusEvent,
 			unfocusEvent,

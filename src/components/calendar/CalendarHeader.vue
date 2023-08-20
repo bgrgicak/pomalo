@@ -4,11 +4,10 @@ import { defaultView } from '@/plugins/vuecal';
 import type { PropType } from 'vue';
 import type VueCal from 'vue-cal';
 
-// const props = defineProps(['vuecal', 'activeView', 'views']);
 const props = defineProps({
 	vuecal: {
 		type: Object as PropType<VueCal>,
-		required: true,
+		default: undefined,
 	},
 	activeView: {
 		type: String,
@@ -22,14 +21,23 @@ const props = defineProps({
 const emit = defineEmits(['update:activeView', 'addEvent']);
 
 const previous = () => {
+	if (!props.vuecal) {
+		return;
+	}
 	props.vuecal.previous();
 };
 
 const next = () => {
+	if (!props.vuecal) {
+		return;
+	}
 	props.vuecal.next();
 };
 
 const today = () => {
+	if (!props.vuecal) {
+		return;
+	}
 	props.vuecal.switchView(props.activeView, new Date());
 };
 
