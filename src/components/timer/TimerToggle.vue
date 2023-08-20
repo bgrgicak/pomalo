@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
 import { useTimerStore } from '@/stores/timer';
+import type Activity from '@/types/activity';
 import { computed } from 'vue';
 
 import type { PropType } from 'vue';

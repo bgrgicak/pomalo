@@ -4,6 +4,8 @@ import __ from '@/helper/translations';
 import { settings } from '@/helper/settings';
 
 import type { PropType } from 'vue';
+import type Activity from '@/types/activity';
+import { computed } from 'vue';
 
 const props = defineProps({
   activity: {
@@ -14,6 +16,10 @@ const props = defineProps({
 const emit = defineEmits(['change']);
 
 const activityStore = useActivityStore();
+
+const isAboveLimit = computed(() => {
+    return props.activity.estimatedHours && props.activity.estimatedHours > settings.recommendedMaxHoursPerTask;
+});
 
 const onChange = (value: string | undefined) => {
     const newValue = value ? parseInt(value) : undefined;
@@ -34,7 +40,7 @@ const onChange = (value: string | undefined) => {
     @update:modelValue="onChange"
   />
   <v-alert
-    v-if="props.activity.estimatedHours > settings.recommendedMaxHoursPerTask"
+    v-if="isAboveLimit"
     color="primary"
     class="mb-8"
     :text="__('It\'s recommended to split large tasks into smaller ones.')"

@@ -39,7 +39,7 @@ export const useSearchStore = defineStore(
             return activityStore.find(
                 searchOptions, false
             ).then((response) => {
-                state.value.activities = response ?? [];
+                state.value.activities = response ? response : [];
             });
         };
 

@@ -24,7 +24,7 @@ const props = defineProps({
         default: false,
     },
     type: {
-        type: String,
+        type: String as PropType<ActivityType>,
         default: undefined,
     },
 });

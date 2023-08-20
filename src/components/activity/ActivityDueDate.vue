@@ -5,6 +5,7 @@ import DatePicker from '@/components/ui/DatePicker.vue';
 import { getLocalDate } from '@/helper/date';
 
 import type { PropType } from 'vue';
+import type Activity from '@/types/activity';
 
 const props = defineProps({
   activity: {

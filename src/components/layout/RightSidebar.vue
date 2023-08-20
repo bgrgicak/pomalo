@@ -57,7 +57,7 @@ watch(route, hide);
       :activity="activity"
       :event="event"
       :type="newType"
-      small="true"
+      :small="true"
     />
   </v-navigation-drawer>
 </template>

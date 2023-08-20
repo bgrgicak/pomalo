@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
 import Search from '../search/Search.vue';
-import type { ActivityEvent } from '@/types/activity';
 import type { PropType } from 'vue';
+import type { ActivityEvent, ActivityType } from '@/types/activity';
 
 const props = defineProps({
   event: {
@@ -14,7 +14,7 @@ const props = defineProps({
     default: false,
   },
   type: {
-    type: String,
+    type: String as PropType<ActivityType>,
     default: undefined,
   },
   visible: {
