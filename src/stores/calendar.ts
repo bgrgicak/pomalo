@@ -1,19 +1,17 @@
-import type Activity from '@/types/activity';
 import { defineStore } from 'pinia';
-import { computed, ref, watch, type Ref } from 'vue';
-import { useActivityStore, type ActivityMap } from './activities';
+import { computed, ref, type Ref } from 'vue';
+import { useActivityStore } from './activities';
 import { parseEventsFromActivities } from '@/data/events';
 import { getUtcTimestamp } from '@/helper/date';
 import { useTimerStore } from './timer';
 import type { CalendarState, CalendarEvent, CalendarClipboardType, CalendarClipboard } from '@/types/calendar';
-import { display } from '@/plugins/vuetify';
 
 
 export const useCalendarStore = defineStore(
 	'calendar',
 	() => {
 		const state: Ref<CalendarState> = ref({
-			events: [],
+			activityIds: [],
 			focusedEvent: undefined,
 			focusedCell: undefined,
 			loading: true,
@@ -24,23 +22,22 @@ export const useCalendarStore = defineStore(
 		const timerStore = useTimerStore();
 
 		const isLoading = computed((): boolean => state.value.loading);
-		const events = computed((): CalendarEvent[] => state.value.events);
 		const focusedEvent = computed((): CalendarEvent | undefined => state.value.focusedEvent);
 		const clipboard = computed((): CalendarClipboard | undefined => state.value.clipboard);
 		const focusedCell = computed((): Date | undefined => state.value.focusedCell);
-
-
-		watch(() => activityStore.activities, (updatedActivities: ActivityMap) => {
+		const events = computed((): CalendarEvent[] => {
 			if (!state.value.startTime || !state.value.endTime) {
-				return;
+				return [];
 			}
-			state.value.events = parseEventsFromActivities(
-                Object.values(updatedActivities) as Activity[],
-                state.value.startTime,
-                state.value.endTime,
-                timerStore.activityId,
+			return parseEventsFromActivities(
+				activityStore.list.filter((activity) => {
+					return state.value.activityIds.includes(activity._id as string);
+				}),
+				state.value.startTime,
+				state.value.endTime,
+				timerStore.activityId,
 			);
-		}, { deep: true });
+		});
 
 		const load = (start: Date, end: Date) => {
 			state.value.startTime = start;
@@ -55,21 +52,13 @@ export const useCalendarStore = defineStore(
 					},
 				},
 			}, true, true).then((activities) => {
-				if (!state.value.startTime || !state.value.endTime) {
-					return [];
-				}
-				state.value.events = parseEventsFromActivities(
-                    activities as Activity[],
-                    state.value.startTime,
-                    state.value.endTime,
-                    timerStore.activityId,
-				);
-				return events;
+				state.value.activityIds = activities ? activities.map((activity) => activity._id as string) : [];
+				return state.value.activityIds;
 			});
 		};
 
 		const focusEvent = (eventId: string) => {
-			state.value.focusedEvent = state.value.events.find((event) => event.eventId === eventId);
+			state.value.focusedEvent = events.value.find((event) => event.eventId === eventId);
 		};
 
 		const unfocusEvent = () => {

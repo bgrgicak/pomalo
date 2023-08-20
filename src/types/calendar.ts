@@ -14,7 +14,7 @@ export interface CalendarEvent {
 }
 
 export interface CalendarState {
-    events: CalendarEvent[];
+    activityIds: string[];
     loading: boolean;
     focusedEvent?: CalendarEvent;
     focusedCell?: Date;
