@@ -1,5 +1,5 @@
 #!/bin/bash
-
+ROOT="$(pwd)"
 CURRENT_BRANCH=$(git branch --show-current)
 
 source ~/.nvm/nvm.sh
@@ -17,14 +17,14 @@ git merge --no-edit main
 npm ci
 npm run build
 
-git add -f ./public/
+git add -f "$ROOT/public/*"
 git commit -m "Deploying to production"
 
 if [ $? -eq 0 ]; then
     echo "Deploying to production"
     git push
     git checkout $CURRENT_BRANCH
-	echo -e "\t\033[32mDeployment completed \033[0m"
+	echo -e "\033[32mDeployment completed \033[0m"
 
     exit 0
 else
