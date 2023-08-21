@@ -18,7 +18,8 @@ npm ci
 npm run build
 
 # Run tests
-./hooks/pre-commit
+npm run lint -- --max-warnings=0
+npm run type-check 
 
 git add -f "$ROOT/public/*"
 git commit -m "Deploying to production"

@@ -4,7 +4,7 @@ PASS=true
 source ~/.nvm/nvm.sh
 nvm use
 
-echo "Validating Javascript:"
+echo "Validating Javascript"
 
 # Check for eslint
 which eslint &> /dev/null
