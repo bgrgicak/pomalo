@@ -16,6 +16,17 @@ npm ci
 npm run build
 
 git commit -am "Deploying to production"
-git push
 
-git checkout $CURRENT_BRANCH
+if [ $? -eq 0 ]; then
+    echo "Deploying to production"
+    git push
+    git checkout $CURRENT_BRANCH
+
+    exit 0
+else
+    echo "Failed to deploy to production"
+    git checkout -- .
+
+    git checkout $CURRENT_BRANCH
+    exit 1
+fi
