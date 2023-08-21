@@ -4,6 +4,7 @@ import Navigation from './components/layout/Navigation.vue';
 import LeftSidebar from './components/layout/LeftSidebar.vue';
 import RightSidebar from './components/layout/RightSidebar.vue';
 import Main from './components/layout/Main.vue';
+import Footer from './components/layout/Footer.vue';
 </script>
 
 <template>
@@ -13,6 +14,7 @@ import Main from './components/layout/Main.vue';
     <LeftSidebar />
     <Main />
     <RightSidebar />
+    <Footer />
   </v-app>
 </template>
 

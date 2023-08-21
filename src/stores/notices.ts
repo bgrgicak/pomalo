@@ -1,32 +1,34 @@
+import { newId } from '@/data/pouchdb';
 import type Notice from '@/types/notice';
 import { defineStore } from 'pinia';
+import { type Ref, computed, ref } from 'vue';
 
 interface NoticeState {
     notices: Notice[]
 }
 
-// TODO Show notices in the UI
 export const useNoticeStore = defineStore(
 	'notices',
-	{
-		state: (): NoticeState => {
-			return {
-				notices: [],
-			};
-		},
-		getters: {
-			notices: (state) => state.notices,
-		},
-		actions: {
-			addNotice(notice: Notice) {
-				this.notices.push(notice);
-			},
-			removeNotice(noticeId: string) {
-				const noticeIndex = this.notices.findIndex(notice => notice._id === noticeId);
-				if (noticeIndex !== -1) {
-					this.notices.splice(noticeIndex, 1);
-				}
+	() => {
+		const state: Ref<NoticeState> = ref({
+			notices: [],
+		});
+		const notices = computed(() => state.value.notices);
+
+		const addNotice = (notice: Notice) => {
+			if (!notice._id) {
+				notice._id = newId();
 			}
-		}
-	},
+			state.value.notices.push(notice);
+		};
+		const removeNotice = (noticeId: string) => {
+			state.value.notices = state.value.notices.filter((notice) => notice._id !== noticeId);
+		};
+
+		return {
+			notices,
+			addNotice,
+			removeNotice,
+		};
+	}
 );

@@ -102,7 +102,7 @@ database.info().then(() => {
 
 export default database;
 
-export const newId = (prefix: string): string => {
+export const newId = (prefix: string = ''): string => {
 	return [
 		prefix,
 		0, // if user isn't logged in, use 0
