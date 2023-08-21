@@ -17,6 +17,9 @@ git merge --no-edit main
 npm ci
 npm run build
 
+# Run tests
+./hooks/pre-commit
+
 git add -f "$ROOT/public/*"
 git commit -m "Deploying to production"
 
