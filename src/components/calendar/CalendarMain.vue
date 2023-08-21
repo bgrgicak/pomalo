@@ -193,7 +193,7 @@ const addLongPressEvent = () => {
 					props.vuecal.utils.cell.minutesAtCursor(event).minutes
 				);
 				emit('addEvent', start);
-			}, 1500);
+			}, 700);
 			cell.addEventListener('touchend', () => {
 				clearTimeout(timeout);
 			});
