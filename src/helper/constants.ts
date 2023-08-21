@@ -16,4 +16,7 @@ export default {
 	localStorage: {
 		settingsKey: 'pomalo-settings',
 	},
+	notice: {
+		dismissDelay: 300000,
+	}
 };

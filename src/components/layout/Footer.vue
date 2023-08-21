@@ -2,11 +2,10 @@
 import __ from '@/helper/translations';
 import { useNoticeStore } from '@/stores/notices';
 import type Notice from '@/types/notice';
-import { computed } from 'vue';
+import constants from '@/helper/constants';
 
 const noticeStore = useNoticeStore();
 
-const timeout = 5000;
 
 const dismiss = (notice: Notice) => {
 	console.log(notice);
@@ -20,20 +19,26 @@ const dismiss = (notice: Notice) => {
   <v-snackbar
     v-for="notice in noticeStore.notices"
     :key="notice._id"
-    :timeout="timeout"
+    :timeout="constants.notice.dismissDelay"
     :model-value="true"
+    class="notice"
   >
-    {{ noticeStore.notices }}
     {{ notice.title }}
 
     <template #actions>
       <v-btn
-        color="blue"
         variant="text"
+        icon="mdi-close"
         @click="() => dismiss(notice)"
-      >
-        {{ __('Close') }}
-      </v-btn>
+      />
     </template>
   </v-snackbar>
 </template>
+<style lang="scss">
+.notice .v-snackbar__wrapper {
+  right: 0;
+  left: unset !important;
+  transform: unset !important;
+}
+</style>
+```
