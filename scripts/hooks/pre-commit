@@ -4,38 +4,38 @@ PASS=true
 source ~/.nvm/nvm.sh
 nvm use
 
-echo "\nValidating Javascript:\n"
+echo "Validating Javascript:"
 
 # Check for eslint
 which eslint &> /dev/null
 if [[ "$?" == 1 ]]; then
-  echo "\t\033[41mPlease install ESlint\033[0m"
+  echo -e "\t\033[41mPlease install ESlint\033[0m"
   exit 1
 fi
 
 npm run lint -- --max-warnings=0
 if [[ "$?" == 0 ]]; then
-	echo "\t\033[32mESLint Passed \033[0m"
+	echo -e "\t\033[32mESLint Passed \033[0m"
 else
-	echo "\t\033[41mESLint Failed \033[0m"
+	echo -e "\t\033[41mESLint Failed \033[0m"
 	PASS=false
 fi
 
 if ! $PASS; then
-  echo "\033[41mCOMMIT FAILED:\033[0m Your commit contains files that should pass ESLint but do not. Please fix the ESLint errors and try again.\n"
+  echo -e "\033[41mCOMMIT FAILED:\033[0m Your commit contains files that should pass ESLint but do not. Please fix the ESLint errors and try again.\n"
   exit 1
 fi
 
 npm run type-check 
 if [[ "$?" == 0 ]]; then
-	echo "\t\033[32mType check Passed \033[0m"
+	echo -e "\t\033[32mType check Passed \033[0m"
 else
-	echo "\t\033[41mType check Failed \033[0m"
+	echo -e "\t\033[41mType check Failed \033[0m"
 	PASS=false
 fi
 
 if ! $PASS; then
-  echo "\033[41mCOMMIT FAILED:\033[0m Your commit contains files that should pass type checks but do not. Please fix the type errors and try again.\n"
+  echo -e "\033[41mCOMMIT FAILED:\033[0m Your commit contains files that should pass type checks but do not. Please fix the type errors and try again.\n"
   exit 1
 fi
 
