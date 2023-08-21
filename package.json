@@ -11,7 +11,8 @@
     "format": "prettier --write src/",
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "deploy": "./scripts/deploy.sh"
+    "deploy": "./scripts/deploy.sh",
+    "setup": "./scripts/setup.sh"
   },
   "dependencies": {
     "ical.js": "^1.5.0",

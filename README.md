@@ -23,8 +23,10 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 
 ## Project Setup
 
+
+
 ```sh
-npm ci
+npm run setup
 ```
 
 ### Compile and Hot-Reload for Development
