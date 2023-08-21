@@ -11,6 +11,7 @@ git checkout production
 git pull
 git merge --no-edit main
 
+nvm use
 npm ci
 npm run build
 
