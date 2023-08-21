@@ -6,10 +6,11 @@ import type { ActivityType } from '@/types/activity';
 import { ref, type Ref } from 'vue';
 import __ from '@/helper/translations';
 import { useActivityListStore } from '@/stores/activity-list';
-import { toLocaleDateString } from '@/helper/date';
 import TimerToggle from '../timer/TimerToggle.vue';
 import type { PropType } from 'vue';
 import ActivityClose from './ActivityClose.vue';
+import { computed } from 'vue';
+import { watch } from 'vue';
 
 const props = defineProps({
 	type: {
@@ -30,9 +31,11 @@ const props = defineProps({
 	},
 });
 
-if (!props.type) {
-	throw new Error('ActivityList requires a type prop');
-}
+const listId: Ref<string> = ref('');
+
+const activityList = computed(() => {
+	return activityListStore.list[listId.value] || [];
+});
 
 const getNewActivity = () => {
 	const activity = emptyActivity(props.type);
@@ -47,13 +50,23 @@ const newActivity: Ref<Activity> = ref(getNewActivity());
 const layoutStore = useLayoutStore();
 const activityListStore = useActivityListStore();
 
-activityListStore.find(props.type, props.parent);
+watch(
+	props,
+	() => {
+		activityListStore.find(props.type, props.parent).then((id: string) => {
+			listId.value = id;
+		});
+	},
+	{ 
+		immediate: true,
+	}
+);
 
 const addActivity = (title?: string) => {
 	if (!title) {
 		layoutStore.showRightSidebarNewActivity(props.type);
 	} else {
-		activityListStore.add(newActivity.value as Activity).then(() => {
+		activityListStore.add(newActivity.value as Activity, listId.value).then(() => {
 			newActivity.value = getNewActivity();
 		});
 	}
@@ -109,7 +122,7 @@ const openActivity = (activity: Activity) => {
     </thead>
     <tbody>
       <tr
-        v-for="item in activityListStore.list"
+        v-for="item in activityList"
         :key="item._id"
       >
         <td

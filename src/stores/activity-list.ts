@@ -4,18 +4,30 @@ import { computed, ref, type Ref } from 'vue';
 import { useActivityStore } from './activities';
 import { ActivityType } from '@/types/activity';
 
+interface ActivityListStore {
+	[key: string]: string[];
+}
+
+interface ActivityList {
+	[key: string]: Activity[];
+}
+
 export const useActivityListStore = defineStore(
 	'activity-list',
 	() => {
-		const activityIds: Ref<string[]> = ref([]);
+		const activityLists: Ref<ActivityListStore> = ref({});
 
 		const activityStore = useActivityStore();
 
-		const list = computed((): Activity[] => {
-			return activityStore.list.filter((activity) => {
-				return activityIds.value.includes(activity._id as string)
-					&& !activity.removed;
+		const list = computed((): ActivityList => {
+			const list: any = {};
+			Object.keys(activityLists.value).forEach((key) => {
+				list[key] = activityStore.list.filter((activity) => {
+					return activityLists.value[key].includes(activity._id as string)
+						&& !activity.removed;
+				});
 			});
+			return list;
 		});
 
 		const activitiesToIds = (activities: Activity[], parent?: string): string[] => {
@@ -27,7 +39,11 @@ export const useActivityListStore = defineStore(
 			}).map((activity: Activity) => activity._id);
 		};
 
-		const getTasks = (parent?: string): Promise<string[] | void> => {
+		const getListId = (type: ActivityType, parent?: string): string => {
+			return btoa(`${type}-${parent}`);
+		};
+
+		const getTasks = (parent?: string): Promise<string[]> => {
 			return activityStore.query(
 				'priority/type',
 				{
@@ -37,33 +53,39 @@ export const useActivityListStore = defineStore(
 					descending: true
 				}
 			).then((response: any) => {
-				activityIds.value = activitiesToIds(response, parent);
-				return activityIds.value;
+				return activitiesToIds(response, parent);
 			});
 		};
 
-		const getActivities = (type: ActivityType, parent?: string): Promise<string[] | void> => {
+		const getActivities = (type: ActivityType, parent?: string): Promise<string[]> => {
 			return activityStore.find({
 				selector: {
 					type: type
 				}
 			}).then((response: any) => {
-				activityIds.value = activitiesToIds(response, parent);
-				return activityIds.value;
+				return activitiesToIds(response, parent);
 			});
 		};
 
-		const find = (type: ActivityType, parent?: string): Promise<string[] | void> => {
+		const find = (type: ActivityType, parent?: string): Promise<string> => {
 			if (type === ActivityType.Task) {
-				return getTasks(parent);
+				return getTasks(parent).then((response: string[]) => {
+					const listId = getListId(type, parent);
+					activityLists.value[listId] = response;
+					return Promise.resolve(listId);
+				});
 			} else {
-				return getActivities(type, parent);
+				return getActivities(type, parent).then((response: string[]) => {
+					const listId = getListId(type, parent);
+					activityLists.value[listId] = response;
+					return Promise.resolve(listId);
+				});
 			}
 		};
 
-		const add = (activity: Activity) => {
+		const add = (activity: Activity, listId: string) => {
 			return activityStore.add(activity).then((response: any) => {
-				activityIds.value.push(response.id);
+				activityLists.value[listId].push(response.id);
 				return response.id;
 			});
 		};
