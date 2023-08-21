@@ -47,7 +47,7 @@ export const useActivityStore = defineStore(
 			return Object.values(activities.value);
 		});
 
-		const find = (request?: PouchDB.Find.FindRequest<{}> | undefined, store: boolean = true, removed: boolean = false): Promise<Activity[] | void> => {
+		const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
 			if (constants.environment.development) {
 				(database as any).explain(request).then((result: any) => {
 					log(result, LogType.Debug);
@@ -56,12 +56,7 @@ export const useActivityStore = defineStore(
 			return database.find(request).then((result) => {
 				return result.docs as ActivityDocument[];
 			}).then((response: ActivityDocument[]) => {
-				return response.map(
-					(activity: ActivityDocument) =>
-						store ? addActivityDocument(activity) : prepareActivityFromDocument(activity)
-				).filter((activity: Activity) => {
-					return removed ? true : !activity.removed;
-				});
+				return response.map(addActivityDocument);
 			}).catch((error) => {
 				log(error, LogType.Error);
 			});

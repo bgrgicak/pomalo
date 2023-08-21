@@ -8,20 +8,23 @@ export const useSearchStore = defineStore(
 	'search',
 	() => {
 		const state: Ref<SearchState> = ref({
-			activities: [],
+			activityIds: [],
 			loading: true,
 			searchText: '',
 		});
 
 		const activityStore = useActivityStore();
 
-		const isLoading = computed((): boolean => state.value.loading);
-		const activities = computed((): Activity[] => state.value.activities);
+		const activities = computed((): Activity[] => {
+			return activityStore.list.filter((activity) => {
+				return state.value.activityIds.includes(activity._id);
+			});
+		});
 
 		const search = (searchText: string, types?: string[]) => {
 			state.value.searchText = searchText;
 			if (state.value.searchText.length < 3) {
-				state.value.activities = [];
+				state.value.activityIds = [];
 				return;
 			}
 			const searchOptions: PouchDB.Find.FindRequest<{}> = {
@@ -37,20 +40,18 @@ export const useSearchStore = defineStore(
 				};
 			}
 			return activityStore.find(
-				searchOptions, false
+				searchOptions
 			).then((response) => {
-				state.value.activities = response ? response : [];
+				state.value.activityIds = (response ? response : []).map((activity) => activity._id);
 			});
 		};
 
 		const clear = () => {
-			state.value.activities = [];
+			state.value.activityIds = [];
 			state.value.searchText = '';
 		};
 
 		return {
-			state,
-			isLoading,
 			activities,
 			search,
 			clear,

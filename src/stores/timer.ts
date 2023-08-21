@@ -5,9 +5,10 @@ import { useActivityStore } from './activities';
 import { getTimePassed, getLocalDate, getUtcTimestamp } from '@/helper/date';
 import { newId } from '@/data/pouchdb';
 import { addEventToActivity, updateEventInActivity } from '@/data/events';
+import constants from '@/helper/constants';
 
 interface TimerState {
-    activity: Activity | undefined;
+    activityId: string | undefined;
     time: string;
     loading: boolean;
 }
@@ -16,34 +17,30 @@ export const useTimerStore = defineStore(
 	'timer',
 	() => {
 		const state: Ref<TimerState> = ref({
-			activity: undefined,
+			activityId: undefined,
 			time: '',
 			loading: true,
 		});
 
 		const activityStore = useActivityStore();
 
-		const active = computed((): boolean => undefined !== state.value.activity && '' !== state.value.time);
-
+		const active = computed((): boolean => undefined !== state.value.activityId && '' !== state.value.time);
 		const time = computed((): string => state.value.time);
-
 		const isLoading = computed((): boolean => state.value.loading);
-
-		const title = computed((): string => {
-			if (!state.value.activity) {
-				return '';
-			}
-			return state.value.activity.title;
-		});
-
-		const activityId = computed((): string | undefined => {
-			if (!state.value.activity) {
+		const activityId = computed((): string | undefined => state.value.activityId);
+		const currentActivity = computed((): Activity | undefined => {
+			if (!state.value.activityId) {
 				return undefined;
 			}
-			return state.value.activity._id;
+			return activityStore.list.find((activity) => activity._id === state.value.activityId);
+		});
+		const title = computed((): string => {
+			if (!currentActivity.value) {
+				return '';
+			}
+			return currentActivity.value.title;
 		});
 
-		const currentActivity = computed((): Activity | undefined => state.value.activity);
 
 
 		const getCurrentActivity = (): Promise<void | Activity[]> => {
@@ -60,9 +57,9 @@ export const useTimerStore = defineStore(
 				},
 			}).then((activities) => {
 				if (activities && activities.length > 0) {
-					state.value.activity = activities[0];
+					state.value.activityId = activities[0]._id;
 				} else {
-					state.value.activity = undefined;
+					state.value.activityId = undefined;
 				}
 			});
 		};
@@ -74,10 +71,10 @@ export const useTimerStore = defineStore(
 					state.value.loading = false;
 				});
 			}
-			if (!state.value.activity) {
+			if (!currentActivity.value) {
 				return '';
 			}
-			const currentEvent = state.value.activity.events.find((event) => {
+			const currentEvent = currentActivity.value.events.find((event) => {
 				return !event.end;
 			});
 			if (!currentEvent) {
@@ -86,13 +83,13 @@ export const useTimerStore = defineStore(
 			state.value.time = getTimePassed(currentEvent.start);
 		};
 		calculateTime(true);
-		setInterval(calculateTime, 1000);
+		setInterval(calculateTime, constants.timer.refreshInterval);
 
 		const stop = () => {
-			if (!state.value.activity) {
+			if (!state.value.activityId) {
 				return Promise.resolve();
 			}
-			return activityStore.get(state.value.activity._id).then((activity) => {
+			return activityStore.get(state.value.activityId).then((activity) => {
 				const updatedActivity = activity as Activity;
 				updatedActivity.events = updatedActivity.events.map((event) => {
 					if (event.end) {
@@ -108,7 +105,7 @@ export const useTimerStore = defineStore(
 						'timerRunning': false,
 					}
 				).then(() => {
-					state.value.activity = undefined;
+					state.value.activityId = undefined;
 				});
 			});
 		};
@@ -132,7 +129,7 @@ export const useTimerStore = defineStore(
 							'timerRunning': true,
 						}
 					).then(() => {
-						state.value.activity = updatedActivity;
+						state.value.activityId = updatedActivity._id;
 					});
 				});
 			});

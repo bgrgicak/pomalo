@@ -36,7 +36,7 @@ watch(route, hide);
     class="right-sidebar"
     @update:model-value="hide"
   >
-    <header class="right-sidebar__header">
+    <header class="right-sidebar__header py-3">
       <v-btn
         icon="mdi-arrow-expand"
         variant="plain"

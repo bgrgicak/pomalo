@@ -1,7 +1,7 @@
 import type Activity from './activity';
 
 export interface SearchState {
-    activities: Activity[];
+    activityIds: string[];
     loading: boolean;
     searchText: string;
 };

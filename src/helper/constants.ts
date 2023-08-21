@@ -18,5 +18,8 @@ export default {
 	},
 	notice: {
 		dismissDelay: 300000,
+	},
+	timer: {
+		refreshInterval: 1000,
 	}
 };
