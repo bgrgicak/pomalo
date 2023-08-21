@@ -17,7 +17,8 @@ git merge --no-edit main
 npm ci
 npm run build
 
-git commit -am "Deploying to production"
+git add -f .
+git commit -m "Deploying to production"
 
 if [ $? -eq 0 ]; then
     echo "Deploying to production"
