@@ -181,6 +181,7 @@ const addLongPressEvent = () => {
 	if (!props.vuecal) {
 		return;
 	}
+	const background = document.querySelector('.calendar .vuecal__bg');
 	const cells = document.querySelectorAll('.calendar .vuecal__bg .vuecal__cell');
 	if (!cells) {
 		return;
@@ -188,12 +189,16 @@ const addLongPressEvent = () => {
 	cells.forEach((cell: any, index: number) => {
 		const currentCell = structuredClone(props.vuecal.viewCells[index]);
 		cell.addEventListener('touchstart', (event: any) => {
+			const scrollTop = background?.scrollTop;
 			const timeout = setTimeout(() => {
+				if (scrollTop !== background?.scrollTop) {
+					return;
+				}
 				const start = currentCell.startDate.addMinutes(
 					props.vuecal.utils.cell.minutesAtCursor(event).minutes
 				);
 				emit('addEvent', start);
-			}, 700);
+			}, 800);
 			cell.addEventListener('touchend', () => {
 				clearTimeout(timeout);
 			});
@@ -209,7 +214,7 @@ const scrollToCurrentTime = () => {
 	if (!calendar) {
 		return;
 	}
-	calendar.scrollTo({ top: getLocalDate().getHours() * props.vuecal.timeCellHeight, behavior: 'smooth' });
+	calendar.scrollTo({ top: getLocalDate().getHours() * props.vuecal.timeCellHeight });
 };
 
 const onReady = (options: any) => {
