@@ -1,6 +1,6 @@
 import { emptyActivity } from '@/data/activities';
 import { getEventEndFromRepeatCount, isAllDayEvent, newEvent } from '@/data/events';
-import { addMilliseconds, getUtcTimestamp, isValidDate } from '@/helper/date';
+import { addMilliseconds, getUtcTimestamp, isValidDate, minuteInMilliseconds } from '@/helper/date';
 import { debug } from '@/helper/logs';
 import { settings } from '@/helper/settings';
 import { useActivityStore } from '@/stores/activities';
@@ -162,6 +162,10 @@ const startIcalSync = () => {
 	setInterval(
 		syncAllCalendars,
 		syncIntervalMilliseconds()
+	);
+	setTimeout(
+		syncAllCalendars,
+		minuteInMilliseconds
 	);
 };
 
