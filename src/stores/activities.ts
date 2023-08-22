@@ -62,11 +62,12 @@ export const useActivityStore = defineStore(
 			});
 		};
 
-		const query = (view: string, options: PouchDB.Query.Options<{},{}> | undefined): Promise<Activity[] | void> => {
+		const query = (view: string, options: PouchDB.Query.Options<{},{}> | undefined) => {
 			return database.query(view, options).then((result) => {
-				return result.rows.map(
+				result.rows.forEach(
 					(row: any) => addActivityDocument(row.doc)
 				);
+				return result;
 			}).catch((error) => {
 				log(error, LogType.Error);
 			});

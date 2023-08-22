@@ -22,9 +22,10 @@ export const useActivityListStore = defineStore(
 		const list = computed((): ActivityList => {
 			const list: any = {};
 			Object.keys(activityLists.value).forEach((key) => {
-				list[key] = activityStore.list.filter((activity) => {
-					return activityLists.value[key].includes(activity._id as string)
-						&& !activity.removed;
+				list[key] = activityLists.value[key].filter((id: string) => {
+					return activityStore.activities[id];
+				}).map((id: string) => {
+					return activityStore.activities[id];
 				});
 			});
 			return list;
@@ -53,7 +54,10 @@ export const useActivityListStore = defineStore(
 					descending: true
 				}
 			).then((response: any) => {
-				return activitiesToIds(response, parent);
+				return activitiesToIds(
+					response.rows.map((row: any) => row.doc),
+					parent
+				);
 			});
 		};
 
