@@ -261,3 +261,13 @@ const onReady = (options: any) => {
     </template>
   </vue-cal>
 </template>
+<style lang="scss">
+.calendar {
+	.vuecal--view-with-time {
+		.vuecal__weekdays-headings,
+		.vuecal__all-day {
+		padding-right: 0;
+		}
+	}
+}
+</style>
