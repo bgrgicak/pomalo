@@ -246,40 +246,6 @@ const fetch = (start: Date, end: Date) => {
   </v-card>
 </template>
 <style lang="scss">
-@mixin event-colors($background, $text) {
-    background-color: rgba($background, var(--v-medium-emphasis-opacity));
-    color: rgb($text);
-
-    &.vuecal__event--focus {
-        background-color: rgba($background, var(--v-high-emphasis-opacity));
-    }
-}
-
-.vuecal__event {
-    @include event-colors(var(--v-theme-primary), var(--v-theme-primary-darken-4));
-    border: 1px solid #fff;
-
-    &.vuecal__event--focus {
-        box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
-    }
-
-    &.calendar-event__task {
-        @include event-colors(var(--v-theme-task), var(--v-theme-task-darken-4));
-    }
-
-    &.calendar-event__event {
-        @include event-colors(var(--v-theme-event), var(--v-theme-event-darken-4));
-    }
-
-    &.calendar-event__project {
-        @include event-colors(var(--v-theme-project), var(--v-theme-project-darken-4));
-    }
-
-    &.calendar-event__readonly {
-        opacity: var(--v-medium-emphasis-opacity);
-    }
-}
-
 .vuecal__cell--selected,
 .vuecal__cell--today,
 .vuecal__cell--current {
