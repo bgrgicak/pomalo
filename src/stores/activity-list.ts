@@ -3,6 +3,8 @@ import type Activity from '@/types/activity';
 import { computed, ref, type Ref } from 'vue';
 import { useActivityStore } from './activities';
 import { ActivityType } from '@/types/activity';
+import { getLocalDate, isValidDate } from '@/helper/date';
+import { calculateActivityStartEndDate } from '@/data/activities';
 
 interface ActivityListStore {
 	[key: string]: string[];
@@ -48,18 +50,47 @@ export const useActivityListStore = defineStore(
 			return activityStore.query(
 				'priority/type',
 				{
-					endkey: ['task'],
-					startkey: ['task', {}],
+					endkey: [ActivityType.Task],
+					startkey:[ActivityType.Task, {}],
 					include_docs: true,
 					descending: true
 				}
-			).then((response: any) => {
+			).then((rows: any) => {
 				return activitiesToIds(
-					response.rows.map((row: any) => row.doc),
+					rows.map((row: any) => row.doc),
 					parent
 				);
 			});
 		};
+
+		const getProjects = (parent?: string): Promise<string[]> => {
+			// TODO use start and end from query
+			return activityStore.query(
+				'parent/duration',
+				{
+					endkey: [ActivityType.Project],
+					startkey: [ActivityType.Project, {}],
+					include_docs: true,
+					descending: true
+				},
+				(row: any) => {
+					return {
+						...row,
+						doc: {
+							...row.doc,
+							eventFirstStart: row.value.start,
+							eventLastEnd: row.value.end,
+						}	
+					};
+				}
+			).then((rows: any) => {
+				return activitiesToIds(
+					rows.map((row: any) => row.doc),
+					parent
+				);
+			});
+		};
+
 
 		const getActivities = (type: ActivityType, parent?: string): Promise<string[]> => {
 			return activityStore.find({
@@ -74,6 +105,12 @@ export const useActivityListStore = defineStore(
 		const find = (type: ActivityType, parent?: string): Promise<string> => {
 			if (type === ActivityType.Task) {
 				return getTasks(parent).then((response: string[]) => {
+					const listId = getListId(type, parent);
+					activityLists.value[listId] = response;
+					return Promise.resolve(listId);
+				});
+			} if (type === ActivityType.Project) {
+				return getProjects(parent).then((response: string[]) => {
 					const listId = getListId(type, parent);
 					activityLists.value[listId] = response;
 					return Promise.resolve(listId);

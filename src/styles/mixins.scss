@@ -1,0 +1,8 @@
+@mixin event-colors($background, $text) {
+    background-color: rgba($background, var(--v-medium-emphasis-opacity));
+    color: rgb($text);
+
+    &.vuecal__event--focus {
+        background-color: rgba($background, var(--v-high-emphasis-opacity));
+    }
+}

@@ -8,6 +8,8 @@ import { useSettingsStore } from '@/stores/settings';
 import { error } from '@/helper/logs';
 // @ts-ignore-next-line
 import { priorityView } from './views/priority';
+// @ts-ignore-next-line
+import { parentView } from './views/parent';
 
 export declare function emit (key: any): void;
 export declare function emit (key: any, value: any): void;
@@ -73,7 +75,7 @@ const createIndexes = (database: PouchDB.Database) => {
 };
 
 const createViews = async (database: PouchDB.Database) => {
-	const views = [priorityView];
+	const views = [priorityView, parentView];
 	for (const view of views) {
 		const viewId = '_design/' + view.name;
 		const viewDocument = await database.get(viewId)

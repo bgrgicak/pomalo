@@ -62,15 +62,22 @@ export const useActivityStore = defineStore(
 			});
 		};
 
-		const query = (view: string, options: PouchDB.Query.Options<{},{}> | undefined) => {
-			return database.query(view, options).then((result) => {
-				result.rows.forEach(
-					(row: any) => addActivityDocument(row.doc)
-				);
-				return result;
-			}).catch((error) => {
-				log(error, LogType.Error);
-			});
+		const query = (view: string, options: PouchDB.Query.Options<{},{}> | undefined, map?: Function) => {
+			return database.query(view, options)
+				.then((result) => {
+					if (!map) {
+						return result.rows;
+					}
+					return result.rows.map((row: any) => map(row));
+				})
+				.then((rows) => {
+					rows.forEach(
+						(row: any) => addActivityDocument(row.doc)
+					);
+					return rows;
+				}).catch((error) => {
+					log(error, LogType.Error);
+				});
 		};
 
 		const get = (activityId: string): Promise<Activity | void> => {

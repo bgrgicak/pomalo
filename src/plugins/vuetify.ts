@@ -4,7 +4,7 @@ import 'vuetify/styles/main.sass';
 import { createVuetify, type ThemeDefinition } from 'vuetify';
 import { computed } from 'vue';
 
-const appTheme: ThemeDefinition = {
+export const appTheme: ThemeDefinition = {
 	dark: false,
 	colors: {
 		primary: '#30A2FF',
@@ -17,6 +17,7 @@ const appTheme: ThemeDefinition = {
 		task: '#1069B3',
 		event: '#FF854A',
 		project: '#FFD317',
+		background: '#FFFFFF',
 	}
 };
 

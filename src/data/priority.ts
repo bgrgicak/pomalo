@@ -1,32 +1,7 @@
-import { dayInMilliseconds, getLocalDate, getUtcTimestamp, yearInMilliseconds } from '@/helper/date';
-import { debug, warning } from '@/helper/logs';
+import { dayInMilliseconds, getUtcTimestamp } from '@/helper/date';
+import { warning } from '@/helper/logs';
 import { settings } from '@/helper/settings';
-import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
-import { ActivityType } from '@/types/activity';
-
-/**
- * Get the number of milliseconds left until due date
- * @param activity 
- * @returns number of milliseconds left until due date
- */
-const getTimeLeftUntilDueDate = (activity: Activity): number => {
-	if (!activity.dueDate) {
-		return yearInMilliseconds;
-	}
-	const currentTimestamp = getUtcTimestamp();
-	const dueDate = getUtcTimestamp(activity.dueDate);
-	return dueDate - currentTimestamp;
-};
-
-const getPercentageOfUsedTime = (activity: Activity, estimatedHours: number, workedTime: number): number => {
-	const timeLeftUntilDueDate: number = getTimeLeftUntilDueDate(activity);
-	return 100 - (
-		(
-			timeLeftUntilDueDate - estimatedHours + workedTime
-		) / timeLeftUntilDueDate
-	) * 100;
-};
 
 
 const multiplyEstimate = (estimatedHours: number): number => {
@@ -85,10 +60,4 @@ export const getWorkedTime = (activity: Activity): number => {
 			getUtcTimestamp(event.end) - getUtcTimestamp(event.start)
 		);
 	}, 0);
-};
-
-const getCompletePercentage = (estimatedHours: number, workedTime: number): number => {
-	return (
-		workedTime / estimatedHours
-	) * 100;
 };

@@ -262,14 +262,7 @@ const onReady = (options: any) => {
   </vue-cal>
 </template>
 <style lang="scss">
-@mixin event-colors($background, $text) {
-    background-color: rgba($background, var(--v-medium-emphasis-opacity));
-    color: rgb($text);
-
-    &.vuecal__event--focus {
-        background-color: rgba($background, var(--v-high-emphasis-opacity));
-    }
-}
+@import '@/styles/mixins.scss';
 
 .vuecal__event {
     @include event-colors(var(--v-theme-primary), var(--v-theme-primary-darken-4));
@@ -292,7 +285,7 @@ const onReady = (options: any) => {
     }
 
     &.calendar-event__readonly {
-        opacity: var(--v-medium-emphasis-opacity);
+        // opacity: var(--v-medium-emphasis-opacity);
     }
 }
 

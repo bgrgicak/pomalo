@@ -38,7 +38,7 @@ export const openActivityPage = async (activity: Activity) => {
 	return Router.push(`/${activity.type}/${activity._id}/`);
 };
 
-const calculateActivityStartEndDate = (activity: Activity) => {
+export const calculateActivityStartEndDate = (activity: Activity) => {
 	let eventFirstStart: Date | undefined = undefined;
 	let eventLastEnd: Date | undefined = undefined;
 	if (activity.events.length > 0) {
