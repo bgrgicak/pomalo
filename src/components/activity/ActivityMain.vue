@@ -52,7 +52,7 @@ const onFieldChange = (key: string, value: any) => {
   <v-card class="activity-details pa-4">
     <v-container>
       <v-row
-        v-if="!!activity?.removed"
+        v-if="!!activity?.archived"
         no-gutters
       >
         <v-col cols="12">

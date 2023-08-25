@@ -41,20 +41,24 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 	).then(async (response) => {
 		const jcalData = ICAL.parse(await response.text());
 		const comp = new ICAL.Component(jcalData);
+		const eventIds: string[] = [];
 		comp.getAllSubcomponents('vevent').forEach((vEvent: any) => {
 			const event = new ICAL.Event(vEvent);
+			const id = 'eventCalendar-' + event.uid;
+			eventIds.push(id);
+
 			const lastModified = event.component.getFirstPropertyValue('last-modified').toJSDate();
 			if (lastCalendarSync && lastModified < lastCalendarSync) {
 				return;
 			}
 			const activity: Activity = {
-				_id: 'event-calendar-' + event.uid,
+				_id: id,
 				title: event.summary,
 				description: event.description,
 				created: getLocalDate(),
 				type: ActivityType.Event,
 				readonly: true,
-				remoteId: event.uid,
+				parent: calendarUrl,
 				members: [],
 				events: [],
 				aboveActivities: [],
@@ -66,7 +70,6 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				start: event.startDate.toJSDate(),
 				end: event.endDate.toJSDate()
 			};
-			activityEvent.id = 'activityEvent' + event.uid;
 			activityEvent.allDay = isAllDayEvent(activityEvent);
 			if (activityEvent.allDay && activityEvent.end) {
 				activityEvent.end = addMilliseconds(activityEvent.end, - 1);
@@ -137,6 +140,12 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				activity,
 			});
 		});
+
+		postMessage({
+			type: 'calendar-sync-all-ids',
+			eventIds,
+			calendarUrl
+		});
 	});
 };
 
@@ -144,4 +153,3 @@ onmessage = (event: MessageEvent) => {
 	const { calendarUrl, lastCalendarSync } = JSON.parse(event.data);
 	syncCalendar(calendarUrl, new Date(lastCalendarSync));
 };
-  

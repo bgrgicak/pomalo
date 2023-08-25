@@ -1,9 +1,10 @@
 
 import { registerSW } from 'virtual:pwa-register';
-import { error as errorLog } from '@/helper/logs';
-import { getCalendarUrls, getLastCalendarSync, syncIntervalMilliseconds } from './ical-sync';
+import { debug, error as errorLog } from '@/helper/logs';
+import { getCalendarUrls, getLastCalendarSync, syncIntervalMilliseconds, updateLastCalendarSync } from './ical-sync';
 import { useActivityStore } from '@/stores/activities';
-import { minuteInMilliseconds } from '@/helper/date';
+import { secondInMilliseconds } from '@/helper/date';
+import type Activity from '@/types/activity';
 
 const syncCalendar = (worker: Worker) => {
 	getCalendarUrls().forEach(async (calendarUrl) => {
@@ -13,6 +14,7 @@ const syncCalendar = (worker: Worker) => {
 				lastCalendarSync: getLastCalendarSync(calendarUrl)
 			})
 		);
+		updateLastCalendarSync(calendarUrl);
 	});
 };
 
@@ -31,13 +33,36 @@ export const updateSW = registerSW({
 			);
 			setTimeout(
 				() => syncCalendar(worker),
-				minuteInMilliseconds
+				secondInMilliseconds
 			);
 
 			worker.onmessage = (event: MessageEvent) => {
-			  if (event.data.type === 'calendar-sync') {
-					useActivityStore().addOrUpdate(event.data.activity);
-			  }
+				debug('SW message', event.data);
+				const activityStore  = useActivityStore();
+				if (event.data.type === 'calendar-sync') {
+					activityStore.addOrUpdate(event.data.activity);
+				} else if (event.data.type === 'calendar-sync-all-ids') {
+					const { eventIds, calendarUrl } = event.data;
+					activityStore.find(
+						{
+							selector: {
+								_id: {
+									$nin: eventIds
+								},
+								parent: {
+									$eq: calendarUrl
+								}
+							}
+						}
+					).then((activities: Activity[] | void) => {
+						if (!activities) {
+							return;
+						}
+						activities.forEach((activity: Activity) => {
+							activityStore.remove(activity._id);
+						});
+					});
+				}
 			};
 		}
 	},

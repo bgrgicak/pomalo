@@ -89,10 +89,9 @@ interface Activity {
     description: string,
     type: ActivityType,
     parent?: string,
-    removed?: boolean,
+    archived?: boolean,
 
     readonly?: boolean,
-    remoteId?: string,
 
     members: ActivityMembers[],
     events: ActivityEvent[],

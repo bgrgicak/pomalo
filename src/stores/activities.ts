@@ -169,18 +169,31 @@ export const useActivityStore = defineStore(
 			);
 		};
 
-		const remove = (activityId: string) => {
+		const archive = (activityId: string) => {
 			return get(activityId).then((document) => {
 				if (!document) {
 					return Promise.reject(__('Activity not found'));
 				}
 				const updatedDocument = Object.assign({}, document);
-				updatedDocument.removed = true;
+				updatedDocument.archived = true;
 				updatedDocument.readonly = true;
 				return put({
 					...updatedDocument,
 					_rev: document._rev,
 				}).then(() => {
+					delete activities.value[activityId];
+				});
+			}).catch(error => {
+				log(error, LogType.Error);
+			});
+		};
+
+		const remove = (activityId: string) => {
+			return get(activityId).then((document) => {
+				if (!document) {
+					return Promise.reject(__('Activity not found'));
+				}
+				return database.remove(document as PouchDB.Core.RemoveDocument).then(() => {
 					delete activities.value[activityId];
 				});
 			}).catch(error => {
@@ -199,6 +212,7 @@ export const useActivityStore = defineStore(
 			addOrUpdate,
 			updateField,
 			updateFields,
+			archive,
 			remove,
 		};
 	}

@@ -18,7 +18,8 @@ const prepareDate = (date?: Date | string | number) => {
 	return date;
 };
 
-export const minuteInMilliseconds = 1000 * 60;
+export const secondInMilliseconds = 1000;
+export const minuteInMilliseconds = secondInMilliseconds * 60;
 export const hourInMilliseconds = minuteInMilliseconds * 60;
 export const dayInMilliseconds = hourInMilliseconds * 24;
 export const weekInMilliseconds = dayInMilliseconds * 7;

@@ -38,7 +38,7 @@ export const useActivityListStore = defineStore(
 				if (parent) {
 					return activity.parent === parent;
 				}
-				return true !== activity.removed;
+				return true !== activity.archived;
 			}).map((activity: Activity) => activity._id);
 		};
 

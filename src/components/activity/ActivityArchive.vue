@@ -31,7 +31,7 @@ const buttonLabel = computed(() => {
 		return undefined;
 	}
 	if (ActivityType.Task === props.activity.type) {
-		return __('Close Task');
+		return __('Archive Task');
 	} else if (ActivityType.Event === props.activity.type) {
 		return __('Delete Event');
 	}
@@ -42,9 +42,9 @@ const buttonIcon = computed(() => {
 	return props.small ? 'mdi-delete' : undefined;
 });
 
-const closeActivity = (activity: Activity) => {
-	if (!confirm(__('Are you sure you want to close this ') + activity.type + '?')) return;
-	activityStore.remove(activity._id).then(() => {
+const archiveActivity = (activity: Activity) => {
+	if (!confirm(__('Are you sure you want to archive this ') + activity.type + '?')) return;
+	activityStore.archive(activity._id).then(() => {
 		if (!props.redirectAfterRemove) {
 			return;
 		}
@@ -56,19 +56,19 @@ const closeActivity = (activity: Activity) => {
 </script>
 <template>
   <v-btn
-    v-if="!props.activity.removed && !props.activity.readonly"
+    v-if="!props.activity.archived && !props.activity.readonly"
     color="error"
-    class="activity-close"
-    :class="{ 'activity-close--small': props.small }"
+    class="activity-archive"
+    :class="{ 'activity-archive--small': props.small }"
     :readonly="props.activity.readonly"
     variant="text"
     :icon="buttonIcon"
     :text="buttonLabel"
-    @click="closeActivity(props.activity)"
+    @click="archiveActivity(props.activity)"
   />
 </template>
 <style scoped lang="scss">
-.activity-close--small {
+.activity-archive--small {
   
 }
 </style>

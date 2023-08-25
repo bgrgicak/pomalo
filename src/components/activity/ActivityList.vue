@@ -8,7 +8,7 @@ import __ from '@/helper/translations';
 import { useActivityListStore } from '@/stores/activity-list';
 import TimerToggle from '../timer/TimerToggle.vue';
 import type { PropType } from 'vue';
-import ActivityClose from './ActivityClose.vue';
+import ActivityArchive from './ActivityArchive.vue';
 import { computed } from 'vue';
 import { watch } from 'vue';
 
@@ -134,7 +134,7 @@ const openActivity = (activity: Activity) => {
         </td>
         <td class="activity-list__item activity-list__item--actions">
           <TimerToggle :activity="item" />
-          <ActivityClose
+          <ActivityArchive
             :activity="item"
             :small="true"
             :redirect-after-remove="false"

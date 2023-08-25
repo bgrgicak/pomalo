@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import ActivityClose from '../activity/ActivityClose.vue';
+import ActivityArchive from '../activity/ActivityArchive.vue';
 import ActivitySchedule from '../activity/ActivitySchedule.vue';
 import type Activity from '@/types/activity';
 import type { ActivityEvent } from '@/types/activity';
@@ -33,7 +33,7 @@ const onFieldChange = (key: string, value: any) => {
     @fieldChange="(value) => onFieldChange('events', value)"
   />
   <v-divider />
-  <ActivityClose
+  <ActivityArchive
     :activity="props.activity"
     class=" mt-4"
   />

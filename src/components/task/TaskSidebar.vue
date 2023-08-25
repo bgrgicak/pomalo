@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
-import ActivityClose from '../activity/ActivityClose.vue';
+import ActivityArchive from '../activity/ActivityArchive.vue';
 import ActivityCompleted from './TaskCompleted.vue';
 import ActivityDueDate from '../activity/ActivityDueDate.vue';
 import TaskEstimatedHours from './TaskEstimatedHours.vue';
@@ -72,7 +72,7 @@ const onFieldChange = (key: string, value: any) => {
     @change="(value: any) => onFieldChange('parent', value)"
   />
   <v-divider class="mb-2" />
-  <ActivityClose
+  <ActivityArchive
     :activity="props.activity"
     class=" mt-4"
   />
