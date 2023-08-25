@@ -9,9 +9,14 @@ import { openActivityPage } from '@/data/activities';
 import { colorScheme } from '@/plugins/ganttastic';
 import { daysBetweenDates } from '@/helper/date';
 import { useLayoutStore } from '@/stores/layout';
+import { useActivityStore } from '@/stores/activities';
+import { watch } from 'vue';
+import { LogType } from '@/types/log';
+import log from '@/helper/logs';
 
 const projectListId: Ref<string> = ref('');
 const taskListIds: any = ref({});
+const projects: Ref<any[]> = ref([]);
 
 const activityListStore = useActivityListStore();
 const layoutStore = useLayoutStore();
@@ -36,52 +41,59 @@ const mapActivityToGanttBar = (activity: Activity) => {
 	};
 };
 
-const projects = computed(() => {
-	if (!activityListStore.list[projectListId.value]) {
-		return [];
-	}
-	return activityListStore.list[projectListId.value].map(
-		(activity: Activity) => {
-			let tasks: any[] = []; 
-			if (taskListIds.value[activity._id] && activityListStore.list[taskListIds.value[activity._id]]) {
-				tasks = activityListStore.list[taskListIds.value[activity._id]].map(mapActivityToGanttBar);
-			}
-			tasks= tasks.sort((a, b) => {
-				if (!a.start || !b.start) {
+watch(
+	[
+		() => activityListStore.list[projectListId.value] ?? [],
+		() => (Object.values(taskListIds.value) as any).map((listId: string) => activityListStore.list[listId])
+	],
+	(newState) => {
+		const [projectList] = newState;
+		if (!projectList) {
+			projects.value = [];
+		}
+		projects.value = projectList.map(
+			(activity: Activity) => {
+				let tasks: any[] = []; 
+				if (taskListIds.value[activity._id] && activityListStore.list[taskListIds.value[activity._id]]) {
+					tasks = activityListStore.list[taskListIds.value[activity._id]].map(mapActivityToGanttBar);
+				}
+				tasks= tasks.sort((a, b) => {
+					if (!a.start || !b.start) {
+						return 0;
+					}
+					if (a.start < b.start) {
+						return -1;
+					}
+					if (a.start > b.start) {
+						return 1;
+					}
 					return 0;
-				}
-				if (a.start < b.start) {
-					return -1;
-				}
-				if (a.start > b.start) {
-					return 1;
-				}
+				});
+				return [
+					mapActivityToGanttBar(activity),
+					...tasks
+				];
+			}
+		).sort((a, b) => {
+			if (!a[0].start || !b[0].start) {
 				return 0;
-			});
-			return [
-				mapActivityToGanttBar(activity),
-				...tasks
-			];
-		}
-	).sort((a, b) => {
-		if (!a[0].start || !b[0].start) {
+			}
+			if (a[0].start < b[0].start) {
+				return -1;
+			}
+			if (a[0].start > b[0].start) {
+				return 1;
+			}
 			return 0;
-		}
-		if (a[0].start < b[0].start) {
-			return -1;
-		}
-		if (a[0].start > b[0].start) {
-			return 1;
-		}
-		return 0;
-	});
-});
+		});
+	}
+);
 
 const duration = computed(() => {
 	let start: Date | undefined = undefined;
 	let end: Date | undefined = undefined;
 	projects.value.forEach(project => {
-		project.forEach(task => {
+		project.forEach((task: any) => {
 			if (!start || (task.start && task.start < start)) {
 				start = task.start;
 			}
@@ -132,6 +144,21 @@ const getExpandIcon = (activity: Activity) => {
 	}
 	return 'mdi-menu-down';
 };
+
+const onDragEnd = (item: any, event: MouseEvent) => {
+	if(event) {
+		event.preventDefault();
+		event.stopPropagation();
+	}
+	if (!item.bar || !item.bar.start || !item.bar.end || !item.bar.id) {
+		return;
+	}
+	useActivityStore().updateFields(item.bar.id, {
+		startDate: new Date(item.bar.start),
+		dueDate: new Date(item.bar.end)
+	});
+	return false;
+};
 </script>
 <template>
   <div class="project-list-view">
@@ -143,7 +170,9 @@ const getExpandIcon = (activity: Activity) => {
       bar-end="end"
       :color-scheme="colorScheme"
       :width="width"
-      :push-on-overlap="true"
+      @dragend-bar="onDragEnd"
+      @click-bar="(item: any) => showActivitySidebar(item.bar.activity)"
+      @dblclick-bar="(item: any) => openActivity(item.bar.activity)"
     >
       <g-gantt-row
         v-for="project in projects"
@@ -178,6 +207,7 @@ const getExpandIcon = (activity: Activity) => {
 @import '@/styles/mixins.scss';
 
 $label-width: 200px;
+$row-height: 52px;
 $border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 
 .project-list-view {
@@ -196,6 +226,7 @@ $border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
   width: $label-width;
   padding: 0 16px;
   position: absolutes;
+  height: $row-height;
 
   &:first-child {
 	border-top: $border;
@@ -234,7 +265,7 @@ $border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 .g-gantt-row {
   padding-left: $label-width;
-  min-height: 52px;
+  min-height: $row-height;
   height: auto !important;
 }
 .g-gantt-bar {
