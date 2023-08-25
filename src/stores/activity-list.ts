@@ -48,12 +48,22 @@ export const useActivityListStore = defineStore(
 
 		const getTasks = (parent?: string): Promise<string[]> => {
 			return activityStore.query(
-				'priority/type',
+				'parent/duration',
 				{
 					endkey: [ActivityType.Task],
-					startkey:[ActivityType.Task, {}],
+					startkey: [ActivityType.Task, {}],
 					include_docs: true,
 					descending: true
+				},
+				(row: any) => {
+					return {
+						...row,
+						doc: {
+							...row.doc,
+							eventFirstStart: row.value.start,
+							eventLastEnd: row.value.end,
+						}	
+					};
 				}
 			).then((rows: any) => {
 				return activitiesToIds(
@@ -61,10 +71,23 @@ export const useActivityListStore = defineStore(
 					parent
 				);
 			});
+			// return activityStore.query(
+			// 	'priority/type',
+			// 	{
+			// 		endkey: [ActivityType.Task],
+			// 		startkey:[ActivityType.Task, {}],
+			// 		include_docs: true,
+			// 		descending: true
+			// 	}
+			// ).then((rows: any) => {
+			// 	return activitiesToIds(
+			// 		rows.map((row: any) => row.doc),
+			// 		parent
+			// 	);
+			// });
 		};
 
 		const getProjects = (parent?: string): Promise<string[]> => {
-			// TODO use start and end from query
 			return activityStore.query(
 				'parent/duration',
 				{

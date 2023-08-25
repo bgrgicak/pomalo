@@ -6,11 +6,12 @@ export interface ActivityDocumentEvent extends Omit<ActivityEvent, 'start' | 'en
     end?: number;
     repeatEnd?: number;
 }
-export interface ActivityDocument extends Omit<Activity, 'created' | 'events' | 'completedDate' | 'dueDate' | 'eventFirstStart' | 'eventLastEnd'> {
+export interface ActivityDocument extends Omit<Activity, 'created' | 'events' | 'completedDate' | 'startDate' | 'dueDate' | 'eventFirstStart' | 'eventLastEnd'> {
     created: number;
     events: ActivityDocumentEvent[];
 
     completedDate?: number;
+    startDate?: number;
     dueDate?: number;
 
     eventFirstStart?: number;

@@ -97,6 +97,7 @@ interface Activity {
     events: ActivityEvent[],
 
     completedDate?: Date,
+    startDate?: Date,
     dueDate?: Date,
     estimatedHours?: number,
 

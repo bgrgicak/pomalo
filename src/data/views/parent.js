@@ -3,12 +3,17 @@ export const parentView = {
 	views: {
 		'duration': {
 			map: (function (document) {
+				const SEVEN_DAYS = 604800000;
 				const parent = document.parent;
-				// TODO use real date
-				let start = (new Date().getTime());
+				let start = document.startDate
+					? document.startDate
+					: (new Date().getTime());
 				let end = document.dueDate
 					? document.dueDate
-					: (start + 604800000); // 7 days
+					: (start + SEVEN_DAYS);
+				if (start > end) {
+					start = end - SEVEN_DAYS;
+				}
 				if (0 !== document.events.length) {
 					document.events.forEach(event => {
 						if (event.start < start) {

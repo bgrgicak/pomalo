@@ -8,7 +8,7 @@ export const colorScheme = {
 	ternary: appTheme.colors!.background,
 	quartenary: appTheme.colors!.background,
 	hoverHighlight: appTheme.colors!.background,
-	text: appTheme.colors!.info,
+	text: 'rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))',
 	background: appTheme.colors!.background,
 };
 

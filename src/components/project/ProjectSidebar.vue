@@ -7,6 +7,7 @@ import ActivitySchedule from '../activity/ActivitySchedule.vue';
 import { computed, type PropType } from 'vue';
 import type Activity from '@/types/activity';
 import type { ActivityEvent } from '@/types/activity';
+import ActivityStartDate from '../activity/ActivityStartDate.vue';
 
 const props = defineProps({
 	activity: {
@@ -49,6 +50,10 @@ const onFieldChange = (key: string, value: any) => {
     <v-divider class="mb-2 mt-10" />
   </div>
   <v-divider class="mb-8" />
+  <ActivityStartDate
+    :activity="props.activity"
+    @change="(value: any) => onFieldChange('startDate', value)"
+  />
   <ActivityDueDate
     :activity="props.activity"
     @change="(value: any) => onFieldChange('dueDate', value)"
