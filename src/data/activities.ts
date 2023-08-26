@@ -39,8 +39,8 @@ export const openActivityPage = async (activity: Activity) => {
 };
 
 export const calculateActivityStartEndDate = (activity: Activity) => {
-	let eventFirstStart: Date | undefined = undefined;
-	let eventLastEnd: Date | undefined = undefined;
+	let eventFirstStart: Date | undefined = activity.startDate;
+	let eventLastEnd: Date | undefined = activity.dueDate;
 	if (activity.events.length > 0) {
 		eventFirstStart = activity.events[0].start;
 		if (activity.events[0].repeat) {

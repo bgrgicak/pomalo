@@ -101,3 +101,10 @@ export const isValidDate = (date: any) => {
 export const addMilliseconds = (date: Date, milliseconds: number) => {
 	return new Date(getUtcTimestamp(date) + milliseconds);
 };
+
+export const setTime = (date: Date, hours: number = 0, minutes: number = 0, seconds: number = 0) => {
+	date.setHours(hours);
+	date.setMinutes(minutes);
+	date.setSeconds(seconds);
+	return date;
+};

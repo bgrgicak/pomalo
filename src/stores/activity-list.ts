@@ -3,8 +3,6 @@ import type Activity from '@/types/activity';
 import { computed, ref, type Ref } from 'vue';
 import { useActivityStore } from './activities';
 import { ActivityType } from '@/types/activity';
-import { getLocalDate, isValidDate } from '@/helper/date';
-import { calculateActivityStartEndDate } from '@/data/activities';
 
 interface ActivityListStore {
 	[key: string]: string[];
@@ -46,53 +44,38 @@ export const useActivityListStore = defineStore(
 			return btoa(`${type}-${parent}`);
 		};
 
-		const getTasks = (parent?: string): Promise<string[]> => {
-			return activityStore.query(
-				'parent/duration',
-				{
-					endkey: [ActivityType.Task],
-					startkey: [ActivityType.Task, {}],
-					include_docs: true,
-					descending: true
-				},
-				(row: any) => {
-					return {
-						...row,
-						doc: {
-							...row.doc,
-							eventFirstStart: row.value.start,
-							eventLastEnd: row.value.end,
-						}	
-					};
-				}
-			).then((rows: any) => {
-				return activitiesToIds(
-					rows.map((row: any) => row.doc),
-					parent
-				);
-			});
-			// return activityStore.query(
-			// 	'priority/type',
-			// 	{
-			// 		endkey: [ActivityType.Task],
-			// 		startkey:[ActivityType.Task, {}],
-			// 		include_docs: true,
-			// 		descending: true
-			// 	}
-			// ).then((rows: any) => {
-			// 	return activitiesToIds(
-			// 		rows.map((row: any) => row.doc),
-			// 		parent
-			// 	);
-			// });
+		const addActivityList = (type: ActivityType, parent?: string, activities: Activity[] = []): string => {
+			const listId = getListId(type, parent);
+			activityLists.value[listId] = activitiesToIds(
+				activities.map((row: any) => row.doc),
+				parent
+			);
+			return listId;
 		};
 
-		const getProjects = (parent?: string): Promise<string[]> => {
+		const getPriorityTypeView = (type: ActivityType, parent?: string): Promise<string> => {
+			return activityStore.query(
+				'priority/type',
+				{
+					endkey: [ActivityType.Task],
+					startkey:[ActivityType.Task, {}],
+					include_docs: true,
+					descending: true
+				}
+			).then((response: Activity[] | void) => {
+				if (!response) {
+					return Promise.reject([]);
+				}
+				return addActivityList(type, parent, response);
+			});
+		};
+
+		const getParentDurationView = (type: ActivityType,parent?: string): Promise<string> => {
 			return activityStore.query(
 				'parent/duration',
 				{
-					endkey: [ActivityType.Project],
-					startkey: [ActivityType.Project, {}],
+					endkey: [type, parent],
+					startkey: [type, parent, {}],
 					include_docs: true,
 					descending: true
 				},
@@ -106,11 +89,11 @@ export const useActivityListStore = defineStore(
 						}	
 					};
 				}
-			).then((rows: any) => {
-				return activitiesToIds(
-					rows.map((row: any) => row.doc),
-					parent
-				);
+			).then((response: Activity[] | void) => {
+				if (!response) {
+					return Promise.reject([]);
+				}
+				return addActivityList(type, parent, response);
 			});
 		};
 
@@ -126,25 +109,11 @@ export const useActivityListStore = defineStore(
 		};
 
 		const find = (type: ActivityType, parent?: string): Promise<string> => {
-			if (type === ActivityType.Task) {
-				return getTasks(parent).then((response: string[]) => {
-					const listId = getListId(type, parent);
-					activityLists.value[listId] = response;
-					return Promise.resolve(listId);
-				});
-			} if (type === ActivityType.Project) {
-				return getProjects(parent).then((response: string[]) => {
-					const listId = getListId(type, parent);
-					activityLists.value[listId] = response;
-					return Promise.resolve(listId);
-				});
-			} else {
-				return getActivities(type, parent).then((response: string[]) => {
-					const listId = getListId(type, parent);
-					activityLists.value[listId] = response;
-					return Promise.resolve(listId);
-				});
-			}
+			return getActivities(type, parent).then((response: string[]) => {
+				const listId = getListId(type, parent);
+				activityLists.value[listId] = response;
+				return Promise.resolve(listId);
+			});
 		};
 
 		const add = (activity: Activity, listId: string) => {
@@ -157,6 +126,8 @@ export const useActivityListStore = defineStore(
 		return {
 			list,
 			find,
+			getPriorityTypeView,
+			getParentDurationView,
 			add,
 		};
 	}
