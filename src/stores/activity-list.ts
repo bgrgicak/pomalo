@@ -87,9 +87,13 @@ export const useActivityListStore = defineStore(
 
 		const add = (activity: Activity, listId: string) => {
 			return activityStore.add(activity).then((response: any) => {
-				activityLists.value[listId].push(response.id);
+				addToList(response.id, listId);
 				return response.id;
 			});
+		};
+
+		const addToList = (activityId: string, listId: string) => {
+			activityLists.value[listId].push(activityId);
 		};
 
 		return {
@@ -97,6 +101,7 @@ export const useActivityListStore = defineStore(
 			find,
 			getPriorityTypeView,
 			add,
+			addToList,
 		};
 	}
 );

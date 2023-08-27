@@ -38,6 +38,7 @@ watch(route, hide);
   >
     <header class="right-sidebar__header py-3">
       <v-btn
+        v-if="activity"
         icon="mdi-arrow-expand"
         variant="plain"
         size="56"
