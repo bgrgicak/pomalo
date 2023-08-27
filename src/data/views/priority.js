@@ -32,11 +32,11 @@ export const priorityView = {
 				) * 100;
 
 				const priority = [
-					isCurrentTask * 10,
-					notCompleted * 8,
-					isInProgress * 7,
-					percentageOfUsedTime * 6,
-					completePercentage * 5,
+					isCurrentTask * 200,
+					notCompleted * 100,
+					isInProgress * 50,
+					completePercentage * 20,
+					percentageOfUsedTime * 10,
 				].reduce((total, value) => total + value, 0);
 				emit(
 					[document.type, priority],
