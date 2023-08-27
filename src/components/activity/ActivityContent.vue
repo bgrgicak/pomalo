@@ -5,8 +5,10 @@ import { useActivityStore } from '@/stores/activities';
 import type { ActivityState } from '@/types/activity';
 import type Activity from '@/types/activity';
 import { ref, watch, type Ref } from 'vue';
-
 import type { PropType } from 'vue';
+import TextEditor from '../ui/TextEditor.vue';
+import { useNoticeStore } from '@/stores/notices';
+import { NoticeType } from '@/types/notice';
 
 const props = defineProps({
 	activity: {
@@ -48,11 +50,18 @@ const onKeyup = (event: KeyboardEvent) => {
 };
 
 const save = () => {
-	const updatedActivity = Object.assign({}, props.activity);
-	updatedActivity.title = state.value.activity.title;
-	updatedActivity.description = state.value.activity.description;
-	activityStore.update(updatedActivity).then(() => {
+	activityStore.updateFields(
+		props.activity._id,
+		{
+			title: state.value.activity.title,
+			description: state.value.activity.description,
+		},
+	).then(() => {
 		state.value.isEditing = false;
+		useNoticeStore().addNotice({
+			title: __('Saved'),
+			type: NoticeType.Success,
+		});
 	});
 };
 
@@ -79,10 +88,10 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
         cols="12"
         class="pb-0"
       >
-        <v-textarea
+        <text-editor
           v-model="state.activity.description"
+          class="activity-description"
           :readonly="state.activity.readonly"
-          rows="5"
           @keyup="onKeyup"
         />
       </v-col>
@@ -104,3 +113,9 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
     </v-row>
   </div>
 </template>
+<style scoped lang="scss">
+.activity-description {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+</style>

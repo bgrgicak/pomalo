@@ -17,7 +17,7 @@ export default {
 		settingsKey: 'pomalo-settings',
 	},
 	notice: {
-		dismissDelay: 300000,
+		dismissDelay: 5000,
 	},
 	timer: {
 		refreshInterval: 1000,

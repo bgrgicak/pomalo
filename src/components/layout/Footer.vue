@@ -8,7 +8,6 @@ const noticeStore = useNoticeStore();
 
 
 const dismiss = (notice: Notice) => {
-	console.log(notice);
 	if (!notice._id) {
 		return;
 	}

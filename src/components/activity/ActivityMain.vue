@@ -137,7 +137,7 @@ const onFieldChange = (key: string, value: any) => {
 
 .activity-details {
     position: relative;
-    overflow-y: auto;
+    overflow-y: auto !important;
     height: calc(100vh - $header-height);
 
     .v-container {

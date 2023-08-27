@@ -22,7 +22,8 @@
     "pouchdb-find": "^8.0.1",
     "vue": "^3.2.47",
     "vue-cal": "^4.8.1",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vuejs-medium-editor": "^3.0.2"
   },
   "devDependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",

@@ -9,8 +9,11 @@ import vuetify from './plugins/vuetify';
 import ganttastic from './plugins/ganttastic';
 
 import './styles/main.scss';
-
 import 'vue-cal/dist/vuecal.css';
+import 'medium-editor/dist/css/medium-editor.css';
+import 'vuejs-medium-editor/dist/themes/default.css';
+// for the code highlighting
+import 'highlight.js/styles/github.css';
 
 import '@/service-worker/register';
 
