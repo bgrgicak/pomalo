@@ -4,11 +4,12 @@ import Router from '@/router/router';
 import { getLocalDate, getUtcTimestamp, addDays } from '../helper/date';
 import { newId } from './pouchdb';
 import type { ActivityDocument } from '@/types/activity-document';
-import { getEstimatedHours, getWorkedTime } from './priority';
+import { getEstimatedDays, getEstimatedHours, getWorkedTime } from './priority';
 import { useActivityStore } from '@/stores/activities';
 import { useNoticeStore } from '@/stores/notices';
 import { NoticeType } from '@/types/notice';
 import { settings } from '@/helper/settings';
+import { debug } from '@/helper/logs';
 
 export const getActivityLink = (activity: Activity): string => {
 	return `/${activity.type}/${activity._id}/`;
@@ -66,14 +67,25 @@ export const calculateActivityStartEndDate = (activity: Activity) => {
 			}
 		});
 	}
+
+
+	const defaultDuration = activity.estimatedHours
+		? getEstimatedDays(activity)
+		: settings.defaultActivityDurationInDays;
 	if (undefined === eventFirstStart) {
-		eventFirstStart = activity.created;
+		eventFirstStart = eventLastEnd
+			? addDays(eventLastEnd, -1 * defaultDuration)
+			: activity.created;
 	}
+
 	if (undefined === eventLastEnd) {
-		eventLastEnd = addDays(eventFirstStart, settings.defaultActivityDurationInDays);
+		eventLastEnd = addDays(eventFirstStart, defaultDuration);
 	}
+
+	// Handle old corrupted data, this should not happen anymore
 	if (eventFirstStart > eventLastEnd) {
-		eventFirstStart = addDays(eventLastEnd, -7);
+		debug('Corrupted data detected on activity ' + activity._id);
+		eventFirstStart = addDays(eventLastEnd, -1 * defaultDuration);
 	}
 	return {
 		eventFirstStart,

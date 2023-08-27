@@ -45,6 +45,19 @@ export const getEstimatedHours = (activity: Activity): number => {
 	);
 };
 
+/**
+ * Get the estimated time in days multiplied by the estimate factor.
+ * If no time is set it will return the default time of one day.
+ * @param activity
+ * @returns estimated time in days
+ */
+export const getEstimatedDays = (activity: Activity): number => {
+	return Math.ceil(
+		getEstimatedHours(activity) / dayInMilliseconds
+		/ settings.workingHoursPerDay
+	);
+};
+
 export const getWorkedTime = (activity: Activity): number => {
 	if (!activity.events.length) {
 		return 0;

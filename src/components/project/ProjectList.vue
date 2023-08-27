@@ -52,11 +52,15 @@ activityListStore.find(ActivityType.Project).then((listId: string) => {
 });
 
 const mapActivityToGanttBar = (activity: Activity) => {
+	const start = activity.startDate ?? activity.eventFirstStart;
+	const end = activity.dueDate && (start && activity.dueDate > start)
+		? activity.dueDate
+		:  activity.eventLastEnd;
 	return {
 		label: activity.title,
 		id: activity._id,
-		start: activity.startDate ?? activity.eventFirstStart,
-		end: activity.dueDate ?? activity.eventLastEnd,
+		start,
+		end,
 		activity,
 		ganttBarConfig: {
 			id: activity._id,
@@ -171,7 +175,7 @@ const getExpandIcon = (activity: Activity) => {
 	return 'mdi-menu-down';
 };
 
-const onDragEnd = (item: any, event: MouseEvent) => {
+const onDragEnd = (item: any) => {
 	if (!item.bar || !item.bar.start || !item.bar.end || !item.bar.id) {
 		return;
 	}
