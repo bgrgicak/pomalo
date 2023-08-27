@@ -70,46 +70,15 @@ export const useActivityListStore = defineStore(
 			});
 		};
 
-		const getParentDurationView = (type: ActivityType,parent?: string): Promise<string> => {
-			return activityStore.query(
-				'parent/duration',
-				{
-					endkey: [type, parent],
-					startkey: [type, parent, {}],
-					include_docs: true,
-					descending: true
-				},
-				(row: any) => {
-					return {
-						...row,
-						doc: {
-							...row.doc,
-							eventFirstStart: row.value.start,
-							eventLastEnd: row.value.end,
-						}	
-					};
-				}
-			).then((response: Activity[] | void) => {
-				if (!response) {
-					return Promise.reject([]);
-				}
-				return addActivityList(type, parent, response);
-			});
-		};
-
-
-		const getActivities = (type: ActivityType, parent?: string): Promise<string[]> => {
+		const find = (type: ActivityType, parent?: string): Promise<string> => {	
 			return activityStore.find({
 				selector: {
-					type: type
+					type,
+					parent,
 				}
 			}).then((response: any) => {
 				return activitiesToIds(response, parent);
-			});
-		};
-
-		const find = (type: ActivityType, parent?: string): Promise<string> => {
-			return getActivities(type, parent).then((response: string[]) => {
+			}).then((response: string[]) => {
 				const listId = getListId(type, parent);
 				activityLists.value[listId] = response;
 				return Promise.resolve(listId);
@@ -127,7 +96,6 @@ export const useActivityListStore = defineStore(
 			list,
 			find,
 			getPriorityTypeView,
-			getParentDurationView,
 			add,
 		};
 	}

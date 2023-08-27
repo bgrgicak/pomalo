@@ -11,7 +11,8 @@ import { useActivityStore } from '@/stores/activities';
 import { watch } from 'vue';
 import { display } from '@/plugins/vuetify';
 import { getLocalDate } from '@/helper/date';
-import { isValidDate } from '@/helper/date';
+
+const DAY_WIDTH_PX = 50;
 
 const props = defineProps({
 	type: {
@@ -41,22 +42,21 @@ const props = defineProps({
 });
 const emit = defineEmits(['addActivity', 'openActivity', 'showActivitySidebar', 'updateNewActivity', 'updateListId']);
 
-const projectListId: Ref<string> = ref('');
 const taskListIds: any = ref({});
 const projects: Ref<any[]> = ref([]);
 
 const activityListStore = useActivityListStore();
 
-activityListStore.getParentDurationView(ActivityType.Project).then((listId: string) => {
-	projectListId.value = listId;
+activityListStore.find(ActivityType.Project).then((listId: string) => {
+	emit('updateListId', listId);
 });
 
 const mapActivityToGanttBar = (activity: Activity) => {
 	return {
 		label: activity.title,
 		id: activity._id,
-		start: activity.eventFirstStart,
-		end: activity.eventLastEnd,
+		start: activity.startDate ?? activity.eventFirstStart,
+		end: activity.dueDate ?? activity.eventLastEnd,
 		activity,
 		ganttBarConfig: {
 			id: activity._id,
@@ -69,7 +69,7 @@ const mapActivityToGanttBar = (activity: Activity) => {
 
 watch(
 	[
-		() => activityListStore.list[projectListId.value] ?? [],
+		() => activityListStore.list[props.listId] ?? [],
 		() => (Object.values(taskListIds.value) as any).map((listId: string) => activityListStore.list[listId])
 	],
 	(newState) => {
@@ -77,41 +77,42 @@ watch(
 		if (!projectList) {
 			projects.value = [];
 		}
-		projects.value = projectList.map(
-			(activity: Activity) => {
-				let tasks: any[] = []; 
-				if (taskListIds.value[activity._id] && activityListStore.list[taskListIds.value[activity._id]]) {
-					tasks = activityListStore.list[taskListIds.value[activity._id]].map(mapActivityToGanttBar);
-				}
-				tasks= tasks.sort((a, b) => {
-					if (!a.start || !b.start) {
+		projects.value = projectList
+			.map(
+				(activity: Activity) => {
+					let tasks: any[] = []; 
+					if (taskListIds.value[activity._id] && activityListStore.list[taskListIds.value[activity._id]]) {
+						tasks = activityListStore.list[taskListIds.value[activity._id]].map(mapActivityToGanttBar);
+					}
+					tasks= tasks.sort((a, b) => {
+						if (!a.start || !b.start) {
+							return 0;
+						}
+						if (a.start < b.start) {
+							return -1;
+						}
+						if (a.start > b.start) {
+							return 1;
+						}
 						return 0;
-					}
-					if (a.start < b.start) {
-						return -1;
-					}
-					if (a.start > b.start) {
-						return 1;
-					}
+					});
+					return [
+						mapActivityToGanttBar(activity),
+						...tasks
+					];
+				}
+			).sort((a, b) => {
+				if (!a[0].start || !b[0].start) {
 					return 0;
-				});
-				return [
-					mapActivityToGanttBar(activity),
-					...tasks
-				];
-			}
-		).sort((a, b) => {
-			if (!a[0].start || !b[0].start) {
+				}
+				if (a[0].start < b[0].start) {
+					return -1;
+				}
+				if (a[0].start > b[0].start) {
+					return 1;
+				}
 				return 0;
-			}
-			if (a[0].start < b[0].start) {
-				return -1;
-			}
-			if (a[0].start > b[0].start) {
-				return 1;
-			}
-			return 0;
-		});
+			});
 	}
 );
 
@@ -129,8 +130,16 @@ const duration = computed(() => {
 		});
 	});
 	return {
-		start,
-		end
+		start: setTime(
+			getLocalDate(
+				start
+			)
+		),
+		end: setTime(
+			getLocalDate(
+				end
+			)
+		),
 	};
 });
 
@@ -138,17 +147,19 @@ const width = computed(() => {
 	if (!duration.value.start || !duration.value.end) {
 		return 0;
 	}
-	const diff = daysBetweenDates(duration.value.end, duration.value.start);
-	return ((diff + 2) * 50) + 'px';
+	const diff = daysBetweenDates(
+		duration.value.end,
+		duration.value.start
+	);
+	return ((diff) * DAY_WIDTH_PX) + 'px';
 });
 
 const expandProject = (activity: Activity) => {
 	if (taskListIds.value[activity._id]) {
 		taskListIds.value[activity._id] = undefined;
 	} else {
-		activityListStore.getParentDurationView(ActivityType.Task, activity._id).then((listId: string) => {
+		activityListStore.find(ActivityType.Task, activity._id).then((listId: string) => {
 			taskListIds.value[activity._id] = listId;
-			console.log(taskListIds.value);
 		});
 	}
 };
@@ -161,26 +172,31 @@ const getExpandIcon = (activity: Activity) => {
 };
 
 const onDragEnd = (item: any, event: MouseEvent) => {
-	if(event) {
-		event.preventDefault();
-		event.stopPropagation();
-	}
 	if (!item.bar || !item.bar.start || !item.bar.end || !item.bar.id) {
-		return false;
+		return;
 	}
-	console.log(getLocalDate(
-		setTime(new Date(item.bar.start)
-		)
-	));
 	useActivityStore().updateFields(item.bar.id, {
-		startDate: setTime(new Date(item.bar.start)),
-		dueDate: setTime(new Date(item.bar.end)),
+		startDate: setTime(
+			getLocalDate(item.bar.start)
+		),
+		dueDate: setTime(		
+			getLocalDate(item.bar.end)
+		),
 	});
-	return false;
+};
+
+const onBarClick = (item: any) => {
+	if (!item.bar || !item.bar.activity) {
+		return;
+	}
+	emit('showActivitySidebar', item.bar.activity);
 };
 </script>
 <template>
-  <div class="project-list">
+  <div
+    class="project-list"
+    :style="{'--day-width': DAY_WIDTH_PX + 'px'}"
+  >
     <v-row
       v-if="!props.compact"
       class="pa-4 pb-0"
@@ -218,7 +234,7 @@ const onDragEnd = (item: any, event: MouseEvent) => {
         :width="width"
         :grid="true"
         @dragend-bar="onDragEnd"
-        @click-bar="(item: any) => emit('showActivitySidebar',item.bar.activity)"
+        @click-bar="(item: any) => onBarClick(item)"
         @dblclick-bar="(item: any) => emit('openActivity',item.bar.activity)"
       >
         <g-gantt-row
@@ -266,6 +282,8 @@ $border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 .g-gantt-chart {
   border-bottom: $border;
+  overflow-y: hidden;
+  min-width: 100%;
 }
 .g-gantt-row-label {
   height: calc(100% + 2px);
@@ -305,11 +323,15 @@ $border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 	box-shadow: none;
 	padding-left: $label-width;
 	height: 75px;
-	margin-top: 10px;
+	padding-top: 10px;
 }
 .g-upper-timeunit,
 .g-timeunit {
 	color: rgb(153, 153, 153) !important;
+}
+.g-timeunit{
+	width: var(--day-width) !important;
+	min-width: var(--day-width) !important;
 }
 .g-gantt-row-bars-container {
 	border: none !important;
@@ -319,6 +341,9 @@ $border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
   padding-left: $label-width;
   min-height: $row-height;
   height: auto !important;
+}
+.g-grid-container {
+	margin-left: $label-width;
 }
 .g-gantt-bar {
 	margin-bottom: 10px;

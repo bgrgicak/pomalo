@@ -78,10 +78,6 @@ export const getWeekStartAndEnd = (date?: Date | string | number) => {
 	};
 };
 
-export const maxDate = () => {
-	return new Date(8640000000000000);
-};
-
 export const minutesBetweenDates = (start: Date, end: Date) => {
 	return Math.round((start.getTime() - end.getTime()) / 60000);
 };
@@ -100,6 +96,10 @@ export const isValidDate = (date: any) => {
 
 export const addMilliseconds = (date: Date, milliseconds: number) => {
 	return new Date(getUtcTimestamp(date) + milliseconds);
+};
+
+export const addDays = (date: Date, days: number) => {
+	return addMilliseconds(date, days * dayInMilliseconds);
 };
 
 export const setTime = (date: Date, hours: number = 0, minutes: number = 0, seconds: number = 0) => {

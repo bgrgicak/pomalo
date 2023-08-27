@@ -3,7 +3,7 @@ import { registerSW } from 'virtual:pwa-register';
 import { debug, error as errorLog } from '@/helper/logs';
 import { getCalendarUrls, getLastCalendarSync, syncIntervalMilliseconds, updateLastCalendarSync } from './ical-sync';
 import { useActivityStore } from '@/stores/activities';
-import { secondInMilliseconds } from '@/helper/date';
+import { minuteInMilliseconds } from '@/helper/date';
 import type Activity from '@/types/activity';
 
 const syncCalendar = (worker: Worker) => {
@@ -33,7 +33,7 @@ export const updateSW = registerSW({
 			);
 			setTimeout(
 				() => syncCalendar(worker),
-				secondInMilliseconds
+				minuteInMilliseconds
 			);
 
 			worker.onmessage = (event: MessageEvent) => {

@@ -1,11 +1,14 @@
 import type Activity from '@/types/activity';
 import type { ActivityEvent, ActivityType } from '@/types/activity';
 import Router from '@/router/router';
-import { getLocalDate, getUtcTimestamp, maxDate } from '../helper/date';
+import { getLocalDate, getUtcTimestamp, addDays } from '../helper/date';
 import { newId } from './pouchdb';
 import type { ActivityDocument } from '@/types/activity-document';
 import { getEstimatedHours, getWorkedTime } from './priority';
 import { useActivityStore } from '@/stores/activities';
+import { useNoticeStore } from '@/stores/notices';
+import { NoticeType } from '@/types/notice';
+import { settings } from '@/helper/settings';
 
 export const getActivityLink = (activity: Activity): string => {
 	return `/${activity.type}/${activity._id}/`;
@@ -42,12 +45,6 @@ export const calculateActivityStartEndDate = (activity: Activity) => {
 	let eventFirstStart: Date | undefined = activity.startDate;
 	let eventLastEnd: Date | undefined = activity.dueDate;
 	if (activity.events.length > 0) {
-		eventFirstStart = activity.events[0].start;
-		if (activity.events[0].repeat) {
-			eventLastEnd = activity.events[0].repeatEnd;
-		} else {
-			eventLastEnd = activity.events[0].end;
-		}
 		activity.events.forEach((event) => {
 			if (undefined === eventFirstStart || event.start < eventFirstStart) {
 				eventFirstStart = event.start;
@@ -70,10 +67,13 @@ export const calculateActivityStartEndDate = (activity: Activity) => {
 		});
 	}
 	if (undefined === eventFirstStart) {
-		eventFirstStart = getLocalDate(0);
+		eventFirstStart = activity.created;
 	}
 	if (undefined === eventLastEnd) {
-		eventLastEnd = maxDate();
+		eventLastEnd = addDays(eventFirstStart, settings.defaultActivityDurationInDays);
+	}
+	if (eventFirstStart > eventLastEnd) {
+		eventFirstStart = addDays(eventLastEnd, -7);
 	}
 	return {
 		eventFirstStart,
@@ -158,5 +158,11 @@ export const reParseAllDocuments = () => {
 		documents.forEach((document) => {
 			activityStore.update(document);
 		});
+		useNoticeStore().addNotice(
+			{
+				type: NoticeType.Success,
+				title: documents.length + ' activities re-parsed',
+			}
+		);
 	});
 };

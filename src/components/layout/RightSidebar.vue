@@ -5,7 +5,7 @@ import { computed } from 'vue';
 import { useActivityStore } from '@/stores/activities';
 import { watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { openActivityPage } from '@/data/activities';
+import { getActivityLink, openActivityPage } from '@/data/activities';
 
 const layoutStore = useLayoutStore();
 const activityStore = useActivityStore();
@@ -42,7 +42,7 @@ watch(route, hide);
         variant="plain"
         size="56"
         class="right-sidebar__expand ml-2"
-        @click="() => openActivityPage(activity)"
+        :href="getActivityLink(activity)"
       />
       <v-spacer />
       <v-btn

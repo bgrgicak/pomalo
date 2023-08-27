@@ -8,8 +8,6 @@ import { useSettingsStore } from '@/stores/settings';
 import { error } from '@/helper/logs';
 // @ts-ignore-next-line
 import { priorityView } from './views/priority';
-// @ts-ignore-next-line
-import { parentView } from './views/parent';
 
 export declare function emit (key: any): void;
 export declare function emit (key: any, value: any): void;
@@ -23,8 +21,6 @@ export const removeAllIndexes = (database: PouchDB.Database) => {
 			}
 			return database.deleteIndex(index);
 		});
-	}).then((result) => {
-		// handle result
 	}).catch((err) => {
 		error(err);
 	});
@@ -62,8 +58,14 @@ const maybeSyncRemote = (database: PouchDB.Database) => {
 const createIndexes = (database: PouchDB.Database) => {
 	database.createIndex({
 		index: {
-			fields: ['priority', 'type'],
-			name: 'activity-priority-index',
+			fields: ['_id', 'parent'],
+			name: 'activity-id-parent-index',
+		},
+	});
+	database.createIndex({
+		index: {
+			fields: ['type', 'parent'],
+			name: 'activity-type-parent-index',
 		},
 	});
 	database.createIndex({
@@ -75,7 +77,7 @@ const createIndexes = (database: PouchDB.Database) => {
 };
 
 const createViews = async (database: PouchDB.Database) => {
-	const views = [priorityView, parentView];
+	const views = [priorityView];
 	for (const view of views) {
 		const viewId = '_design/' + view.name;
 		const viewDocument = await database.get(viewId)

@@ -21,7 +21,7 @@ const onChange = (value: string | undefined) => {
 	const newValue = value ? getLocalDate(value) : undefined;
 	activityStore.updateField(
 		props.activity._id,
-		'starDate',
+		'startDate',
 		newValue,
 	).then(() => {
 		emit('change', newValue);
