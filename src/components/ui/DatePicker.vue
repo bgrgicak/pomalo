@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import { getSystemDateFormat, toInputDateString, getLocalDate } from '@/helper/date';
+import { getSystemDateFormat, toInputDateString, getLocalDate, isValidDate } from '@/helper/date';
 import type { PropType } from 'vue';
+import { ref } from 'vue';
 import { computed } from 'vue';
+const hourOptions = Array.from(Array(24).keys()).map((hour) => {
+	return hour.toString().padStart(2, '0');
+});
+const minuteOptions = Array.from(Array(60).keys()).map((minute) => {
+	return minute.toString().padStart(2, '0');
+});
+
 const props = defineProps({
 	value: {
 		type: Date,
@@ -31,6 +39,8 @@ const props = defineProps({
 
 const emit = defineEmits(['change']);
 
+const showDatepicker = ref(false);
+
 const systemDateFormat = getSystemDateFormat();
 
 
@@ -45,62 +55,108 @@ const dateValue = computed(() => {
 
 const timeValue = computed(() => {
 	if (!props.value) {
-		return undefined;
+		return {
+			hours: '00',
+			minutes: '00',
+		};
 	}
-	return getLocalDate(props.value).toTimeString().substr(0, 5);
+	let hours: string | number = props.value.getHours();
+	if (hours < 10) {
+		hours = '0' + hours;
+	}
+	let minutes: string | number = props.value.getMinutes();
+	if (minutes < 10) {
+		minutes = '0' + minutes;
+	}
+	return {
+		hours,
+		minutes,
+	};
 });
 
-const onChangeDate = (newValue: string) => {
-	if (!newValue) {
-		emit('change', undefined);
+const onChangeDate = (newValue: any) => {
+	if(!isValidDate(newValue)){
 		return;
 	}
-	const newDate = new Date(newValue);
-	if (timeValue.value) {
-		const [hours, minutes] = timeValue.value.split(':');
-		newDate.setHours(parseInt(hours));
-		newDate.setMinutes(parseInt(minutes));
-	}
+	newValue.setHours(timeValue.value.hours);
+	newValue.setMinutes(timeValue.value.minutes);
+	emit('change', newValue);
+	showDatepicker.value = false;
+};
+const onChangeTime = (newValue: any) => {
+	const newDate = getLocalDate(props.value);
+	newDate.setHours(
+		parseInt(
+			undefined === newValue.hours
+				? timeValue.value.hours
+				: newValue.hours
+		)
+	);
+	newDate.setMinutes(
+		parseInt(
+			undefined === newValue.minutes
+				? timeValue.value.minutes
+				: newValue.minutes
+		)
+	);
 	emit('change', newDate);
 };
-const onChangeTime = (newValue: string) => {
-	const timeSplit = newValue.split(':');
-	const hours = timeSplit[0] ? parseInt(timeSplit[0]) : 0;
-	const minutes = timeSplit[1] ? parseInt(timeSplit[1]) : 0;
-	const newDate = getLocalDate(props.value);
-	newDate.setHours(hours);
-	newDate.setMinutes(minutes);
-	emit('change', newDate);
 
+const show = () => {
+	showDatepicker.value = true;
+};
+const hide = () => {
+	showDatepicker.value = false;
 };
 </script>
 <template>
-  <div :class="{ 'date-picker': true, 'date-picker--has-time': showTime }">
+  <div
+    :class="{ 'date-picker': true, 'date-picker--has-time': showTime }"
+  >
     <v-text-field
       :label="label"
-      :value="dateValue"
+      :model-value="dateValue"
       class="date-picker__date"
-      type="date"
-      :readonly="props.readonly"
       :pattern="systemDateFormat"
       :hint="props.hint"
       :variant="props.variant"
-      @update:modelValue="onChangeDate"
-    />
-    <v-text-field
-      v-if="showTime"
-      :value="timeValue"
-      class="date-picker__time"
-      type="time"
       :readonly="props.readonly"
-      pattern="[0-9]{2}:[0-9]{2}"
-      :variant="props.variant"
-      @update:modelValue="onChangeTime"
+      @click="show"
     />
+    <v-date-picker
+      v-if="showDatepicker && !props.readonly"
+      v-click-outside="hide"
+      title=""
+      :model-value="[value]"
+      @update:modelValue="onChangeDate"
+      @click:cancel="hide"
+    />
+    <div
+      v-if="showTime"
+      class="date-picker__time"
+    >
+      <v-select
+        label=""
+        :readonly="props.readonly"
+        :value="timeValue.hours"
+        :items="hourOptions"
+        variant="underlined"
+        @update:modelValue="(value: any) => onChangeTime({hours: value})"
+      />
+      <v-select
+        label=""
+        :readonly="props.readonly"
+        :value="timeValue.minutes"
+        :items="minuteOptions"
+        variant="underlined"
+        @update:modelValue="(value: any) => onChangeTime({minutes: value})"
+      />
+    </div>
   </div>
 </template>
 <style lang="scss">
 .date-picker {
+	position: relative;
     &.date-picker--has-time {
         display: flex;
 
@@ -109,16 +165,30 @@ const onChangeTime = (newValue: string) => {
             left: -1px;
         }
     }
+
+	.v-picker {
+		z-index: 1;
+		position: absolute;
+		//Picker width is forced to 360px, so we need to adjust the position and scale
+		transform: scale(0.8);
+		left: -36px;
+		top: 0;
+	}
 }
 
 .date-picker__date {
-    min-width: 160px;
+    min-width: 148px;
 }
 
 .date-picker__time {
-    min-width: 124px;
-    max-width: 124px;
+    min-width: 130px;
+    max-width: 130px;
     border-left: unset;
+
+	.v-select {
+		display: inline-block;
+		width: 50%;
+	}
 
     .v-field__input {
         padding-left: 6px;

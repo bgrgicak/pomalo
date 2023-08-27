@@ -20,11 +20,11 @@ const props = defineProps({
 	},
 	repeat: {
 		type: Boolean,
-		default: false,
+		default: true,
 	},
 	allDay: {
 		type: Boolean,
-		default: false,
+		default: true,
 	},
 	small: {
 		type: Boolean,

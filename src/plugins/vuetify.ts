@@ -3,6 +3,7 @@ import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles/main.sass';
 import { createVuetify, type ThemeDefinition } from 'vuetify';
 import { computed } from 'vue';
+import { VDatePicker } from 'vuetify/labs/VDatePicker';
 
 export const appTheme: ThemeDefinition = {
 	dark: false,
@@ -49,7 +50,11 @@ const vuetify = createVuetify({
 			variant: 'underlined',
 		},
 	},
+	components: {
+		VDatePicker,
+	},
 });
+
 
 export default vuetify;
 
