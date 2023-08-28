@@ -61,10 +61,12 @@ const onFieldChange = (key: string, value: any) => {
   <v-divider class="mb-8" />
   <ActivityStartDate
     :activity="props.activity"
+    :max="props.activity.dueDate"
     @change="(value: any) => onFieldChange('startDate', value)"
   />
   <ActivityDueDate
     :activity="props.activity"
+    :min="props.activity.startDate"
     @change="(value: any) => onFieldChange('dueDate', value)"
   />
   <TaskEstimatedHours

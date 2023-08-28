@@ -132,6 +132,7 @@ const onEventFieldChange = (field: string, value: any) => {
         :readonly="props.activity.readonly"
         :value="event.start"
         :time="!event.allDay"
+        :max="event.end"
         @change="(value: string) => onEventFieldChange('start', value)"
       />
     </v-col>
@@ -143,6 +144,7 @@ const onEventFieldChange = (field: string, value: any) => {
       <DatePicker
         :label="__('Ends')"
         :readonly="props.activity.readonly"
+        :min="event.start"
         :value="event.end"
         :time="!event.allDay"
         @change="(value: string) => onEventFieldChange('end', value)"
@@ -180,6 +182,7 @@ const onEventFieldChange = (field: string, value: any) => {
       <v-col cols="9">
         <DatePicker
           :label="__('Repeat ends')"
+          :min="event.start"
           :readonly="props.activity.readonly"
           :value="event.repeatEnd"
           @change="(value: string) => onEventFieldChange('repeatEnd', value)"

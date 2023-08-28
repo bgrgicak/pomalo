@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { getSystemDateFormat, toInputDateString, getLocalDate, isValidDate } from '@/helper/date';
 import __ from '@/helper/translations';
+import { useNoticeStore } from '@/stores/notices';
+import { NoticeType } from '@/types/notice';
 import type { PropType } from 'vue';
 import { ref } from 'vue';
 import { computed } from 'vue';
@@ -14,7 +16,7 @@ const minuteOptions = Array.from(Array(60).keys()).map((minute) => {
 const props = defineProps({
 	value: {
 		type: Date,
-		default: null,
+		default: undefined,
 	},
 	label: {
 		type: String,
@@ -36,9 +38,19 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
+	min: {
+		type: Date,
+		default: undefined,
+	},
+	max: {
+		type: Date,
+		default: undefined,
+	},
 });
 
 const emit = defineEmits(['change']);
+
+const noticeStore = useNoticeStore();
 
 const showDatepicker = ref(false);
 
@@ -51,10 +63,27 @@ const dateValue = computed(() => {
 	if (!props.value) {
 		return undefined;
 	}
-	return toInputDateString(props.value);
+	if (props.time) {
+		return props.value.toLocaleString();
+	}
+	return props.value.toLocaleDateString();
 });
 
-const timeValue = computed(() => {
+const minDate = computed(() => {
+	if (!props.min) {
+		return undefined;
+	}
+	return toInputDateString(props.min);
+});
+
+const maxDate = computed(() => {
+	if (!props.max) {
+		return undefined;
+	}
+	return toInputDateString(props.max);
+});
+
+const getTimeValue = (date: Date | undefined) => {
 	if (!props.value) {
 		return {
 			hours: '00',
@@ -73,34 +102,48 @@ const timeValue = computed(() => {
 		hours,
 		minutes,
 	};
-});
+};
+
+const timeValue = ref(getTimeValue(props.value));
 
 const onChangeDate = (newValue: any) => {
 	if(!isValidDate(newValue)){
 		return;
 	}
-	newValue.setHours(timeValue.value.hours);
-	newValue.setMinutes(timeValue.value.minutes);
-	emit('change', newValue);
+	if (timeValue.value.hours) {
+		newValue.setHours(
+			parseInt(
+				timeValue.value.hours as string
+			)
+		);
+	}
+	if (timeValue.value.minutes) {
+		newValue.setMinutes(
+			parseInt(
+				timeValue.value.minutes as string
+			));
+	}
 	showDatepicker.value = false;
+
+	if (props.max && newValue.getTime() > props.max.getTime()) {
+		noticeStore.addNotice({
+			type: NoticeType.Error,
+			title: __('The date is after the maximum date.'),
+		});
+	} else if (props.min && newValue.getTime() < props.min.getTime()) {
+		noticeStore.addNotice({
+			type: NoticeType.Error,
+			title: __('The date is before the minimum date.'),
+		});
+	} else {
+		emit('change', newValue);
+	}
 };
 const onChangeTime = (newValue: any) => {
-	const newDate = getLocalDate(props.value);
-	newDate.setHours(
-		parseInt(
-			undefined === newValue.hours
-				? timeValue.value.hours
-				: newValue.hours
-		)
-	);
-	newDate.setMinutes(
-		parseInt(
-			undefined === newValue.minutes
-				? timeValue.value.minutes
-				: newValue.minutes
-		)
-	);
-	emit('change', newDate);
+	timeValue.value = {
+		...timeValue.value,
+		...newValue,
+	};
 };
 
 const show = () => {
@@ -108,6 +151,12 @@ const show = () => {
 };
 const hide = () => {
 	showDatepicker.value = false;
+};
+const clickOutsideConditional = (event: any) => {
+	if (event.target) {
+		return ! event.target.classList.contains('v-list-item-title');
+	}
+	return true;
 };
 </script>
 <template>
@@ -126,9 +175,14 @@ const hide = () => {
     />
     <v-date-picker
       v-if="showDatepicker && !props.readonly"
-      v-click-outside="hide"
+      v-click-outside.self="{
+        handler: hide,
+        closeConditional: clickOutsideConditional
+      }"
       title=""
       :model-value="[value]"
+      :min="minDate"
+      :max="maxDate"
       @update:modelValue="onChangeDate"
       @click:cancel="hide"
     >
@@ -141,6 +195,7 @@ const hide = () => {
             {{ __('Time') }}
           </h3>
           <v-select
+            class="included"
             label=""
             :readonly="props.readonly"
             :value="timeValue.hours"
@@ -208,6 +263,9 @@ const hide = () => {
 	.v-select {
 		display: inline-block;
 		width: 50%;
+		.v-list-item-title {
+			pointer-events: none;
+		}
 	}
 
     .v-field__input {

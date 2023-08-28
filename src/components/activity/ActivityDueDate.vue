@@ -32,6 +32,7 @@ const onChange = (value: string | undefined) => {
   <DatePicker
     :label="__('Due date')"
     :value="props.activity.dueDate"
+    :min="props.activity.startDate"
     :readonly="props.activity.readonly"
     @change="onChange"
   />
