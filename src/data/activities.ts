@@ -1,7 +1,7 @@
 import type Activity from '@/types/activity';
 import type { ActivityEvent, ActivityType } from '@/types/activity';
 import Router from '@/router/router';
-import { getLocalDate, getUtcTimestamp, addDays } from '../helper/date';
+import { getLocalDate, getUtcTimestamp, addDays, maxDate } from '../helper/date';
 import { newId } from './pouchdb';
 import type { ActivityDocument } from '@/types/activity-document';
 import { getEstimatedDays, getEstimatedHours, getWorkedTime } from './priority';
@@ -57,6 +57,8 @@ export const calculateActivityStartEndDate = (activity: Activity) => {
 					)
 				) {
 					eventLastEnd = event.repeatEnd;
+				} else {
+					eventLastEnd = maxDate();
 				}
 			} else if (
 				event.end && (

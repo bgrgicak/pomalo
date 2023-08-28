@@ -180,7 +180,7 @@ const clickOutsideConditional = (event: any) => {
         closeConditional: clickOutsideConditional
       }"
       title=""
-      :model-value="[value]"
+      :model-value="value as any"
       :min="minDate"
       :max="maxDate"
       @update:modelValue="onChangeDate"

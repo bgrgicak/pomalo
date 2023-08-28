@@ -26,6 +26,8 @@ export const weekInMilliseconds = dayInMilliseconds * 7;
 export const yearInMilliseconds = dayInMilliseconds * 365;
 export const daysInAYear = 365;
 
+export const maxDate = () => new Date(8640000000000000);
+
 /**
  * Convert UTC date to local date string
  */
