@@ -64,6 +64,7 @@ const focusEditor = () => {
 <style lang="scss">
 .text-editor {
 	overflow: visible !important;
+	min-height: 200px;
     border: thin solid rgba(var(--v-border-color), var(--v-disabled-opacity));
     &:hover,
     &.text-editor--focused  {

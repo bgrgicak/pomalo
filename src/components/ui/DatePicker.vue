@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getSystemDateFormat, toInputDateString, getLocalDate, isValidDate } from '@/helper/date';
+import __ from '@/helper/translations';
 import type { PropType } from 'vue';
 import { ref } from 'vue';
 import { computed } from 'vue';
@@ -130,28 +131,32 @@ const hide = () => {
       :model-value="[value]"
       @update:modelValue="onChangeDate"
       @click:cancel="hide"
-    />
-    <div
-      v-if="showTime"
-      class="date-picker__time"
     >
-      <v-select
-        label=""
-        :readonly="props.readonly"
-        :value="timeValue.hours"
-        :items="hourOptions"
-        variant="underlined"
-        @update:modelValue="(value: any) => onChangeTime({hours: value})"
-      />
-      <v-select
-        label=""
-        :readonly="props.readonly"
-        :value="timeValue.minutes"
-        :items="minuteOptions"
-        variant="underlined"
-        @update:modelValue="(value: any) => onChangeTime({minutes: value})"
-      />
-    </div>
+      <template #header>
+        <div
+          v-if="showTime"
+          class="date-picker__time"
+        >
+          <h3 class="mt-3">
+            {{ __('Time') }}
+          </h3>
+          <v-select
+            label=""
+            :readonly="props.readonly"
+            :value="timeValue.hours"
+            :items="hourOptions"
+            @update:modelValue="(value: any) => onChangeTime({hours: value})"
+          />
+          <v-select
+            label=""
+            :readonly="props.readonly"
+            :value="timeValue.minutes"
+            :items="minuteOptions"
+            @update:modelValue="(value: any) => onChangeTime({minutes: value})"
+          />
+        </div>
+      </template>
+    </v-date-picker>
   </div>
 </template>
 <style lang="scss">
@@ -167,12 +172,24 @@ const hide = () => {
     }
 
 	.v-picker {
+		display: flex;
+		flex-direction: column;
 		z-index: 1;
 		position: absolute;
 		//Picker width is forced to 360px, so we need to adjust the position and scale
 		transform: scale(0.8);
 		left: -36px;
 		top: 0;
+
+		.v-picker__header {
+			order: 2;
+		}
+		.v-picker__body {
+			order: 1;
+		}
+		.v-picker__actions {
+			order: 3;
+		}
 	}
 }
 
@@ -181,9 +198,12 @@ const hide = () => {
 }
 
 .date-picker__time {
-    min-width: 130px;
-    max-width: 130px;
+    width: 100%;
     border-left: unset;
+	padding-inline-start: 24px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-inline-end: 12px;
 
 	.v-select {
 		display: inline-block;
