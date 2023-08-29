@@ -242,6 +242,7 @@ const onReady = (options: any) => {
     watch-realtime="true"
     :show-all-day-events="true"
     :editable-events="editingOptions"
+    events-on-month-view="short"
     @event-click="eventClick"
     @cell-click="cellClick"
     @cell-dblclick="cellDoubleClick"
@@ -263,6 +264,29 @@ const onReady = (options: any) => {
 </template>
 <style lang="scss">
 @import '@/styles/mixins.scss';
+
+.vuecal__cell--selected,
+.vuecal__cell--today,
+.vuecal__cell--current {
+    background-color: transparent;
+}
+
+.vuecal--years-view .vuecal__cell-content, .vuecal--year-view .vuecal__cell-content, .vuecal--month-view .vuecal__cell-content {
+  justify-content: start;
+  min-height: 150px;
+  overflow: hidden;
+  .vuecal__cell-date {
+	text-align: right;
+	padding: 0.25rem;
+  }
+}
+
+.vuecal__heading.today,
+.vuecal__cell--current .vuecal__cell-date,
+.vuecal__cell--today .vuecal__cell-date{
+	font-weight: 600;
+	color: rgb(var(--v-theme-primary-darken-2));
+}
 
 .vuecal__event {
     @include event-colors(var(--v-theme-primary), var(--v-theme-primary-darken-4));
@@ -293,7 +317,7 @@ const onReady = (options: any) => {
 	.vuecal--view-with-time {
 		.vuecal__weekdays-headings,
 		.vuecal__all-day {
-		padding-right: 0;
+			padding-right: 0;
 		}
 	}
 }

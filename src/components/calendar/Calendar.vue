@@ -245,14 +245,3 @@ const fetch = (start: Date, end: Date) => {
     />
   </v-card>
 </template>
-<style lang="scss">
-.vuecal__cell--selected,
-.vuecal__cell--today,
-.vuecal__cell--current {
-    background-color: transparent;
-}
-
-.vuecal__heading.today {
-    font-weight: 600;
-}
-</style>
