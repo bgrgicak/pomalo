@@ -19,7 +19,7 @@ const props = defineProps({
 		default: true,
 	},
 }); 
-const emit = defineEmits(['keyup', 'update:modelValue']);
+const emit = defineEmits(['update:modelValue']);
 
 const focused: Ref<boolean> = ref(false);
 const editor: Ref<any> = ref(null);
@@ -55,7 +55,6 @@ const focusEditor = () => {
       :read-only="props.readonly"
       :toolbar="toolbarOptions"
       @update:content="onChange"
-      @keyup="(value: string) => emit('keyup', value)"
       @focus="focused = true"
       @blur="focused = false"
     />

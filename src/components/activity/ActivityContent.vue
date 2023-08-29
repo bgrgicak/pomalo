@@ -68,11 +68,17 @@ const save = () => {
 const updateOnCommandEnter = (event: KeyboardEvent) => {
 	if (event.key === 'Enter' && event.metaKey) {
 		save();
+	} else if ( 'v' === event.key && (event.metaKey || event.ctrlKey)) {
+		// Register edit on paste
+		state.value.isEditing = true;
 	}
 };
 </script>
 <template>
-  <div @keydown="updateOnCommandEnter">
+  <div
+    @keydown="updateOnCommandEnter"
+    @keyup="onKeyup"
+  >
     <v-row>
       <v-col cols="12">
         <v-text-field
@@ -92,7 +98,6 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
           v-model="state.activity.description"
           class="activity-description"
           :readonly="state.activity.readonly"
-          @keyup="onKeyup"
         />
       </v-col>
     </v-row>
