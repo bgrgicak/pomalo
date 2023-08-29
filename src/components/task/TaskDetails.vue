@@ -25,6 +25,7 @@ const events = computed(
 			.map((event: ActivityEvent) => {
 				return {
 					date: toLocaleDateString(event.start),
+					timestamp: event.start,
 					duration: getTimePassed(event.start, event.end),
 					type: 'event',
 					icon: 'mdi-timer-outline',
@@ -33,6 +34,7 @@ const events = computed(
 		events.push(
 			{
 				date: toLocaleDateString(props.activity.created),
+				timestamp: props.activity.created,
 				type: 'created',
 				icon: 'mdi-pencil-outline'
 			}
@@ -41,12 +43,13 @@ const events = computed(
 			events.push(
 				{
 					date: toLocaleDateString(props.activity.completedDate),
+					timestamp: props.activity.completedDate,
 					type: 'completed',
 					icon: 'mdi-check'
 				}
 			);
 		}
-		return events.sort((a: any, b: any) => a.date < b.date ? 1 : 0);
+		return events.sort((a: any, b: any) => a.timestamp < b.timestamp ? 1 : 0);
 	}
 
 
