@@ -6,6 +6,7 @@ import { settings } from '@/helper/settings';
 import type { PropType } from 'vue';
 import type Activity from '@/types/activity';
 import { computed } from 'vue';
+import { debounce } from '@/helper/debounce';
 
 const props = defineProps({
 	activity: {
@@ -16,20 +17,25 @@ const props = defineProps({
 const emit = defineEmits(['change']);
 
 const activityStore = useActivityStore();
+let typingTimeout: any = undefined;
 
 const isAboveLimit = computed(() => {
 	return props.activity.estimatedHours && props.activity.estimatedHours > settings.recommendedMaxHoursPerTask;
 });
-
 const onChange = (value: string | undefined) => {
 	const newValue = value ? parseInt(value) : undefined;
-	activityStore.updateField(
-		props.activity._id,
-		'estimatedHours',
-		newValue,
-	).then(() => {
-		emit('change', newValue);
-	});
+	if (typingTimeout) {
+		clearTimeout(typingTimeout);
+	}
+	typingTimeout = setTimeout(() => {
+		activityStore.updateField(
+			props.activity._id,
+			'estimatedHours',
+			newValue,
+		).then(() => {
+			emit('change', newValue);
+		});
+	}, 500);
 };
 </script>
 <template>

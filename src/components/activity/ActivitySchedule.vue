@@ -50,6 +50,7 @@ const event = computed(() => {
 });
 
 const activityStore = useActivityStore();
+let typingTimeout: any = undefined;
 
 const repeatOptions = Object.keys(RepeatLabels).map((key) => {
 	return {
@@ -103,6 +104,15 @@ const onEventFieldChange = (field: string, value: any) => {
 	activityStore.update(updatedActivity).then(() => {
 		emit('fieldChange', updatedActivity.events);
 	});
+};
+
+const onIntervalChange = (value: any) => {
+	if (typingTimeout) {
+		clearTimeout(typingTimeout);
+	}
+	typingTimeout = setTimeout(() => {
+		onEventFieldChange('repeatInterval', parseInt(value));
+	}, 500);
 };
 </script>
 <template>
@@ -176,7 +186,7 @@ const onEventFieldChange = (field: string, value: any) => {
           :model-value="event.repeatInterval ?? 1"
           type="number"
           min="1"
-          @update:modelValue="(value: string) => onEventFieldChange('repeatInterval', parseInt(value))"
+          @update:modelValue="onIntervalChange"
         />
       </v-col>
       <v-col cols="9">

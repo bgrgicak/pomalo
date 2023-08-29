@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import { getSystemDateFormat, toInputDateString, getLocalDate, isValidDate } from '@/helper/date';
+import { getSystemDateFormat, isValidDate } from '@/helper/date';
 import __ from '@/helper/translations';
-import { useNoticeStore } from '@/stores/notices';
-import { NoticeType } from '@/types/notice';
+import type { Ref } from 'vue';
 import type { PropType } from 'vue';
 import { ref } from 'vue';
 import { computed } from 'vue';
-const hourOptions = Array.from(Array(24).keys()).map((hour) => {
-	return hour.toString().padStart(2, '0');
-});
-const minuteOptions = Array.from(Array(60).keys()).map((minute) => {
-	return minute.toString().padStart(2, '0');
-});
 
 const props = defineProps({
 	value: {
@@ -50,12 +43,15 @@ const props = defineProps({
 
 const emit = defineEmits(['change']);
 
-const noticeStore = useNoticeStore();
-
-const showDatepicker = ref(false);
-
 const systemDateFormat = getSystemDateFormat();
 
+const showDatepicker = ref(false);
+const timeValue: Ref<string> = ref(
+	props.value
+		? props.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+		: ''
+);
+const timeError: Ref<string> = ref('');
 
 const showTime = computed(() => true === props.time);
 
@@ -73,77 +69,54 @@ const minDate = computed(() => {
 	if (!props.min) {
 		return undefined;
 	}
-	return toInputDateString(props.min);
+	return props.min.toLocaleDateString();
 });
 
 const maxDate = computed(() => {
 	if (!props.max) {
 		return undefined;
 	}
-	return toInputDateString(props.max);
+	return props.max.toLocaleDateString();
 });
 
-const getTimeValue = (date: Date | undefined) => {
-	if (!props.value) {
-		return {
-			hours: '00',
-			minutes: '00',
-		};
+const getNewValue = (newValue: any) => {
+	if (timeValue.value) {
+		newValue = new Date(
+			newValue.toLocaleDateString() + ' ' + timeValue.value
+		);
 	}
-	let hours: string | number = props.value.getHours();
-	if (hours < 10) {
-		hours = '0' + hours;
-	}
-	let minutes: string | number = props.value.getMinutes();
-	if (minutes < 10) {
-		minutes = '0' + minutes;
-	}
-	return {
-		hours,
-		minutes,
-	};
+	return newValue;
 };
 
-const timeValue = ref(getTimeValue(props.value));
+const onSave = (value: Date|undefined) => {
+	if ('' !== timeError.value) {
+		return false; 
+	}
+	// trigger save if only time changed
+	if (undefined === value) {
+		onChangeDate(props.value);
+	}
+};
 
 const onChangeDate = (newValue: any) => {
 	if(!isValidDate(newValue)){
 		return;
 	}
-	if (timeValue.value.hours) {
-		newValue.setHours(
-			parseInt(
-				timeValue.value.hours as string
-			)
-		);
-	}
-	if (timeValue.value.minutes) {
-		newValue.setMinutes(
-			parseInt(
-				timeValue.value.minutes as string
-			));
-	}
 	showDatepicker.value = false;
-
-	if (props.max && newValue.getTime() > props.max.getTime()) {
-		noticeStore.addNotice({
-			type: NoticeType.Error,
-			title: __('The date is after the maximum date.'),
-		});
-	} else if (props.min && newValue.getTime() < props.min.getTime()) {
-		noticeStore.addNotice({
-			type: NoticeType.Error,
-			title: __('The date is before the minimum date.'),
-		});
-	} else {
-		emit('change', newValue);
-	}
+	emit('change', getNewValue(newValue));
 };
-const onChangeTime = (newValue: any) => {
-	timeValue.value = {
-		...timeValue.value,
-		...newValue,
-	};
+
+const onChangeTime = (value: string) => {
+	timeError.value = '';
+	timeValue.value = value;
+	const newValue = getNewValue(props.value);
+	if (props.max && newValue > props.max) {
+		timeError.value = __('Date must be before ') + props.max.toLocaleString();
+		return false;
+	} else if (props.min && newValue < props.min) {
+		timeError.value =  __('Date must be after ') + props.min.toLocaleString();
+		return false;
+	}
 };
 
 const show = () => {
@@ -170,7 +143,7 @@ const clickOutsideConditional = (event: any) => {
       :pattern="systemDateFormat"
       :hint="props.hint"
       :variant="props.variant"
-      :readonly="props.readonly"
+      :readonly="true"
       @click="show"
     />
     <v-date-picker
@@ -185,31 +158,25 @@ const clickOutsideConditional = (event: any) => {
       :max="maxDate"
       @update:modelValue="onChangeDate"
       @click:cancel="hide"
+      @click:save="onSave"
     >
       <template #header>
-        <div
+        <v-text-field
           v-if="showTime"
           class="date-picker__time"
+          :label="__('Time')"
+          :readonly="props.readonly"
+          :model-value="timeValue"
+          type="time"
+          @update:modelValue="onChangeTime"
+        />
+        <v-alert
+          v-if="timeError"
+          type="error"
+          class="mx-4 mb-6"
         >
-          <h3 class="mt-3">
-            {{ __('Time') }}
-          </h3>
-          <v-select
-            class="included"
-            label=""
-            :readonly="props.readonly"
-            :value="timeValue.hours"
-            :items="hourOptions"
-            @update:modelValue="(value: any) => onChangeTime({hours: value})"
-          />
-          <v-select
-            label=""
-            :readonly="props.readonly"
-            :value="timeValue.minutes"
-            :items="minuteOptions"
-            @update:modelValue="(value: any) => onChangeTime({minutes: value})"
-          />
-        </div>
+          {{ timeError }}
+        </v-alert>
       </template>
     </v-date-picker>
   </div>
