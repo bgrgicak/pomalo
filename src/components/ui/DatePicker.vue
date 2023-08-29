@@ -3,6 +3,7 @@ import { getSystemDateFormat, isValidDate } from '@/helper/date';
 import __ from '@/helper/translations';
 import type { Ref } from 'vue';
 import type { PropType } from 'vue';
+import { watch } from 'vue';
 import { ref } from 'vue';
 import { computed } from 'vue';
 
@@ -46,10 +47,21 @@ const emit = defineEmits(['change']);
 const systemDateFormat = getSystemDateFormat();
 
 const showDatepicker = ref(false);
+
+const getPropTime = (value: Date | undefined) => {
+	if (value) {
+		return value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+	}
+	return '';
+};
 const timeValue: Ref<string> = ref(
-	props.value
-		? props.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
-		: ''
+	getPropTime(props.value)
+);
+watch(
+	() => props.value,
+	(value: Date | undefined) => {
+		timeValue.value = getPropTime(value);
+	}
 );
 const timeError: Ref<string> = ref('');
 

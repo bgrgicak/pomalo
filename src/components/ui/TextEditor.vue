@@ -61,6 +61,7 @@ const focusEditor = () => {
   </v-input>
 </template>
 <style lang="scss">
+
 .text-editor {
 	min-height: 200px;
     border: thin solid rgba(var(--v-border-color), var(--v-disabled-opacity));
@@ -81,6 +82,11 @@ const focusEditor = () => {
 	}
 	.ql-tooltip {
 		z-index: 1;
+	}
+	.ql-bubble .ql-editor pre.ql-syntax {
+		background-color: inherit;
+		color: inherit;
+		border: thin solid rgba(var(--v-border-color), var(--v-disabled-opacity));
 	}
 }
 </style>

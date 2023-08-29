@@ -13,6 +13,9 @@ import type { CalendarEvent } from '@/types/calendar';
 import { nextTick } from 'vue';
 import { watch } from 'vue';
 import type { PropType } from 'vue';
+import { minuteInMilliseconds, getTimeDifference } from '@/helper/date';
+import { settings } from '@/helper/settings';
+import { addMilliseconds } from '@/helper/date';
 
 const props = defineProps({
 	vuecal: {
@@ -99,6 +102,35 @@ const eventClick = (event: any) => {
 	if (event.id) {
 		deleteOlderNewEvents();
 	}
+};
+
+const eventOnDrop = (event: any) => {
+	const snapDifference = settings.calendar.snapDifference;
+	const overlapEnd = props.vuecal.mutableEvents.find((e: VueCalEvent) => {
+		return e.id !== event.event.id && e.start <= event.event.end && e.end >= event.event.end;
+	});
+	if (overlapEnd) {
+		const difference = getTimeDifference(overlapEnd.start, event.event.end);
+		if (difference < snapDifference && difference > -snapDifference) {
+			event.event.start = addMilliseconds(event.event.start, -difference);
+			event.event.end = overlapEnd.start;
+		}
+	}
+
+	const overlapStart = props.vuecal.mutableEvents.find((e: VueCalEvent) => {
+		return e.id !== event.event.id
+			&& e.start <= event.event.start
+			&& e.end >= event.event.start;
+	});
+	if (overlapStart) {
+		const difference = getTimeDifference(overlapStart.end, event.event.start);
+		if (difference < snapDifference && difference > -snapDifference) {
+			event.event.end = addMilliseconds(event.event.end, difference);
+			event.event.start = overlapStart.end;
+		}
+	}
+
+	eventDurationChange(event);
 };
 
 const eventDurationChange = (event: any) => {
@@ -243,13 +275,14 @@ const onReady = (options: any) => {
     :show-all-day-events="true"
     :editable-events="editingOptions"
     events-on-month-view="short"
+    :time-cell-height="100"
     @event-click="eventClick"
     @cell-click="cellClick"
     @cell-dblclick="cellDoubleClick"
     @ready="onReady"
     @view-change="fetchEvents"
     @event-duration-change="eventDurationChange"
-    @event-drop="eventDurationChange"
+    @event-drop="eventOnDrop"
     @event-drag-create="eventDragCreate"
   >
     <template #event="{ event }">
@@ -284,7 +317,7 @@ const onReady = (options: any) => {
 .vuecal__heading.today,
 .vuecal__cell--current .vuecal__cell-date,
 .vuecal__cell--today .vuecal__cell-date{
-	font-weight: 600;
+	font-weight: bold;
 	color: rgb(var(--v-theme-primary-darken-2));
 }
 
@@ -311,6 +344,10 @@ const onReady = (options: any) => {
     &.calendar-event__readonly {
         // opacity: var(--v-medium-emphasis-opacity);
     }
+}
+
+.vuecal__event-resize-handle {
+	height: 0.25rem;
 }
 
 .calendar {

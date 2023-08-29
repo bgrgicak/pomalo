@@ -58,10 +58,14 @@ export const getLocalDate = (date?: Date | string | number) => {
 	return new Date(date.getTime() - date.getTimezoneOffset());
 };
 
+export const getTimeDifference = (start: Date, end: Date) => {
+	return end.getTime() - start.getTime();
+};
+
 export const getTimePassed = (start: Date | string | number, end?: Date | string | number) => {
 	start = prepareDate(start);
 	end = end ? prepareDate(end) : new Date();
-	const diff = end.getTime() - start.getTime();
+	const diff = getTimeDifference(start, end);
 	const hours = Math.floor(diff / 1000 / 60 / 60);
 	const minutes = Math.floor((diff / 1000 / 60) % 60);
 	const seconds = Math.floor((diff / 1000) % 60);

@@ -5,6 +5,7 @@ export const settings = {
 	defaultActivityDurationInDays: 7,
 	calendar: {
 		syncIntervalMinutes: 15,
-		syncProxyServer: 'https://rodjo.bluebanana.hr/?calendar_url='
+		syncProxyServer: 'https://rodjo.bluebanana.hr/?calendar_url=',
+		snapDifference:  600000, // 10 minutes
 	}
 };
