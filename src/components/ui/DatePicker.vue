@@ -64,7 +64,7 @@ watch(
 	}
 );
 const timeError: Ref<string> = ref('');
-
+const dateChanged: Ref<boolean> = ref(false);
 const showTime = computed(() => true === props.time);
 
 const dateValue = computed(() => {
@@ -105,9 +105,10 @@ const onSave = (value: Date|undefined) => {
 		return false; 
 	}
 	// trigger save if only time changed
-	if (undefined === value) {
+	if (undefined === value && false === dateChanged.value) {
 		onChangeDate(props.value);
 	}
+	dateChanged.value = false;
 };
 
 const onChangeDate = (newValue: any) => {
@@ -143,6 +144,17 @@ const clickOutsideConditional = (event: any) => {
 	}
 	return true;
 };
+
+const onClick = (e: any) => {
+	if (e.target) {
+		// check if date was changed
+		dateChanged.value = e.target.matches(
+			`.v-date-picker-month__day--selected,
+				.v-date-picker-month__day--selected > .v-btn,
+				.v-date-picker-month__day--selected > .v-btn > .v-btn__content`
+		);
+	}
+};
 </script>
 <template>
   <div
@@ -165,12 +177,13 @@ const clickOutsideConditional = (event: any) => {
         closeConditional: clickOutsideConditional
       }"
       title=""
-      :model-value="value as any"
+      :model-value="(value as any)"
       :min="minDate"
       :max="maxDate"
       @update:modelValue="onChangeDate"
       @click:cancel="hide"
       @click:save="onSave"
+      @click="onClick"
     >
       <template #header>
         <v-text-field
@@ -209,11 +222,12 @@ const clickOutsideConditional = (event: any) => {
 		display: flex;
 		flex-direction: column;
 		z-index: 1;
+
 		position: absolute;
 		//Picker width is forced to 360px, so we need to adjust the position and scale
 		transform: scale(0.8);
 		left: -36px;
-		top: 0;
+		top: -28px;
 
 		.v-picker__header {
 			order: 2;
