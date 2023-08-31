@@ -17,6 +17,7 @@ export const useActivityStore = defineStore(
 	'activities',
 	() => {
 		let activities: Ref<ActivityMap> = ref({});
+		const currentActivityId: Ref<string | undefined> = ref(undefined);
 
 		database.changes({
 			since: 'now',
@@ -30,7 +31,16 @@ export const useActivityStore = defineStore(
 			log(error);
 		});
 
+		const maybeUpdateCurrentActivity = (activityDocument: ActivityDocument): void => {
+			if (activityDocument.timerRunning) {
+				currentActivityId.value = activityDocument._id;
+			} else if (currentActivityId.value && currentActivityId.value === activityDocument._id && !activityDocument.timerRunning) {
+				currentActivityId.value = undefined;
+			}
+		};
+
 		const prepareActivityFromDocument = (activityDocument: ActivityDocument): Activity => {
+			maybeUpdateCurrentActivity(activityDocument);
 			return addDefaultsToActivity(
 				parseDocumentToActivity(activityDocument)
 			);
@@ -45,6 +55,13 @@ export const useActivityStore = defineStore(
 
 		const list = computed((): Activity[] => {
 			return Object.values(activities.value);
+		});
+
+		const currentActivity = computed((): Activity | undefined => {
+			if (!currentActivityId.value) {
+				return undefined;
+			}
+			return activities.value[currentActivityId.value];
 		});
 
 		const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
@@ -203,6 +220,7 @@ export const useActivityStore = defineStore(
 
 		return {
 			activities,
+			currentActivity,
 			list,
 			find,
 			query,
