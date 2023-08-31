@@ -2,6 +2,7 @@
 import __ from '@/helper/translations';
 import { defaultView } from '@/plugins/vuecal';
 import type { PropType } from 'vue';
+import { computed } from 'vue';
 import type VueCal from 'vue-cal';
 
 const props = defineProps({
@@ -19,6 +20,20 @@ const props = defineProps({
 	},
 });
 const emit = defineEmits(['update:activeView', 'addEvent']);
+
+const title = computed(() => {
+	if (!props.vuecal) {
+		return '';
+	}
+	const options: any = { year: 'numeric' };
+	if ('month' === props.activeView || 'week' === props.activeView ) {
+		options.month = 'long';
+	} else if ('day' === props.activeView ) {
+		options.month = 'long';
+		options.day = 'numeric';
+	}
+	return props.vuecal.view.startDate.toLocaleDateString(undefined, options);
+});
 
 const previous = () => {
 	if (!props.vuecal) {
@@ -38,6 +53,7 @@ const today = () => {
 	if (!props.vuecal) {
 		return;
 	}
+	console.log(props.vuecal);
 	props.vuecal.switchView(props.activeView, new Date());
 };
 
@@ -86,7 +102,7 @@ const today = () => {
       class="d-flex align-center"
     >
       <h2 class="m-0 text-subtitle-2 text-md-h6">
-        {{ (props.vuecal as any)?.viewTitle }}
+        {{ title }}
       </h2>
     </v-col>
     <v-col

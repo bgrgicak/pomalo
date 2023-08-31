@@ -304,13 +304,21 @@ const onReady = (options: any) => {
     background-color: transparent;
 }
 
-.vuecal--years-view .vuecal__cell-content, .vuecal--year-view .vuecal__cell-content, .vuecal--month-view .vuecal__cell-content {
+.vuecal--month-view .vuecal__cell-content {
   justify-content: start;
   min-height: 150px;
   overflow: hidden;
   .vuecal__cell-date {
 	text-align: right;
 	padding: 0.25rem;
+  }
+}
+
+
+.vuecal--years-view .vuecal__cell-content,
+.vuecal--year-view .vuecal__cell-content {
+  .vuecal__cell-date {
+	font-size: 1.5rem;
   }
 }
 
