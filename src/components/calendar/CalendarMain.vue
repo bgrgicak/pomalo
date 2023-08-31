@@ -242,7 +242,7 @@ const scrollToCurrentTime = () => {
 	if (!props.vuecal) {
 		return;
 	}
-	const calendar = document.querySelector('.calendar .vuecal__bg');
+	const calendar = document.querySelector('.calendar .vuecal__body');
 	if (!calendar) {
 		return;
 	}
@@ -275,7 +275,7 @@ const onReady = (options: any) => {
     :show-all-day-events="true"
     :editable-events="editingOptions"
     events-on-month-view="short"
-    :time-cell-height="100"
+    :time-cell-height="80"
     @event-click="eventClick"
     @cell-click="cellClick"
     @cell-dblclick="cellDoubleClick"
@@ -321,9 +321,17 @@ const onReady = (options: any) => {
 	color: rgb(var(--v-theme-primary-darken-2));
 }
 
+.vuecal__body {
+	overflow: auto;
+	.vuecal__bg {
+		overflow: visible;
+	}
+}
+
 .vuecal__event {
     @include event-colors(var(--v-theme-primary), var(--v-theme-primary-darken-4));
     border: 1px solid #fff;
+	align-items: start;
 
     &.vuecal__event--focus {
         box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
@@ -344,6 +352,20 @@ const onReady = (options: any) => {
     &.calendar-event__readonly {
         // opacity: var(--v-medium-emphasis-opacity);
     }
+	
+	.v-card-title {
+		text-align: left;
+		text-transform: capitalize;
+		font-size: 1rem;
+		padding: 0.5rem 0.5rem 0 0.5rem;
+		line-height: 1rem;
+	}
+	.v-card-subtitle {
+		text-align: left;
+		font-size: 0.75rem;
+		padding: 0 0.5rem;
+		line-height: 1rem;
+	}
 }
 
 .vuecal__event-resize-handle {

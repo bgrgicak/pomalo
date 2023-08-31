@@ -68,9 +68,6 @@ const save = () => {
 const updateOnCommandEnter = (event: KeyboardEvent) => {
 	if (event.key === 'Enter' && event.metaKey) {
 		save();
-	} else if ( 'v' === event.key && (event.metaKey || event.ctrlKey)) {
-		// Register edit on paste
-		state.value.isEditing = true;
 	}
 };
 </script>
@@ -98,6 +95,7 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
           v-model="state.activity.description"
           class="activity-description"
           :readonly="state.activity.readonly"
+          @paste="state.isEditing = true"
         />
       </v-col>
     </v-row>

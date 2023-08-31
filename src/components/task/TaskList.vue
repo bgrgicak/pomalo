@@ -127,8 +127,11 @@ watch(
   </v-table>
 </template>
   <style lang="scss">
-  .activity-list table {
-    border-collapse: collapse; 
+  .activity-list {
+    padding-bottom: 2rem;
+      table {
+      border-collapse: collapse; 
+    }
   }
   .activity-list__title {
     text-transform: capitalize;

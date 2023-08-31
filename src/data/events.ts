@@ -1,8 +1,9 @@
 import type Activity from '@/types/activity';
-import { RepeatInterval, type ActivityEvent } from '@/types/activity';
+import { RepeatInterval, type ActivityEvent, ActivityType } from '@/types/activity';
 import { daysBetweenDates, getLocalDate, getWeekStartAndEnd, weeksBetweenDates } from '../helper/date';
 import type { CalendarEvent } from '@/types/calendar';
 import { newId } from './pouchdb';
+import routes from '@/router/routes';
 
 export const getEventFromActivity = (activity: Activity, eventId: string): ActivityEvent | undefined => {
 	return activity.events.find(event => event.id === eventId);

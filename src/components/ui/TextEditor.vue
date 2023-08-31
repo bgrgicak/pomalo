@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
 import { ref, type PropType, type Ref } from 'vue';
-import { QuillEditor } from '@vueup/vue-quill';
 
-import '@vueup/vue-quill/dist/vue-quill.bubble.css';
+import 'tinymce/tinymce';
+import 'tinymce/plugins/lists';
+import 'tinymce/plugins/codesample';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/paste';
+import 'tinymce/themes/silver';
+import 'tinymce/icons/default';
+import 'tinymce/skins/ui/oxide/skin.css';
+import Editor from '@tinymce/tinymce-vue';
 
 const props = defineProps({
 	modelValue: {
@@ -23,38 +30,40 @@ const emit = defineEmits(['update:modelValue']);
 
 const focused: Ref<boolean> = ref(false);
 const editor: Ref<any> = ref(null);
+const textEditorRef: Ref<any> = ref(null);
 
 const onChange = (value: string) => {
 	emit('update:modelValue', value);
 };
-var toolbarOptions = [
-	['bold', 'italic', 'underline', 'strike', 'code-block'],
-
-	[{ 'header': 1 }, { 'header': 2 }],
-	[{ 'list': 'ordered'}, { 'list': 'bullet' }],
-	[{ 'script': 'sub'}, { 'script': 'super' }],
-];
 const focusEditor = () => {
+	console.log(textEditorRef.value);
 	if (editor.value) {
 		editor.value.focus();
 	}
 };
+
+const options = {
+	plugins: 'lists link codesample paste',
+	toolbar: 'bold italic underline link codesample | bullist numlist',
+	menubar: false,
+	paste_as_text: true
+};
 </script>
 <template>
   <v-input
-    class="text-editor mb-8 pa-4"
+    ref="textEditorRef"
+    class="text-editor mb-8"
     :class="{'text-editor--focused': focused}"
     :focused="focused"
     @click="focusEditor"
   >
-    <QuillEditor
-      ref="editor"
-      theme="bubble"
-      :content="props.modelValue"
-      content-type="html"
-      :read-only="props.readonly"
-      :toolbar="toolbarOptions"
-      @update:content="onChange"
+    <Editor
+      :disabled="props.readonly"
+      :init="options"
+      :model-value="props.modelValue"
+      :inline="true"
+      tag-name="div"
+      @update:model-value="onChange"
       @focus="focused = true"
       @blur="focused = false"
     />
@@ -63,30 +72,28 @@ const focusEditor = () => {
 <style lang="scss">
 
 .text-editor {
-	min-height: 200px;
     border: thin solid rgba(var(--v-border-color), var(--v-disabled-opacity));
+	.v-input__control {
+		padding: 1rem;
+        border: 2px solid transparent;
+	}
     &:hover,
     &.text-editor--focused  {
         border-color: rgba(var(--v-border-color), var(--v-field-border-opacity));
     }
     &.text-editor--focused {
-        border-width: 2px;
+		.v-input__control {
+        	border-color: rgba(var(--v-border-color), var(--v-field-border-opacity));
+		}
     }
-	.ql-container {
+	.mce-content-body {
 		font-size: 1rem;
 		width: 100%;
+		min-height: 200px;
+		outline: none;
 	}
-	.ql-editor {
-		overflow: visible;
-		padding: 0;
-	}
-	.ql-tooltip {
-		z-index: 1;
-	}
-	.ql-bubble .ql-editor pre.ql-syntax {
-		background-color: inherit;
-		color: inherit;
-		border: thin solid rgba(var(--v-border-color), var(--v-disabled-opacity));
+	.v-input__details {
+		display: none;
 	}
 }
 </style>

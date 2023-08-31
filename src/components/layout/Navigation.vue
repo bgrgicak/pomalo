@@ -38,7 +38,6 @@ $navigation-icon-height: 36px;
     top: $header-height !important;
     width: $navigation-width;
     height: calc(100vh - #{$header-height}) !important;
-    overflow: hidden;
 }
 
 .navigation-item {
