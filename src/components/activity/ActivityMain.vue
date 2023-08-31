@@ -138,7 +138,7 @@ const onFieldChange = (key: string, value: any) => {
 .activity-details {
     position: relative;
     overflow-y: auto !important;
-    height: calc(100vh - $header-height);
+    min-height: calc(100vh - $header-height - $sidebar-header-height);
 
     .v-container {
         max-width: 100%;

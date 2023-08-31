@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { display } from '@/plugins/vuetify';
 import { RouterView } from 'vue-router';
 </script>
 <template>
-  <v-main class="main pa-0">
+  <v-main
+    class="main pa-0"
+    :class="{'main--mobile': display.mobile.value}"
+  >
     <RouterView />
   </v-main>
 </template>
@@ -19,5 +23,10 @@ html, body {
 	width: calc(100vw - $navigation-width);
 	overflow: auto;
 	height: calc(100vh - $header-height);
+
+	&.main--mobile {
+		left: 0;
+		width: 100%;
+	}
 }
 </style>

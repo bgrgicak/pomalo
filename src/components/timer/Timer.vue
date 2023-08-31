@@ -41,6 +41,7 @@ const timerStore = useTimerStore();
         white-space: nowrap;
         text-align: left;
         display: inline-block;
+        font-size: 0.75rem;
     }
 }
 

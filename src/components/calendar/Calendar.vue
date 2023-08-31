@@ -95,20 +95,13 @@ const maybeCopyPasteEvent = (keyboardEvent: any) => {
 		return;
 	}
 	if ('v' === keyboardEvent.key) {
-		console.log(
-			calendarStore.clipboard,
-			calendarStore.focusedCell,
-			isValidDate(calendarStore.focusedCell)
-		);
 		if (calendarStore.clipboard && calendarStore.focusedCell && isValidDate(calendarStore.focusedCell)) {
 			activityStore.get(calendarStore.clipboard.activityId).then((activity: Activity | void) => {
-				console.log(activity);
 				if (!activity) {
 					return;
 				}
 
 				const event = getEventFromActivity(activity, calendarStore.clipboard!.eventId);
-				console.log(event);
 				if (!event) {
 					return;
 				}
@@ -237,7 +230,6 @@ const fetch = (start: Date, end: Date) => {
     class="calendar pa-4"
     @keydown="onKeyboardEvent"
   >
-    {{ calendarStore.clipboard }}
     <CalendarHeader
       v-model:active-view="activeView"
       :vuecal="vuecal"

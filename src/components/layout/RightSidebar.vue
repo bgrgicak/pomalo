@@ -85,5 +85,6 @@ watch(route, hide);
 
 .right-sidebar__header {
     display: flex;
+    height: $sidebar-header-height;
 }
 </style>
