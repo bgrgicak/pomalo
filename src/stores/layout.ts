@@ -1,24 +1,44 @@
+import router from '@/router/router';
+import type Activity from '@/types/activity';
 import type { ActivityEvent, ActivityType } from '@/types/activity';
 import type { LayoutState } from '@/types/layout';
 import { defineStore } from 'pinia';
 import { type Ref, computed, ref } from 'vue';
+import { useActivityStore } from './activities';
 
 export const useLayoutStore = defineStore(
 	'layout',
 	() => {
+
 		const state: Ref<LayoutState> = ref({
 			leftSidebarVisibility: false,
-			rightSidebarVisibility: false,
 			menuVisibility: undefined,
 			current: {},
 		});
 
-		const isLeftSidebarVisible = computed(() => state.value.leftSidebarVisibility);
-		const isRightSidebarVisible = computed(() => state.value.rightSidebarVisibility);
-		const isMenuVisible = computed(() => state.value.menuVisibility);
-		const currentActivityId = computed(() => state.value.current.activityId);
-		const currentEvent = computed(() => state.value.current.event);
+		const activityStore = useActivityStore();
+
+		const currentActivityId = computed(() => router.currentRoute.value.query.preview as string | undefined);
+		const currentActivity = computed(() => currentActivityId.value ? activityStore.activities[currentActivityId.value] : undefined);
+
+		const currentEventId = computed(() => router.currentRoute.value.query.previewEvent as string | undefined);
+		const currentEvent = computed(() => {
+			if(state.value.current.event) {
+				return state.value.current.event;
+			}
+			if(currentActivity.value && currentEventId.value) {
+				return currentActivity.value.events.find((event) => event.id === currentEventId.value);
+			}
+			return undefined;
+		});
 		const newActivityType = computed(() => state.value.current.type);
+
+		const isMenuVisible = computed(() => state.value.menuVisibility);
+		const isLeftSidebarVisible = computed(() => state.value.leftSidebarVisibility);
+		const isRightSidebarVisible = computed(() =>
+			currentActivityId.value !== undefined
+			|| currentEventId.value !== undefined
+		);
 
 		const showLeftSidebar = () => {
 			state.value.leftSidebarVisibility = true;
@@ -26,26 +46,37 @@ export const useLayoutStore = defineStore(
 		const hideLeftSidebar = () => {
 			state.value.leftSidebarVisibility = false;
 		};
+
+		const setPreviewItem = (activityId?: string, eventId?: string) => {
+			router.push({
+				query: {
+					...router.currentRoute.value.query,
+					preview: activityId,
+					previewEvent: eventId,
+				}
+			});
+		};
 		const showRightSidebar = (activityId: string | undefined = undefined, event: ActivityEvent | undefined = undefined) => {
-			state.value.rightSidebarVisibility = true;
 			state.value.current = {
-				activityId,
-				event,
+				event
 			};
+			setPreviewItem(activityId, event?.id);
 		};
 		const showRightSidebarNewActivity = (type: ActivityType) => {
-			state.value.rightSidebarVisibility = true;
 			state.value.current = {
 				type
 			};
 		};
 		const hideRightSidebar = () => {
-			state.value.rightSidebarVisibility = false;
-			state.value.current = {};
+			setPreviewItem();
 		};
 
 		const toggleRightSidebar = () => {
-			state.value.rightSidebarVisibility = !state.value.rightSidebarVisibility;
+			if (isRightSidebarVisible.value) {
+				hideRightSidebar();
+			} else {
+				showRightSidebar();
+			}
 		};
 
 		const updateMenuVisibility = (visible: boolean) => {
@@ -53,12 +84,14 @@ export const useLayoutStore = defineStore(
 		};
 		return {
 			state,
+			currentActivityId,
+			currentActivity,
+			currentEventId,
+			currentEvent,
+			newActivityType,
 			isLeftSidebarVisible,
 			isRightSidebarVisible,
 			isMenuVisible,
-			currentActivityId,
-			currentEvent,
-			newActivityType,
 			showLeftSidebar,
 			hideLeftSidebar,
 			showRightSidebar,

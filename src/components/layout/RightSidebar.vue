@@ -4,13 +4,14 @@ import ActivityMain from '@/components/activity/ActivityMain.vue';
 import { computed } from 'vue';
 import { useActivityStore } from '@/stores/activities';
 import { watch } from 'vue';
-import { useRoute } from 'vue-router';
 import { getActivityLink } from '@/data/activities';
+import router from '@/router/router';
+import { ref } from 'vue';
 
 const layoutStore = useLayoutStore();
 const activityStore = useActivityStore();
 
-const route = useRoute();
+const firstLoad = ref(true);
 
 const activityId = computed(() => layoutStore.currentActivityId as string);
 const activity = computed(() => activityStore.activities[activityId.value]);
@@ -25,7 +26,15 @@ const hide = () => {
 	layoutStore.hideRightSidebar();
 };
 
-watch(route, hide);
+watch(
+	() => router.currentRoute.value.path,
+	() => {
+		if (!firstLoad.value) {
+			hide();
+		}
+		firstLoad.value = false;
+	}
+);
 </script>
 <template>
   <v-navigation-drawer
@@ -36,30 +45,36 @@ watch(route, hide);
     class="right-sidebar"
     @update:model-value="hide"
   >
-    <header class="right-sidebar__header py-3">
-      <v-btn
-        v-if="activity"
-        icon="mdi-arrow-expand"
-        variant="plain"
-        size="56"
-        class="right-sidebar__expand ml-2"
-        :href="getActivityLink(activity)"
+    <div
+      v-click-outside.self="{
+        handler: hide
+      }"
+    >
+      <header class="right-sidebar__header py-3">
+        <v-btn
+          v-if="activity"
+          icon="mdi-arrow-expand"
+          variant="plain"
+          size="56"
+          class="right-sidebar__expand ml-2"
+          :href="getActivityLink(activity)"
+        />
+        <v-spacer />
+        <v-btn
+          icon="mdi-close"
+          variant="plain"
+          size="56"
+          class="right-sidebar__close mr-2"
+          @click="hide"
+        />
+      </header>
+      <ActivityMain
+        :activity="activity"
+        :event="event"
+        :type="newType"
+        :small="true"
       />
-      <v-spacer />
-      <v-btn
-        icon="mdi-close"
-        variant="plain"
-        size="56"
-        class="right-sidebar__close mr-2"
-        @click="hide"
-      />
-    </header>
-    <ActivityMain
-      :activity="activity"
-      :event="event"
-      :type="newType"
-      :small="true"
-    />
+    </div>
   </v-navigation-drawer>
 </template>
 <style lang="scss">

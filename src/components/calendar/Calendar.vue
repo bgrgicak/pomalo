@@ -218,6 +218,7 @@ const fetch = (start: Date, end: Date) => {
 	if (start && isValidDate(start) && activeView.value) {
 		router.push({
 			query: {
+				...router.currentRoute.value.query,
 				date: getUtcTimestamp(start),
 				view: activeView.value ?? 'week',
 			}
