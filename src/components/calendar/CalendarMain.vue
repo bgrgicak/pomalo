@@ -73,6 +73,13 @@ const disabledViews = computed(() => {
 	});
 });
 
+const cellHeight = computed(() => {
+	if (['week', 'day'].includes(props.activeView)) {
+		return 80;
+	}
+	return 40;
+});
+
 const cellClick = (cellDate: Date) => {
 	deleteOlderNewEvents(cellDate);
 	calendarStore.focusCell(cellDate);
@@ -275,7 +282,7 @@ const onReady = (options: any) => {
     :show-all-day-events="true"
     :editable-events="editingOptions"
     events-on-month-view="short"
-    :time-cell-height="80"
+    :time-cell-height="cellHeight"
     @event-click="eventClick"
     @cell-click="cellClick"
     @cell-dblclick="cellDoubleClick"
@@ -318,7 +325,7 @@ const onReady = (options: any) => {
 .vuecal--years-view .vuecal__cell-content,
 .vuecal--year-view .vuecal__cell-content {
   .vuecal__cell-date {
-	font-size: 1.5rem;
+	font-size: 1.2rem;
   }
 }
 
