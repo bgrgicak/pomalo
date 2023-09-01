@@ -23,6 +23,8 @@ const props = defineProps({
 	},
 });
 
+const emit = defineEmits(['onArchived']);
+
 const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
 
@@ -34,6 +36,8 @@ const buttonLabel = computed(() => {
 		return __('Archive Task');
 	} else if (ActivityType.Event === props.activity.type) {
 		return __('Delete Event');
+	} else if (ActivityType.Project === props.activity.type) {
+		return __('Archive Project');
 	}
 	return __('Delete');
 });
@@ -43,14 +47,16 @@ const buttonIcon = computed(() => {
 });
 
 const archiveActivity = (activity: Activity) => {
-	if (!confirm(__('Are you sure you want to archive this ') + activity.type + '?')) return;
+	if (!confirm(__('Are you sure you want to archive ') + activity.title + '?')) return;
 	activityStore.archive(activity._id).then(() => {
 		if (!props.redirectAfterRemove) {
 			return;
 		}
 		layoutStore.hideRightSidebar();
-		if (router.currentRoute.value.path.startsWith('/task/'))
+		emit('onArchived', activity._id);
+		if (router.currentRoute.value.path.startsWith('/task/')) {
 			router.push('/' + activity.type + 's');
+		}
 	});
 };
 </script>

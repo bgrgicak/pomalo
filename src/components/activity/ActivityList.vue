@@ -15,7 +15,7 @@ const props = defineProps({
 		type: String as PropType<ActivityType>,
 		required: true,
 	},
-	items: {
+	headerItems: {
 		type: Array as PropType<any[]>,
 		default: () => [],
 	},
@@ -31,28 +31,8 @@ const props = defineProps({
 
 const listId: Ref<string> = ref('');
 
-const getNewActivity = () => {
-	const activity = emptyActivity(props.type);
-	if (props.parent) {
-		activity.parent = props.parent;
-	}
-	return activity;
-};
-
-const newActivity: Ref<Activity> = ref(getNewActivity());
-
 const layoutStore = useLayoutStore();
 const activityListStore = useActivityListStore();
-
-const addActivity = (title?: string) => {
-	if (!title) {
-		layoutStore.showRightSidebarNewActivity(props.type);
-	} else {
-		activityListStore.add(newActivity.value as Activity, listId.value).then(() => {
-			newActivity.value = getNewActivity();
-		});
-	}
-};
 
 const showActivitySidebar = (activity: Activity) => {
 	layoutStore.showRightSidebar(activity._id);
@@ -64,34 +44,33 @@ const openActivity = (activity: Activity) => {
 		}
 	);
 };
+
+const removeActivity = (activityId: string) => {
+	activityListStore.remove(activityId, listId.value);
+};
 </script>
 <template>
   <TaskList
     v-if="props.type === ActivityType.Task"
     :type="props.type"
-    :items="props.items"
+    :header-items="props.headerItems"
     :parent="props.parent"
     :compact="props.compact"
     :list-id="listId"
-    :new-activity="newActivity"
     @showActivitySidebar="showActivitySidebar"
     @openActivity="openActivity"
-    @addActivity="addActivity"
-    @updateNewActivity="newActivity = $event"
     @updateListId="listId = $event"
+    @removeActivity="removeActivity"
   />
   <ProjectList 
     v-else-if="props.type === ActivityType.Project"
     :type="props.type"
-    :items="props.items"
+    :header-items="props.headerItems"
     :parent="props.parent"
     :compact="props.compact"
     :list-id="listId"
-    :new-activity="newActivity"
     @showActivitySidebar="showActivitySidebar"
     @openActivity="openActivity"
-    @addActivity="addActivity"
-    @updateNewActivity="newActivity = $event"
     @updateListId="listId = $event"
   />
 </template>

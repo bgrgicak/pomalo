@@ -5,7 +5,7 @@ import { computed } from 'vue';
 import { useActivityStore } from '@/stores/activities';
 import { watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { getActivityLink, openActivityPage } from '@/data/activities';
+import { getActivityLink } from '@/data/activities';
 
 const layoutStore = useLayoutStore();
 const activityStore = useActivityStore();

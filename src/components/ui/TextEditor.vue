@@ -36,7 +36,6 @@ const onChange = (value: string) => {
 	emit('update:modelValue', value);
 };
 const focusEditor = () => {
-	console.log(textEditorRef.value);
 	if (editor.value) {
 		editor.value.focus();
 	}

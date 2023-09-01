@@ -7,13 +7,16 @@ import type { ActivityType } from '@/types/activity';
 import { computed, watch, type PropType } from 'vue';
 import TimerToggle from '../timer/TimerToggle.vue';
 import ActivityArchive from '../activity/ActivityArchive.vue';
+import ActivityAdd from '../activity/ActivityAdd.vue';
+import { emptyActivity } from '@/data/activities';
+import { ref } from 'vue';
 
 const props = defineProps({
 	type: {
 		type: String as PropType<ActivityType>,
 		required: true,
 	},
-	items: {
+	headerItems: {
 		type: Array as PropType<any[]>,
 		default: () => [],
 	},
@@ -25,19 +28,28 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
-	newActivity: {
-		type: Object as PropType<Activity>,
-		default: () => {},
-	},
 	listId: {
 		type: String,
 		default: '',
 	},
 });
-const emit = defineEmits(['addActivity', 'openActivity', 'showActivitySidebar', 'updateNewActivity', 'updateListId']);
+const emit = defineEmits([
+	'openActivity',
+	'showActivitySidebar',
+	'updateListId',
+	'removeActivity'
+]);
+
+const newTitle = ref('');
 
 const activityList = computed(() => {
-	return activityListStore.list[props.listId] || [];
+	if (!props.listId) {
+		return [];
+	}
+	if (!activityListStore.list[props.listId]) {
+		return [];
+	}
+	return activityListStore.list[props.listId];
 });
 
 const activityListStore = useActivityListStore();
@@ -53,6 +65,28 @@ watch(
 		immediate: true,
 	}
 );
+
+const addActivity = (activity: Activity) => {
+	activityListStore.addToList(activity._id, props.listId);
+};
+
+const removeActivity = (activityId: string) => {
+	emit('removeActivity', activityId);
+};
+
+const onNewListItemEnter = () => {
+	if (!newTitle.value) {
+		return;
+	}
+	const newActivity = emptyActivity(props.type);
+	newActivity.title = newTitle.value;
+	if (props.parent) {
+		newActivity.parent = props.parent;
+	}
+	activityListStore.add(newActivity, props.listId, false).then(() => {
+		newTitle.value = '';
+	});
+};
 </script>
 <template>
   <v-row
@@ -68,13 +102,10 @@ watch(
       cols="2"
       align="right"
     >
-      <v-btn
-        icon
-        variant="text"
-        @click="() => emit('addActivity')"
-      >
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
+      <ActivityAdd
+        :types="[type]"
+        @add-activity="addActivity"
+      />
     </v-col>
   </v-row>
   <v-table class="activity-list">
@@ -82,7 +113,7 @@ watch(
       <tr>
         <th>{{ __('Title') }}</th>
         <th
-          v-for="(headerItem, headerIndex) in props.items"
+          v-for="(headerItem, headerIndex) in props.headerItems"
           :key="headerIndex"
         >
           {{ headerItem.name }}
@@ -109,17 +140,17 @@ watch(
             :activity="item"
             :small="true"
             :redirect-after-remove="false"
+            @onArchived="removeActivity"
           />
         </td>
       </tr>
       <tr>
         <td class="activity-list__new">
           <v-text-field
-            :model-value="newActivity.title"
-            :placeholder="__('Add a ') + newActivity.type"
+            v-model="newTitle"
+            :placeholder="__('Add ') + props.type"
             variant="plain"
-            @update:model-value="value => emit('updateNewActivity', { ...newActivity, title: value })"
-            @click="() => emit('addActivity')"
+            @keyup.enter="onNewListItemEnter"
           />
         </td>
       </tr>

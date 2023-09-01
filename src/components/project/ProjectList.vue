@@ -11,6 +11,7 @@ import { useActivityStore } from '@/stores/activities';
 import { watch } from 'vue';
 import { display } from '@/plugins/vuetify';
 import { getLocalDate } from '@/helper/date';
+import ActivityAdd from '../activity/ActivityAdd.vue';
 
 const DAY_WIDTH_PX = 50;
 
@@ -19,7 +20,7 @@ const props = defineProps({
 		type: String as PropType<ActivityType>,
 		required: true,
 	},
-	items: {
+	headerItems: {
 		type: Array as PropType<any[]>,
 		default: () => [],
 	},
@@ -31,16 +32,12 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
-	newActivity: {
-		type: Object as PropType<Activity>,
-		default: () => {},
-	},
 	listId: {
 		type: String,
 		default: '',
 	},
 });
-const emit = defineEmits(['addActivity', 'openActivity', 'showActivitySidebar', 'updateNewActivity', 'updateListId']);
+const emit = defineEmits(['openActivity', 'showActivitySidebar', 'updateListId']);
 
 const taskListIds: any = ref({});
 const projects: Ref<any[]> = ref([]);
@@ -195,6 +192,10 @@ const onBarClick = (item: any) => {
 	}
 	emit('showActivitySidebar', item.bar.activity);
 };
+
+const addActivity = (activity: Activity) => {
+	activityListStore.addToList(activity._id, props.listId);
+};
 </script>
 <template>
   <div
@@ -203,7 +204,7 @@ const onBarClick = (item: any) => {
   >
     <v-row
       v-if="!props.compact"
-      class="pa-4 pb-0"
+      class="pa-4"
     >
       <v-col
         cols="10"
@@ -218,13 +219,10 @@ const onBarClick = (item: any) => {
         align="right"
         class="pb-0"
       >
-        <v-btn
-          icon
-          variant="text"
-          @click="() => emit('addActivity')"
-        >
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
+        <ActivityAdd
+          :types="[type]"
+          @add-activity="addActivity"
+        />
       </v-col>
     </v-row>
     <div class="project-list__chart">

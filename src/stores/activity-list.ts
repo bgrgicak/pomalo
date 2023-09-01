@@ -23,7 +23,8 @@ export const useActivityListStore = defineStore(
 			const list: any = {};
 			Object.keys(activityLists.value).forEach((key) => {
 				list[key] = activityLists.value[key].filter((id: string) => {
-					return activityStore.activities[id];
+					return activityStore.activities[id]
+						&& true !== activityStore.activities[id].archived;
 				}).map((id: string) => {
 					return activityStore.activities[id];
 				});
@@ -85,15 +86,33 @@ export const useActivityListStore = defineStore(
 			});
 		};
 
-		const add = (activity: Activity, listId: string) => {
+		const add = (activity: Activity, listId: string, addToTop: boolean = true) => {
 			return activityStore.add(activity).then((response: any) => {
-				addToList(response.id, listId);
+				addToList(response.id, listId, addToTop);
 				return response.id;
 			});
 		};
 
-		const addToList = (activityId: string, listId: string) => {
-			activityLists.value[listId].push(activityId);
+		const addToList = (activityId: string, listId: string, addToTop: boolean = true) => {
+			console.log(activityId, listId, addToTop);
+			if (activityLists.value[listId].includes(activityId)) {
+				return;
+			}
+			if (addToTop) {
+				activityLists.value[listId] = [
+					activityId,
+					...activityLists.value[listId],
+				];
+			} else {
+				activityLists.value[listId].push(activityId);
+			}
+		};
+
+		const remove = (activityId: string, listId: string) => {
+			const index = activityLists.value[listId].indexOf(activityId);
+			if (index > -1) {
+				activityLists.value[listId].splice(index, 1);
+			}
 		};
 
 		return {
@@ -102,6 +121,7 @@ export const useActivityListStore = defineStore(
 			getPriorityTypeView,
 			add,
 			addToList,
+			remove,
 		};
 	}
 );
