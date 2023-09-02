@@ -16,7 +16,6 @@ const firstLoad = ref(true);
 const activityId = computed(() => layoutStore.currentActivityId as string);
 const activity = computed(() => activityStore.activities[activityId.value]);
 const event = computed(() => layoutStore.currentEvent ?? undefined);
-const newType = computed(() => layoutStore.newActivityType ?? undefined);
 
 if (activityId.value) {
 	activityStore.get(activityId.value);
@@ -71,7 +70,6 @@ watch(
       <ActivityMain
         :activity="activity"
         :event="event"
-        :type="newType"
         :small="true"
       />
     </div>

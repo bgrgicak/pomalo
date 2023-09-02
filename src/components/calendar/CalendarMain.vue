@@ -99,11 +99,7 @@ const eventClick = (event: any) => {
 	if (event.eventId === calendarStore.focusedEvent?.eventId) {
 		layoutStore.showRightSidebar(
 			event.id,
-			{
-				id: event.eventId,
-				start: event.start,
-				end: event.end,
-			}
+			event.eventId
 		);
 	}
 	calendarStore.focusEvent(event.eventId);

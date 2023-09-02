@@ -13,7 +13,6 @@ export const useLayoutStore = defineStore(
 		const state: Ref<LayoutState> = ref({
 			leftSidebarVisibility: false,
 			menuVisibility: undefined,
-			current: {},
 		});
 
 		const activityStore = useActivityStore();
@@ -23,15 +22,11 @@ export const useLayoutStore = defineStore(
 
 		const currentEventId = computed(() => router.currentRoute.value.query.previewEvent as string | undefined);
 		const currentEvent = computed(() => {
-			if(state.value.current.event) {
-				return state.value.current.event;
-			}
 			if(currentActivity.value && currentEventId.value) {
 				return currentActivity.value.events.find((event) => event.id === currentEventId.value);
 			}
 			return undefined;
 		});
-		const newActivityType = computed(() => state.value.current.type);
 
 		const isMenuVisible = computed(() => state.value.menuVisibility);
 		const isLeftSidebarVisible = computed(() => state.value.leftSidebarVisibility);
@@ -56,16 +51,8 @@ export const useLayoutStore = defineStore(
 				}
 			});
 		};
-		const showRightSidebar = (activityId: string | undefined = undefined, event: ActivityEvent | undefined = undefined) => {
-			state.value.current = {
-				event
-			};
-			setPreviewItem(activityId, event?.id);
-		};
-		const showRightSidebarNewActivity = (type: ActivityType) => {
-			state.value.current = {
-				type
-			};
+		const showRightSidebar = (activityId: string | undefined = undefined, eventId: string | undefined = undefined) => {
+			setPreviewItem(activityId, eventId);
 		};
 		const hideRightSidebar = () => {
 			setPreviewItem();
@@ -88,14 +75,12 @@ export const useLayoutStore = defineStore(
 			currentActivity,
 			currentEventId,
 			currentEvent,
-			newActivityType,
 			isLeftSidebarVisible,
 			isRightSidebarVisible,
 			isMenuVisible,
 			showLeftSidebar,
 			hideLeftSidebar,
 			showRightSidebar,
-			showRightSidebarNewActivity,
 			hideRightSidebar,
 			toggleRightSidebar,
 			updateMenuVisibility,

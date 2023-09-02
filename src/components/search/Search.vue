@@ -117,7 +117,7 @@ const openActivity = (activity: Activity) => {
 			);
 		}
 		if (props.openInSidebar) {
-			layoutStore.showRightSidebar(activity._id, props.event);
+			layoutStore.showRightSidebar(activity._id, props.event?.id);
 		} else {
 			openActivityPage(activity);
 		}
@@ -127,7 +127,7 @@ const openActivity = (activity: Activity) => {
 
 const timerToggle = (activity: Activity) => {
 	if (props.openInSidebar) {
-		layoutStore.showRightSidebar(activity._id, props.event);
+		layoutStore.showRightSidebar(activity._id, props.event?.id);
 	}
 	hide();
 };

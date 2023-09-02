@@ -5,7 +5,6 @@ import TaskDetails from '../task/TaskDetails.vue';
 import TaskSidebar from '../task/TaskSidebar.vue';
 import { computed, type PropType } from 'vue';
 import ActivityContent from './ActivityContent.vue';
-import ActivityNew from './ActivityNew.vue';
 import EventSidebar from '@/components/event/EventSidebar.vue';
 import ProjectSidebar from '@/components/project/ProjectSidebar.vue';
 import type Activity from '@/types/activity';
@@ -14,7 +13,7 @@ import ProjectDetails from '../project/ProjectDetails.vue';
 const props = defineProps({
 	activity: {
 		type: Object as PropType<Activity>,
-		default: undefined,
+		required: true,
 	},
 	event: {
 		type: Object as PropType<ActivityEvent>,
@@ -24,15 +23,8 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
-	type: {
-		type: String as PropType<ActivityType>,
-		default: undefined,
-	},
 });
 
-const isNew = computed(() => {
-	return undefined === props.activity;
-});
 const isTask = computed(() => {
 	return props.activity && ActivityType.Task === props.activity.type;
 });
@@ -80,14 +72,7 @@ const onFieldChange = (key: string, value: any) => {
           :md="props.small ? '12' : '8'"
           cols="12"
         >
-          <ActivityNew
-            v-if="isNew"
-            :event="props.event"
-            :type="props.type"
-            :open-in-sidebar="true"
-          />
           <ActivityContent
-            v-else-if="props.activity"
             :activity="props.activity"
           />
           <TaskDetails
