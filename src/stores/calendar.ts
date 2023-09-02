@@ -57,6 +57,12 @@ export const useCalendarStore = defineStore(
 			});
 		};
 
+		const addActivityId = (activityId: string) => {
+			if (!state.value.activityIds.includes(activityId)) {
+				state.value.activityIds.push(activityId);
+			}
+		};
+
 		const focusEvent = (eventId: string) => {
 			state.value.focusedEvent = events.value.find((event) => event.eventId === eventId);
 		};
@@ -93,6 +99,7 @@ export const useCalendarStore = defineStore(
 			focusedCell,
 			clipboard,
 			load,
+			addActivityId,
 			focusEvent,
 			unfocusEvent,
 			focusCell,

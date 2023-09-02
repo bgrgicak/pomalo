@@ -58,6 +58,12 @@ export const getLocalDate = (date?: Date | string | number) => {
 	return new Date(date.getTime() - date.getTimezoneOffset());
 };
 
+/**
+ * Get the difference between two dates in milliseconds
+ * @param start Date
+ * @param end Date
+ * @returns number of milliseconds between start and end
+ */
 export const getTimeDifference = (start: Date, end: Date) => {
 	return end.getTime() - start.getTime();
 };

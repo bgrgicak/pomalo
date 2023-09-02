@@ -5,7 +5,7 @@ import { useActivityStore } from '@/stores/activities';
 import { useLayoutStore } from '@/stores/layout';
 import { useNoticeStore } from '@/stores/notices';
 import type Activity from '@/types/activity';
-import { ActivityType } from '@/types/activity';
+import { ActivityType, type ActivityEvent } from '@/types/activity';
 import { NoticeType } from '@/types/notice';
 import type { PropType } from 'vue';
 import { computed } from 'vue';
@@ -24,11 +24,19 @@ const props = defineProps({
 		type: Boolean,
 		default: true,
 	},
+	focused: {
+		type: Boolean,
+		default: false,
+	},
+	event: {
+		type: Object as PropType<ActivityEvent>,
+		default: undefined
+	},
 });
 
 const emit = defineEmits(['addActivity']);
 
-const showInput = ref(false);
+const focused = ref(props.focused);
 const newActivityTitle = ref('');
 
 const activityStore = useActivityStore();
@@ -36,6 +44,10 @@ const layoutStore = useLayoutStore();
 
 const placeholder = computed(() => {
 	return __('Title');
+});
+
+const isInputFocused = computed(() => {
+	return focused.value || props.focused;
 });
 
 const showOptions = computed(() => {
@@ -49,12 +61,15 @@ const addActivity = (type?: ActivityType) => {
 	if (newActivityTitle.value) {
 		const newActivity = emptyActivity(type);
 		newActivity.title = newActivityTitle.value;
+		if (props.event) {
+			newActivity.events = [props.event];
+		}
 
 		const afterAdd = (activity: Activity) => {
 			layoutStore.showRightSidebar(activity._id);
 			emit('addActivity', newActivity);
 			newActivityTitle.value = '';
-			showInput.value = false;
+			focused.value = false;
 		};
 		
 		if (props.addToStore) {
@@ -76,7 +91,7 @@ const addActivity = (type?: ActivityType) => {
 };
 
 const toggleInput = () => {
-	showInput.value = !showInput.value;
+	focused.value = !focused.value;
 };
 
 const onKeydown = (event: KeyboardEvent) => {
@@ -92,7 +107,7 @@ const onKeydown = (event: KeyboardEvent) => {
     class="activity-add"
   >
     <v-btn
-      v-if="!showInput"
+      v-if="!isInputFocused"
       icon
       variant="text"
       @click="toggleInput"
@@ -100,7 +115,7 @@ const onKeydown = (event: KeyboardEvent) => {
       <v-icon>mdi-plus</v-icon>
     </v-btn>
     <div
-      v-if="showInput"
+      v-if="isInputFocused"
       v-click-outside="toggleInput"
       class="activity-add__form"
     >

@@ -13,9 +13,10 @@ import type { CalendarEvent } from '@/types/calendar';
 import { nextTick } from 'vue';
 import { watch } from 'vue';
 import type { PropType } from 'vue';
-import { minuteInMilliseconds, getTimeDifference } from '@/helper/date';
+import { getTimeDifference } from '@/helper/date';
 import { settings } from '@/helper/settings';
 import { addMilliseconds } from '@/helper/date';
+import CalendarCell from './CalendarCell.vue';
 
 const props = defineProps({
 	vuecal: {
@@ -56,7 +57,7 @@ const editingOptions = computed(() => {
 		title: false,
 		drag: true,
 		resize: true,
-		delete: true,
+		delete: false,
 		create: !display.value.mobile.value
 	};
 });
@@ -185,16 +186,6 @@ const fetchEvents = (options: any) => {
 	emit('fetchEvents', options.startDate, options.endDate);
 };
 
-const eventDragCreate = (event: any) => {
-	layoutStore.showRightSidebar(
-		undefined,
-		newEvent(
-			event.start,
-			event.end,
-		)
-	);
-};
-
 const cellDoubleClick = (start: Date) => {
 	if (display.value.mobile.value) {
 		return;
@@ -290,15 +281,9 @@ const onReady = (options: any) => {
     @view-change="fetchEvents"
     @event-duration-change="eventDurationChange"
     @event-drop="eventOnDrop"
-    @event-drag-create="eventDragCreate"
   >
     <template #event="{ event }">
-      <v-card-title>
-        {{ event.title }}
-      </v-card-title>
-      <v-card-subtitle>
-        {{ event.start.formatTime('h:m') + ' - ' + event.end.formatTime('h:m') }}
-      </v-card-subtitle>
+      <calendar-cell :event="event" />
     </template>
   </vue-cal>
 </template>
@@ -347,26 +332,44 @@ const onReady = (options: any) => {
     @include event-colors(var(--v-theme-primary), var(--v-theme-primary-darken-4));
     border: 1px solid #fff;
 	align-items: start;
+	overflow: visible;
+
+	&:hover {
+		min-height: 35px;
+		z-index: 10;
+	}
+
+    &.calendar-event__task {
+        @include event-colors(var(--v-theme-task), var(--v-theme-task-darken-4));
+		&:hover {
+			background-color: rgb(var(--v-theme-task));
+		}
+    }
+
+    &.calendar-event__event {
+        @include event-colors(var(--v-theme-event), var(--v-theme-event-darken-4));
+		&:hover {
+			background-color: rgb(var(--v-theme-event));
+		}
+    }
+
+    &.calendar-event__project {
+        @include event-colors(var(--v-theme-project), var(--v-theme-project-darken-4));
+		&:hover {
+			background-color: rgb(var(--v-theme-project));
+		}
+    }
 
     &.vuecal__event--focus {
         box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
     }
 
-    &.calendar-event__task {
-        @include event-colors(var(--v-theme-task), var(--v-theme-task-darken-4));
-    }
-
-    &.calendar-event__event {
-        @include event-colors(var(--v-theme-event), var(--v-theme-event-darken-4));
-    }
-
-    &.calendar-event__project {
-        @include event-colors(var(--v-theme-project), var(--v-theme-project-darken-4));
-    }
-
-    &.calendar-event__readonly {
-        // opacity: var(--v-medium-emphasis-opacity);
-    }
+	&.vuecal__event--resizing,
+	&.calendar-event__task,
+	&.calendar-event__event,
+	&.calendar-event__project {
+		overflow: hidden;
+	}
 	
 	.v-card-title {
 		text-align: left;

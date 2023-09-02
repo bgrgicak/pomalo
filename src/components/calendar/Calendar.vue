@@ -8,7 +8,7 @@ import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
 import { getEventFromActivity, newEvent, removeEventFromActivity, updateEventInActivity } from '@/data/events';
 import CalendarHeader from './CalendarHeader.vue';
-import { getLocalDate, getUtcTimestamp, isValidDate, minutesBetweenDates } from '@/helper/date';
+import { getLocalDate, getTimeDifference, getUtcTimestamp, isValidDate, minutesBetweenDates } from '@/helper/date';
 import { computed } from 'vue';
 import { CalendarClipboardType } from '@/types/calendar';
 import { useNoticeStore } from '@/stores/notices';
@@ -18,6 +18,7 @@ import { allViews, defaultView, defaultSmallView } from '@/plugins/vuecal';
 import { watch } from 'vue';
 import { display } from '@/plugins/vuetify';
 import { addEventToActivity } from '@/data/events';
+import { minuteInMilliseconds } from '@/helper/date';
 
 const allowedViews = computed(() => {
 	return structuredClone(allViews).filter(
@@ -194,22 +195,21 @@ const updateEvent = (activityId: string, event: any, repeatIteration: boolean = 
 	});
 };
 
-const addEvent = (start?: Date) => {
+const addEvent = (start?: Date, end?: Date) => {
 	if (!start) {
 		start = getLocalDate();
 	}
-	const newEventDuration = 60;
+	const newEventDuration = undefined !== end
+		? getTimeDifference(start, end) / minuteInMilliseconds
+		: 60;
 	(vuecal.value as any).createEvent(
 		start,
 		newEventDuration,
-		{ title: '' }
-	);
-	layoutStore.showRightSidebar(
-		undefined,
-		newEvent(
-			start,
-			start.addMinutes(newEventDuration)
-		)
+		{
+			title: '',
+			deletable: false,
+			class: 'new-event',
+		}
 	);
 };
 
