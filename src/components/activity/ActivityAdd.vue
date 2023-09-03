@@ -34,26 +34,11 @@ const props = defineProps({
 
 const emit = defineEmits(['addActivity']);
 
-const focused = ref(props.focused);
-const newActivityTitle = ref('');
-
 const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
-const searchStore = useSearchStore();
-
-watch(
-	() => newActivityTitle.value,
-	(searchText: string) => {
-		searchStore.search(searchText, props.types);
-	}
-);
 
 const placeholder = computed(() => {
 	return __('Title');
-});
-
-const isInputFocused = computed(() => {
-	return focused.value || props.focused;
 });
 
 const addActivity = (activity: Activity) => {
@@ -68,16 +53,13 @@ const addActivity = (activity: Activity) => {
 			}
 			layoutStore.showRightSidebar(activity._id);
 			emit('addActivity', activity);
-			newActivityTitle.value = '';
-			focused.value = false;
 		});
 };
 </script>
 <template>
   <ActivitySelect
-    v-model="newActivityTitle"
     :types="props.types"
-    :is-input-focused="isInputFocused"
+    :is-input-focused="props.focused"
     :placeholder="placeholder"
     :search="false"
     @new-click="addActivity"

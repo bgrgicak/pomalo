@@ -52,6 +52,7 @@ const addNewEvent = (activity: Activity) => {
       class="mb-1"
       :event="event"
       :focused="true"
+      :search-options="{archived: false}"
       @newClick="addNewEvent"
       @optionClick="addEvent"
     />
@@ -64,6 +65,10 @@ const addNewEvent = (activity: Activity) => {
 
 .calendar-event__new {
   overflow: visible !important;
+  min-height: 60px !important;
+  &:hover {
+    min-height: 60px !important;
+  }
 
   .calendar-cell__title {
     overflow: visible;
@@ -76,6 +81,10 @@ const addNewEvent = (activity: Activity) => {
     &.calendar-cell__title--new {
       overflow: visible;
     }
+  }
+
+  .v-card-subtitle {
+    display: none;
   }
 }
 </style>

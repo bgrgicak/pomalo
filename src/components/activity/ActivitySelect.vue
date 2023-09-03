@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { emptyActivity, getActivityLink } from '@/data/activities';
 import __ from '@/helper/translations';
-import { useActivityStore } from '@/stores/activities';
-import { useLayoutStore } from '@/stores/layout';
-import { useNoticeStore } from '@/stores/notices';
 import { useSearchStore } from '@/stores/search';
 import type Activity from '@/types/activity';
 import { ActivityType, type ActivityEvent } from '@/types/activity';
-import { NoticeType } from '@/types/notice';
 import type { PropType } from 'vue';
 import { watch } from 'vue';
 import { computed } from 'vue';
 import { ref } from 'vue';
 import TimerToggle from '../timer/TimerToggle.vue';
+import type { SearchOptions } from '@/types/search';
 
 const props = defineProps({
 	types: {
@@ -39,6 +36,10 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
+	searchOptions: {
+		type: Object as PropType<SearchOptions>,
+		default: undefined,
+	},
 });
 
 const emit = defineEmits(['optionClick', 'newClick']);
@@ -52,7 +53,13 @@ if (props.search) {
 	watch(
 		() => newActivityTitle.value,
 		(searchText: string) => {
-			searchStore.search(searchText, props.types);
+			searchStore.search(
+				searchText,
+				{
+					...props.searchOptions,
+					types: props.types
+				}
+			);
 		}
 	);
 }

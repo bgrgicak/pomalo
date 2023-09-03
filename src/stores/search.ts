@@ -2,7 +2,7 @@ import type Activity from '@/types/activity';
 import { defineStore } from 'pinia';
 import { computed, ref, type Ref } from 'vue';
 import { useActivityStore } from './activities';
-import type { SearchState } from '@/types/search';
+import type { SearchOptions, SearchState } from '@/types/search';
 
 export const useSearchStore = defineStore(
 	'search',
@@ -21,7 +21,7 @@ export const useSearchStore = defineStore(
 			});
 		});
 
-		const search = (searchText: string, types?: string[]) => {
+		const search = (searchText: string, options?: SearchOptions | undefined) => {
 			state.value.searchText = searchText;
 			if (state.value.searchText.length < 3) {
 				state.value.activityIds = [];
@@ -31,13 +31,16 @@ export const useSearchStore = defineStore(
 				selector: {
 					title: {
 						$regex: new RegExp(searchText, 'gi'),
-					}
+					},
 				},
 			};
-			if (types) {
+			if (undefined !== options?.types) {
 				searchOptions.selector.type = {
-					$in: types,
+					$in: options?.types,
 				};
+			}
+			if (undefined !== options?.archived) {
+				searchOptions.selector.archived = options.archived;
 			}
 			return activityStore.find(
 				searchOptions

@@ -61,7 +61,7 @@ watch(
 
 const selectedDate = computed(() => {
 	if (!router.currentRoute.value.query.date) {
-		return undefined;
+		return getLocalDate();
 	}
 	const date = getLocalDate(
 		parseInt(
@@ -69,7 +69,7 @@ const selectedDate = computed(() => {
 		)
 	);
 	if (!isValidDate(date)) {
-		return undefined;
+		return getLocalDate();
 	}
 	return date;
 });

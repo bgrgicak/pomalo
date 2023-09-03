@@ -28,6 +28,7 @@ export const emptyActivity = (type: ActivityType): Activity => {
 		belowActivities: [],
 		calculatedEstimatedTime: 0,
 		calculatedTimeSpent: 0,
+		archived: false,
 	};
 };
 

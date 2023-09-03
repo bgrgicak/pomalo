@@ -15,8 +15,8 @@ export const appTheme: ThemeDefinition = {
 		warning: '#d4cb1c',
 		error: '#eb2838',
 		info: '#2b96da',
-		task: '#1069B3',
-		event: '#FF854A',
+		task: '#FF854A',
+		event: '#1069B3',
 		project: '#FFD317',
 		background: '#FFFFFF',
 	}

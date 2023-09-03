@@ -158,7 +158,7 @@ const toggleFocus = (state?: boolean) => {
 };
 
 const onSearch = (searchText: string) => {
-	searchStore.search(searchText, props.types);
+	searchStore.search(searchText, { types: props.types });
 };
 
 const onClear = () => {
