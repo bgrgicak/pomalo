@@ -29,7 +29,7 @@ export const useCalendarStore = defineStore(
 			if (!state.value.startTime || !state.value.endTime) {
 				return [];
 			}
-			return parseEventsFromActivities(
+			const events = parseEventsFromActivities(
 				activityStore.list.filter((activity) => {
 					return state.value.activityIds.includes(activity._id as string);
 				}),
@@ -37,6 +37,10 @@ export const useCalendarStore = defineStore(
 				state.value.endTime,
 				timerStore.activityId,
 			);
+			if (state.value.newEvent) {
+				events.push(state.value.newEvent);
+			}
+			return events;
 		});
 
 		const load = (start: Date, end: Date) => {
@@ -60,6 +64,13 @@ export const useCalendarStore = defineStore(
 		const addActivityId = (activityId: string) => {
 			if (!state.value.activityIds.includes(activityId)) {
 				state.value.activityIds.push(activityId);
+			}
+		};
+
+		const addNewEvent = (event: CalendarEvent) => {
+			state.value.newEvent = event;
+			if (event.id) {
+				addActivityId(event.id);
 			}
 		};
 
@@ -100,6 +111,7 @@ export const useCalendarStore = defineStore(
 			clipboard,
 			load,
 			addActivityId,
+			addNewEvent,
 			focusEvent,
 			unfocusEvent,
 			focusCell,

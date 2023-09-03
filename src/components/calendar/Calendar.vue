@@ -8,7 +8,7 @@ import { useActivityStore } from '@/stores/activities';
 import type Activity from '@/types/activity';
 import { getEventFromActivity, newEvent, removeEventFromActivity, updateEventInActivity } from '@/data/events';
 import CalendarHeader from './CalendarHeader.vue';
-import { getLocalDate, getTimeDifference, getUtcTimestamp, isValidDate, minutesBetweenDates } from '@/helper/date';
+import { getLocalDate, getUtcTimestamp, isValidDate, minutesBetweenDates } from '@/helper/date';
 import { computed } from 'vue';
 import { CalendarClipboardType } from '@/types/calendar';
 import { useNoticeStore } from '@/stores/notices';
@@ -17,8 +17,8 @@ import CalendarMain from './CalendarMain.vue';
 import { allViews, defaultView, defaultSmallView } from '@/plugins/vuecal';
 import { watch } from 'vue';
 import { display } from '@/plugins/vuetify';
-import { addEventToActivity } from '@/data/events';
-import { minuteInMilliseconds } from '@/helper/date';
+import { addEventToActivity, newCalendarEvent } from '@/data/events';
+import { settings } from '@/helper/settings';
 
 const allowedViews = computed(() => {
 	return structuredClone(allViews).filter(
@@ -199,16 +199,17 @@ const addEvent = (start?: Date, end?: Date) => {
 	if (!start) {
 		start = getLocalDate();
 	}
-	const newEventDuration = undefined !== end
-		? getTimeDifference(start, end) / minuteInMilliseconds
-		: 60;
-	(vuecal.value as any).createEvent(
-		start,
-		newEventDuration,
+	if (!end) {
+		end = start.addMinutes(settings.defaultEventDurationInMinutes);
+	}
+
+	calendarStore.addNewEvent(
 		{
-			title: '',
-			deletable: false,
-			class: 'new-event',
+			...newCalendarEvent(
+				start,
+				end,
+			),
+			class: 'v-card calendar-event__new',
 		}
 	);
 };

@@ -3,6 +3,7 @@ export const settings = {
 	workingHoursPerDay: 8,
 	estimateMultiplier: 2,
 	defaultActivityDurationInDays: 7,
+	defaultEventDurationInMinutes: 60,
 	calendar: {
 		syncIntervalMinutes: 15,
 		syncProxyServer: 'https://rodjo.bluebanana.hr/?calendar_url=',

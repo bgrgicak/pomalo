@@ -17,8 +17,6 @@ const props = defineProps({
 	},
 });
 
-const emit = defineEmits(['addEvent']);
-
 const calendarStore = useCalendarStore();
 
 const event = computed(() => {

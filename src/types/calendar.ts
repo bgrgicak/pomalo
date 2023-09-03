@@ -21,6 +21,7 @@ export interface CalendarState {
     startTime?: Date;
     endTime?: Date;
     clipboard?: CalendarClipboard;
+    newEvent?: CalendarEvent;
 }
 
 export enum CalendarClipboardType {

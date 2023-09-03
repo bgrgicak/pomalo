@@ -89,6 +89,11 @@ export const calculateActivityStartEndDate = (activity: Activity) => {
 		debug('Corrupted data detected on activity ' + activity._id);
 		eventFirstStart = addDays(eventLastEnd, -1 * defaultDuration);
 	}
+
+	// If timer is running, set last end to max date to ensure it is loaded in the calendar
+	if (activity.timerRunning) {
+		eventLastEnd = maxDate();
+	}
 	return {
 		eventFirstStart,
 		eventLastEnd,

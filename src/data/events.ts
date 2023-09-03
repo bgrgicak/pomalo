@@ -60,6 +60,15 @@ export const newEvent = (start: Date, end?: Date): ActivityEvent => {
 	};
 };
 
+export const newCalendarEvent = (start: Date, end?: Date): CalendarEvent => {
+	const event = newEvent(start, end);
+	return {
+		eventId: event.id,
+		start: event.start,
+		end: event.end,
+	};
+};
+
 export const calendarEventToActivityEvent = (event: CalendarEvent): ActivityEvent => {
 	return {
 		id: event.eventId,

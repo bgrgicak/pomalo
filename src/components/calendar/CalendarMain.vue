@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import VueCal, { type VueCalEvent, type VueCalView } from 'vue-cal';
-import { newEvent } from '@/data/events';
+import VueCal, { type VueCalEvent } from 'vue-cal';
 import { getLocalDate } from '@/helper/date';
 import { useCalendarStore } from '@/stores/calendar';
 import { useLayoutStore } from '@/stores/layout';
@@ -60,6 +59,13 @@ const editingOptions = computed(() => {
 		delete: false,
 		create: !display.value.mobile.value
 	};
+});
+
+const events = computed(() => {
+	if (!props.vuecal) {
+		return [];
+	}
+	return calendarStore.events;
 });
 
 const disabledViews = computed(() => {
@@ -259,7 +265,7 @@ const onReady = (options: any) => {
     class="v-card calendar"
     :active-view="activeView"
     :disable-views="disabledViews"
-    :events="calendarStore.events"
+    :events="events"
     :click-to-navigate="false"
     :dblclick-to-navigate="['year', 'month'].includes(activeView)"
     :snap-to-time="15"
@@ -270,6 +276,7 @@ const onReady = (options: any) => {
     :editable-events="editingOptions"
     events-on-month-view="short"
     :time-cell-height="cellHeight"
+    :watch-real-time="true"
     @event-click="eventClick"
     @cell-click="cellClick"
     @cell-dblclick="cellDoubleClick"

@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { emptyActivity } from '@/data/activities';
+import { emptyActivity, getActivityLink } from '@/data/activities';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
 import { useLayoutStore } from '@/stores/layout';
 import { useNoticeStore } from '@/stores/notices';
+import { useSearchStore } from '@/stores/search';
 import type Activity from '@/types/activity';
 import { ActivityType, type ActivityEvent } from '@/types/activity';
 import { NoticeType } from '@/types/notice';
 import type { PropType } from 'vue';
+import { watch } from 'vue';
 import { computed } from 'vue';
 import { ref } from 'vue';
+import TimerToggle from '../timer/TimerToggle.vue';
 
 const props = defineProps({
 	types: {
@@ -41,6 +44,15 @@ const newActivityTitle = ref('');
 
 const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
+const searchStore = useSearchStore();
+
+watch(
+	() => newActivityTitle.value,
+	(searchText: string) => {
+		console.log(searchText);
+		searchStore.search(searchText, props.types);
+	}
+);
 
 const placeholder = computed(() => {
 	return __('Title');
@@ -130,11 +142,32 @@ const onKeydown = (event: KeyboardEvent) => {
         @keydown="onKeydown"
       >
         <template #append-inner>
-          <ul
+          <v-list
             v-if="showOptions"
             class="autocomplete__options"
           >
-            <li
+            <v-list-item
+              v-for="activity in searchStore.activities"
+              :key="(activity as Activity)._id"
+              class="autocomplete__option"
+            >
+              <v-btn
+                class="search__result-title"
+                variant="plain"
+                :href="getActivityLink(activity)"
+              >
+                {{ activity.title }}
+              </v-btn>
+              <template
+                #append
+              >
+                <TimerToggle
+                  :activity="
+                    activity"
+                />
+              </template>
+            </v-list-item>
+            <v-list-item
               v-for="type in props.types"
               :key="(type as string)"
               class="autocomplete__option"
@@ -146,8 +179,8 @@ const onKeydown = (event: KeyboardEvent) => {
               >
                 {{ __('Add ') + type }}
               </v-btn>
-            </li>
-          </ul>
+            </v-list-item>
+          </v-list>
         </template>
       </v-text-field>
     </div>
