@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import ActivityAdd from '../activity/ActivityAdd.vue';
 import { computed } from 'vue';
 import { newEvent } from '@/data/events';
 import type Activity from '@/types/activity';
 import { useCalendarStore } from '@/stores/calendar';
+import ActivitySelect from '../activity/ActivitySelect.vue';
+import { useActivityStore } from '@/stores/activities';
 
 const props = defineProps({
 	vuecal: {
@@ -18,6 +19,7 @@ const props = defineProps({
 });
 
 const calendarStore = useCalendarStore();
+const activityStore = useActivityStore();
 
 const event = computed(() => {
 	return newEvent(
@@ -27,7 +29,14 @@ const event = computed(() => {
 });
 
 const addEvent = (activity: Activity) => {
-	calendarStore.addActivityId(activity._id);
+	activityStore.addOrUpdate(activity).then(() => {
+		calendarStore.addActivityId(activity._id);
+		calendarStore.removeNewEvent();
+	});
+};
+
+const addNewEvent = (activity: Activity) => {
+	addEvent(activity);
 };
 </script>
 <template>
@@ -38,28 +47,35 @@ const addEvent = (activity: Activity) => {
     <span v-if="props.event.title">
       {{ props.event.title }}
     </span>
-    <ActivityAdd
+    <ActivitySelect
       v-else
       class="mb-1"
       :event="event"
       :focused="true"
-      @addActivity="addEvent"
+      @newClick="addNewEvent"
+      @optionClick="addEvent"
     />
   </v-card-title>
   <v-card-subtitle>
-    {{ event.start.formatTime('h:m') + ' - ' + event.end.formatTime('h:m') }}
+    {{ event.start.formatTime('hh:mm') + ' - ' + event.end.formatTime('hh:mm') }}
   </v-card-subtitle>
 </template>
 <style lang="scss">
-.calendar-cell__title {
-  .activity-add {
-    width: 100%;
-    .activity-add__form{
-        min-width: auto;
-    }
-  }
-  &.calendar-cell__title--new {
+
+.calendar-event__new {
+  overflow: visible !important;
+
+  .calendar-cell__title {
     overflow: visible;
+    .activity-add {
+      width: 100%;
+      .activity-add__form{
+          min-width: auto;
+      }
+    }
+    &.calendar-cell__title--new {
+      overflow: visible;
+    }
   }
 }
 </style>

@@ -256,6 +256,10 @@ const onReady = (options: any) => {
 		addLongPressEvent();
 	});
 };
+
+const eventDragCreate = (event: any) => {
+	emit('addEvent', event.start, event.end);
+};
 </script>
 <template>
   <vue-cal
@@ -284,6 +288,7 @@ const onReady = (options: any) => {
     @view-change="fetchEvents"
     @event-duration-change="eventDurationChange"
     @event-drop="eventOnDrop"
+    @event-drag-create="eventDragCreate"
   >
     <template #event="{ event }">
       <calendar-cell :event="event" />
@@ -335,7 +340,7 @@ const onReady = (options: any) => {
     @include event-colors(var(--v-theme-primary), var(--v-theme-primary-darken-4));
     border: 1px solid #fff;
 	align-items: start;
-	overflow: visible;
+		overflow: hidden;
 
 	&:hover {
 		min-height: 35px;
@@ -366,13 +371,6 @@ const onReady = (options: any) => {
     &.vuecal__event--focus {
         box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
     }
-
-	&.vuecal__event--resizing,
-	&.calendar-event__task,
-	&.calendar-event__event,
-	&.calendar-event__project {
-		overflow: hidden;
-	}
 	
 	.v-card-title {
 		text-align: left;

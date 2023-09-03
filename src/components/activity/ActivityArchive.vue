@@ -54,7 +54,7 @@ const archiveActivity = (activity: Activity) => {
 		}
 		layoutStore.hideRightSidebar();
 		emit('onArchived', activity._id);
-		if (router.currentRoute.value.path.startsWith('/task/')) {
+		if (router.currentRoute.value.path.startsWith(`/${activity.type}/`)) {
 			router.push('/' + activity.type + 's');
 		}
 	});

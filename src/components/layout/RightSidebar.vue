@@ -34,6 +34,13 @@ watch(
 		firstLoad.value = false;
 	}
 );
+
+const clickOutsideConditional = (event: any) => {
+	if (event.target) {
+		return ! event.target.classList.contains('activity-list__link');
+	}
+	return true;
+};
 </script>
 <template>
   <v-navigation-drawer
@@ -46,7 +53,8 @@ watch(
   >
     <div
       v-click-outside.self="{
-        handler: hide
+        handler: hide,
+        closeConditional: clickOutsideConditional
       }"
     >
       <header class="right-sidebar__header py-3">

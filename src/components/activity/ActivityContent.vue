@@ -28,7 +28,7 @@ watch(() => props.activity, (newActivity) => {
 	if (undefined === state.value.activity) {
 		return;
 	}
-	if (newActivity._id === state.value.activity._id) {
+	if (newActivity?._id === state.value.activity._id) {
 		return;
 	}
 	if (state.value.isEditing) {

@@ -53,7 +53,6 @@ const today = () => {
 	if (!props.vuecal) {
 		return;
 	}
-	console.log(props.vuecal);
 	props.vuecal.switchView(props.activeView, new Date());
 };
 

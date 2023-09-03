@@ -74,6 +74,10 @@ export const useCalendarStore = defineStore(
 			}
 		};
 
+		const removeNewEvent = () => {
+			state.value.newEvent = undefined;
+		};
+
 		const focusEvent = (eventId: string) => {
 			state.value.focusedEvent = events.value.find((event) => event.eventId === eventId);
 		};
@@ -112,6 +116,7 @@ export const useCalendarStore = defineStore(
 			load,
 			addActivityId,
 			addNewEvent,
+			removeNewEvent,
 			focusEvent,
 			unfocusEvent,
 			focusCell,

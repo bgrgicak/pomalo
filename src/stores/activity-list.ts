@@ -94,7 +94,6 @@ export const useActivityListStore = defineStore(
 		};
 
 		const addToList = (activityId: string, listId: string, addToTop: boolean = true) => {
-			console.log(activityId, listId, addToTop);
 			if (activityLists.value[listId].includes(activityId)) {
 				return;
 			}
