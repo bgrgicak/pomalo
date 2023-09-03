@@ -72,9 +72,9 @@ const addNewEvent = (activity: Activity) => {
 
   .calendar-cell__title {
     overflow: visible;
-    .activity-add {
+    .activity-select {
       width: 100%;
-      .activity-add__form{
+      .activity-select__form{
           min-width: auto;
       }
     }

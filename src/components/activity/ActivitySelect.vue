@@ -41,6 +41,30 @@ const props = defineProps({
 		type: Object as PropType<SearchOptions>,
 		default: undefined,
 	},
+	icon: {
+		type: String,
+		default: 'mdi-plus',
+	},
+	placeholder: {
+		type: String,
+		default: undefined,
+	},
+	variant: {
+		type: String as PropType<any>,
+		default: undefined,
+	},
+	label: {
+		type: String,
+		default: undefined,
+	},
+	density: {
+		type: String as PropType<any>,
+		default: 'compact',
+	},
+	clearable: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const emit = defineEmits(['optionClick', 'newClick']);
@@ -68,6 +92,9 @@ if (props.search) {
 }
 
 const placeholder = computed(() => {
+	if (props.placeholder) {
+		return props.placeholder;
+	}
 	return __('Title');
 });
 
@@ -85,6 +112,7 @@ const optionCount = computed(() => {
 
 const toggleInput = () => {
 	focused.value = !focused.value;
+	newActivityTitle.value = '';
 };
 
 const onKeydown = (event: KeyboardEvent) => {
@@ -149,7 +177,10 @@ const onNewClick = (type: ActivityType) => {
 </script>
 <template>
   <div 
-    class="activity-add"
+    class="activity-select"
+    :class="{
+      'activity-select--focused': isInputFocused
+    }"
   >
     <v-btn
       v-if="!isInputFocused"
@@ -157,78 +188,77 @@ const onNewClick = (type: ActivityType) => {
       variant="text"
       @click="toggleInput"
     >
-      <v-icon>mdi-plus</v-icon>
+      <v-icon>{{ props.icon }}</v-icon>
     </v-btn>
     <div
       v-if="isInputFocused"
       v-click-outside="toggleInput"
-      class="activity-add__form"
+      class="activity-select__form"
     >
       <v-text-field
         v-model="newActivityTitle"
-        density="compact"
         :placeholder="placeholder"
         class="ma-0"
-        :append-inner-icon="'mdi-plus'"
+        :append-inner-icon="props.icon"
         autofocus
-        variant="outlined"
+        :variant="props.variant ?? 'outlined'"
+        :label="props.label"
+        :density="props.density"
+        :clearable="props.clearable"
         @keydown="onKeydown"
+      />
+      <v-list
+        v-if="showOptions"
+        class="autocomplete__options"
       >
-        <template #append-inner>
-          <v-list
-            v-if="showOptions"
-            class="autocomplete__options"
+        <v-list-item
+          v-for="(activity, activityIndex) in searchStore.activities"
+          :key="activity._id"
+          class="autocomplete__option"
+          :class="{
+            'autocomplete__option--selected': selectedOption === activityIndex
+          }"
+        >
+          <v-btn
+            class="search__result-title"
+            variant="plain"
+            :href="getActivityLink(activity)"
+            @click="() => onOptionClick(activity)"
           >
-            <v-list-item
-              v-for="(activity, activityIndex) in searchStore.activities"
-              :key="activity._id"
-              class="autocomplete__option"
-              :class="{
-                'autocomplete__option--selected': selectedOption === activityIndex
-              }"
-            >
-              <v-btn
-                class="search__result-title"
-                variant="plain"
-                :href="getActivityLink(activity)"
-                @click="() => onOptionClick(activity)"
-              >
-                {{ activity.title }}
-              </v-btn>
-              <template
-                v-if="props.showTimer"
-                #append
-              >
-                <TimerToggle
-                  :activity="
-                    activity"
-                />
-              </template>
-            </v-list-item>
-            <v-list-item
-              v-for="(type, typeIndex) in props.types"
-              :key="(type as string)"
-              class="autocomplete__option"
-              :class="{
-                'autocomplete__option--selected': selectedOption === (typeIndex + searchStore.activities.length)
-              }"
-            >
-              <v-btn
-                :block="true"
-                variant="text"
-                @click="() => onNewClick(type)"
-              >
-                {{ __('Add ') + type }}
-              </v-btn>
-            </v-list-item>
-          </v-list>
-        </template>
-      </v-text-field>
+            {{ activity.title }}
+          </v-btn>
+          <template
+            v-if="props.showTimer"
+            #append
+          >
+            <TimerToggle
+              :activity="
+                activity"
+            />
+          </template>
+        </v-list-item>
+        <v-list-item
+          v-for="(type, typeIndex) in props.types"
+          :key="(type as string)"
+          class="autocomplete__option"
+          :class="{
+            'autocomplete__option--selected': selectedOption === (typeIndex + searchStore.activities.length)
+          }"
+        >
+          <v-btn
+            :block="true"
+            variant="text"
+            @click="() => onNewClick(type)"
+          >
+            {{ __('Add ') + type }}
+          </v-btn>
+        </v-list-item>
+      </v-list>
     </div>
   </div>
 </template>
 <style lang="scss">
-.activity-add {
+.activity-select {
     .v-btn {
         width: 44px;
         height: 44px;
@@ -238,34 +268,66 @@ const onNewClick = (type: ActivityType) => {
         display: none;
     }
 }
-.activity-add__form {
+.activity-select__form {
   min-width: 200px;
   z-index: 10;
   position: relative;
+  .v-field__input {
+    height: 44px;
+  }
 }
-.autocomplete__options {
+.autocomplete__options.v-list {
   display: block;
   width: 100%;
-  position: absolute;
+  position: absolute !important;
   min-width: 180px;
-  top: 42px;
+  top: 40px;
   z-index: 2;
   background-color: rgb(var(--v-theme-background));
   left: 0;
   overflow: auto;
-  border: 1px solid rgb(var(--v-border-color));
-  padding-top: 2px;
+  border: thin solid rgba(var(--v-border-color), var(--v-disabled-opacity));
+  border-top: none;
+  padding: 0px;
+  border-bottom-left-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
 }
-.autocomplete__option {
+.autocomplete__option.v-list-item {
     width: 100%;
+    padding: 0 !important;
     .v-btn {
-    width: 100%;
-    text-align: left;
-    justify-content: start;
+      width: 100%;
+      text-align: left;
+      justify-content: start;
+      .v-btn__content {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        justify-content: left;
+        display: block;
+      }
     }
     &.autocomplete__option--selected {
         background-color: rgb(var(--v-theme-primary));
         color: rgb(var(--v-theme-on-primary));
+        .timer-toggle {
+          .v-icon {
+            color: rgb(var(--v-theme-on-primary-darken-1))
+          }
+        }
     }
+
+    .v-list-item__append {
+      padding-right: 1rem;
+      .v-btn {
+        padding: 0;
+      }
+    }
+}
+.activity-select--focused {
+  .autocomplete__options.v-list {
+    border: 2px solid rgba(var(--v-border-color), var(--v-high-emphasis-opacity));
+    border-top: none;
+  }
 }
 </style>
