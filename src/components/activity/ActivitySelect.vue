@@ -10,6 +10,7 @@ import { computed } from 'vue';
 import { ref } from 'vue';
 import TimerToggle from '../timer/TimerToggle.vue';
 import type { SearchOptions } from '@/types/search';
+import type { Ref } from 'vue';
 
 const props = defineProps({
 	types: {
@@ -44,6 +45,8 @@ const props = defineProps({
 
 const emit = defineEmits(['optionClick', 'newClick']);
 
+const selectedOption: Ref<number|undefined> = ref(undefined);
+
 const focused = ref(props.focused);
 const newActivityTitle = ref('');
 
@@ -76,15 +79,49 @@ const showOptions = computed(() => {
 	return newActivityTitle.value.length > 0;
 });
 
+const optionCount = computed(() => {
+	return searchStore.activities.length + props.types.length;
+});
+
 const toggleInput = () => {
 	focused.value = !focused.value;
 };
 
 const onKeydown = (event: KeyboardEvent) => {
 	if (event.key === 'Enter') {
-		// addActivity();
+		if (selectedOption.value === undefined) {
+			if (searchStore.activities.length === 0) {
+				onNewClick(props.types[0]);
+			} else {
+				onOptionClick(searchStore.activities[0]);
+			}
+		} else if (selectedOption.value < searchStore.activities.length) {
+			onOptionClick(searchStore.activities[selectedOption.value]);
+		} else {
+			onNewClick(props.types[selectedOption.value - searchStore.activities.length]);
+		}
 	} else if (event.key === 'Escape') {
 		toggleInput();
+	}
+	// if arrow up or down is pressed
+	if (event.key === 'ArrowUp') {
+		let newSelectedValue = selectedOption.value === undefined
+			? optionCount.value - 1
+			: selectedOption.value - 1;
+		if (newSelectedValue < 0) { 
+			newSelectedValue = optionCount.value - 1;
+		}
+		selectedOption.value = newSelectedValue;
+	} else if (event.key === 'ArrowDown') {
+		let newSelectedValue = selectedOption.value === undefined
+			? 0
+			: selectedOption.value + 1;
+		if (newSelectedValue >= optionCount.value) {
+			newSelectedValue = 0;
+		}
+		selectedOption.value = newSelectedValue;
+	} else {
+		selectedOption.value = undefined;
 	}
 };
 
@@ -96,7 +133,7 @@ const onOptionClick = (activity: Activity) => {
 	emit('optionClick', newActivity);
 	toggleInput();
 
-	// Prevent default, TODO allow if cmd or ctrl is pressed
+	// Prevent default to prevent link from being opened
 	return false;
 };
 
@@ -143,9 +180,12 @@ const onNewClick = (type: ActivityType) => {
             class="autocomplete__options"
           >
             <v-list-item
-              v-for="activity in searchStore.activities"
+              v-for="(activity, activityIndex) in searchStore.activities"
               :key="activity._id"
               class="autocomplete__option"
+              :class="{
+                'autocomplete__option--selected': selectedOption === activityIndex
+              }"
             >
               <v-btn
                 class="search__result-title"
@@ -166,9 +206,12 @@ const onNewClick = (type: ActivityType) => {
               </template>
             </v-list-item>
             <v-list-item
-              v-for="type in props.types"
+              v-for="(type, typeIndex) in props.types"
               :key="(type as string)"
               class="autocomplete__option"
+              :class="{
+                'autocomplete__option--selected': selectedOption === (typeIndex + searchStore.activities.length)
+              }"
             >
               <v-btn
                 :block="true"
@@ -219,6 +262,10 @@ const onNewClick = (type: ActivityType) => {
     width: 100%;
     text-align: left;
     justify-content: start;
+    }
+    &.autocomplete__option--selected {
+        background-color: rgb(var(--v-theme-primary));
+        color: rgb(var(--v-theme-on-primary));
     }
 }
 </style>
