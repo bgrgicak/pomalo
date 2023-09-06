@@ -7,6 +7,9 @@ import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import ActivitySelect from '../activity/ActivitySelect.vue';
 import type { PropType } from 'vue';
+import { useActivityListStore } from '@/stores/activity-list';
+import type { Ref } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
 	activity: {
@@ -16,9 +19,17 @@ const props = defineProps({
 });
 const emit = defineEmits(['change']);
 
-const parentTypes = [ActivityType.Project];
+const listId: Ref<string | undefined> = ref(undefined);
 
+const activityListStore = useActivityListStore();
 const activityStore = useActivityStore();
+
+activityListStore.find(ActivityType.Project).then((newListId: string) => {
+	if (!newListId) {
+		return;
+	}
+	listId.value = newListId;
+});
 
 const parentTitle: ComputedRef<string | undefined> = computed(() => {
 	if (!props.activity.parent) {
@@ -31,8 +42,15 @@ const parentTitle: ComputedRef<string | undefined> = computed(() => {
 	return activityStore.activities[props.activity.parent].title;
 });
 
-const onClick = (activity: Activity) => {
-	const newValue = activity?._id;
+const options = computed( () => {
+	if (!listId.value) {
+		return [];
+	}
+	return activityListStore.list[listId.value];
+});
+
+const onClick = (activityId: string) => {
+	const newValue = activityId ?? undefined;
 	activityStore.updateField(
 		props.activity._id,
 		'parent',
@@ -43,22 +61,12 @@ const onClick = (activity: Activity) => {
 };
 </script>
 <template>
-  <ActivitySelect
-    :types="parentTypes"
-    :value="parentTitle"
-    :new-types="parentTypes"
-    :label="__('Project')"
-    :placeholder="__('Select a project')"
-    :visible="true"
-    :hide-timer="true"
-    :hide-icon="true"
-    :prevent-default="true"
-    icon=""
-    :clearable="true"
-    variant="underlined"
-    :focused="true"
-    class="activity-parent"
-    @optionClick="onClick"
+  <v-autocomplete
+    :model-value="parentTitle"
+    :items="options"
+    item-value="_id"
+    item-text="title"
+    @update:model-value="onClick"
   />
 </template>
 <style lang="scss">

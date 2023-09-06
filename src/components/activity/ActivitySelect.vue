@@ -42,6 +42,10 @@ const props = defineProps({
 		type: Object as PropType<ActivityEvent>,
 		default: undefined
 	},
+	small: {
+		type: Boolean,
+		default: true,
+	},
 	showTimer: {
 		type: Boolean,
 		default: false,
@@ -86,10 +90,10 @@ const newActivityTitle = ref(props.value);
 
 const searchStore = useSearchStore();
 
-if (props.search) {
-	watch(
-		() => newActivityTitle.value,
-		(searchText: string) => {
+watch(
+	() => newActivityTitle.value,
+	(searchText: string) => {
+		if (props.search) {
 			searchStore.search(
 				searchText,
 				{
@@ -98,8 +102,8 @@ if (props.search) {
 				}
 			);
 		}
-	);
-}
+	}
+);
 
 const placeholder = computed(() => {
 	if (props.placeholder) {
@@ -108,8 +112,13 @@ const placeholder = computed(() => {
 	return __('Title');
 });
 
+
 const isInputFocused = computed(() => {
 	return focused.value || props.focused;
+});
+
+const isInputVisible = computed(() => {
+	return false === props.small || isInputFocused.value;
 });
 
 const showOptions = computed(() => {
@@ -237,7 +246,7 @@ const onNewClick = (type: ActivityType) => {
       <v-icon>{{ props.icon }}</v-icon>
     </v-btn>
     <div
-      v-if="isInputFocused"
+      v-if="isInputVisible"
       v-click-outside="toggleInput"
       class="activity-select__form"
     >
@@ -257,7 +266,10 @@ const onNewClick = (type: ActivityType) => {
         v-if="showOptions"
         class="autocomplete__options"
       >
-        <v-list ref="selectOptionsRef">
+        <v-list
+          v-if="newActivityTitle"
+          ref="selectOptionsRef"
+        >
           <v-list-item
             v-for="(activity, activityIndex) in searchStore.activities"
             :key="activity._id"
