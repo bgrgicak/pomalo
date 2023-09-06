@@ -61,6 +61,7 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				parent: calendarUrl,
 				members: [],
 				events: [],
+				alarms: [],
 				aboveActivities: [],
 				belowActivities: [],
 			};
@@ -134,6 +135,22 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				}
 			}
 			activity.events = [activityEvent];
+
+			event.component.getAllSubcomponents('valarm').forEach((alarm: any) => {
+				const alarmEvent = new ICAL.Event(alarm);
+				const trigger = alarmEvent.component.getFirstPropertyValue('trigger');
+				if (trigger.weeks || trigger.days || trigger.hours || trigger.minutes || trigger.seconds) { 
+					activity.alarms.push({
+						weeks: trigger.weeks ?? 0,
+						days: trigger.days ?? 0,
+						hours: trigger.hours ?? 0,
+						minutes: trigger.minutes ?? 0,
+						seconds: trigger.seconds ?? 0,
+						isNegative: trigger.isNegative ?? false,
+					});
+				}
+			});
+
 			debug('Adding activity', activity);
 			postMessage({
 				type: 'calendar-sync',
@@ -148,7 +165,6 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 		});
 	});
 };
-
 onmessage = (event: MessageEvent) => {
 	const { calendarUrl, lastCalendarSync } = JSON.parse(event.data);
 	syncCalendar(calendarUrl, new Date(lastCalendarSync));

@@ -77,6 +77,15 @@ export enum ActivityType {
     New = 'new', // used for creating new activities
 };
 
+export interface ActivityAlarm {
+    weeks: number,
+    days: number,
+    hours: number,
+    minutes: number,
+    seconds: number,
+    isNegative: boolean,
+};
+
 export interface ActivityState {
     activity: Activity,
     isEditing: boolean,
@@ -95,6 +104,7 @@ interface Activity {
 
     members: ActivityMembers[],
     events: ActivityEvent[],
+    alarms: ActivityAlarm[],
 
     completedDate?: Date,
     startDate?: Date,
