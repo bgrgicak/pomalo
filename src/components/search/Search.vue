@@ -80,6 +80,10 @@ const addActivity = (activity: Activity) => {
 		layoutStore.showRightSidebar(activity._id, props.event?.id);
 	});
 };
+
+const openActivity = (activity: Activity) => {
+	layoutStore.showRightSidebar(activity._id, props.event?.id);
+};
 </script>
 <template>
   <ActivitySelect
@@ -93,6 +97,7 @@ const addActivity = (activity: Activity) => {
     :label="props.label"
     :clearable="props.clearable"
     @new-click="addActivity"
+    @option-click="openActivity"
   />
 </template>
 <style lang="scss">
@@ -104,7 +109,7 @@ $form-width: 300px;
 	display: flex;
 	
 	.v-input {
-		border: 2px solid rgba(var(--v-border-color), var(--v-high-emphasis-opacity));
+		border: none;
 	}
 	.v-field__overlay {
 		background-color: transparent;
@@ -118,6 +123,7 @@ $form-width: 300px;
 	}
 	
 	.v-list.autocomplete__options {
+		border: none;
 		border-bottom-left-radius: 0.25rem;
 		border-bottom-right-radius: 0.25rem;
 	}
