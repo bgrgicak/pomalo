@@ -217,7 +217,7 @@ const addActivity = (activity: Activity) => {
       <v-col
         cols="2"
         align="right"
-        class="pb-0"
+        class="pb-0 pr-2 pt-2"
       >
         <ActivityAdd
           :types="[type]"

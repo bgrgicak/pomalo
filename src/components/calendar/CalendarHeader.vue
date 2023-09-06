@@ -61,18 +61,19 @@ const today = () => {
 <template>
   <v-row
     v-if="props.vuecal"
-    class="pb-0"
+    class="pb-0 pt-2 px-2"
   >
     <v-col
       cols="9"
       :md="6"
       :offset-md="3"
-      class="d-flex flex-column align-start align-md-center"
+      class="d-flex flex-column align-start align-md-center justify-center pa-0"
     >
       <v-btn-toggle
         :model-value="props.activeView"
         rounded="0"
         group
+        density="compact"
         @update:modelValue="(value) => emit('update:activeView', value)"
       >
         <v-btn
@@ -86,7 +87,7 @@ const today = () => {
     </v-col>
     <v-col
       cols="3"
-      class="d-flex flex-column align-end"
+      class="d-flex flex-column align-end pa-0"
     >
       <v-btn
         icon="mdi-plus"
@@ -95,10 +96,10 @@ const today = () => {
       />
     </v-col>
   </v-row>
-  <v-row class="pb-2">
+  <v-row class="pb-4 px-2">
     <v-col
       cols="6"
-      class="d-flex align-center"
+      class="d-flex align-center pa-0"
     >
       <h2 class="m-0 text-subtitle-2 text-md-h6">
         {{ title }}
@@ -106,7 +107,7 @@ const today = () => {
     </v-col>
     <v-col
       cols="6"
-      class="d-flex align-center"
+      class="d-flex align-center pa-0"
     >
       <v-spacer />
       <v-btn

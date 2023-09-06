@@ -13,6 +13,10 @@ import type { SearchOptions } from '@/types/search';
 import type { Ref } from 'vue';
 
 const props = defineProps({
+	value: {
+		type: String,
+		default: '',
+	},
 	types: {
 		type: Array as PropType<ActivityType[]>,
 		default: () => [
@@ -20,6 +24,10 @@ const props = defineProps({
 			ActivityType.Event,
 			ActivityType.Project,
 		],
+	},
+	newTypes: {
+		type: Array as PropType<ActivityType[]>,
+		default: undefined,
 	},
 	focused: {
 		type: Boolean,
@@ -72,7 +80,7 @@ const emit = defineEmits(['optionClick', 'newClick']);
 const selectedOption: Ref<number|undefined> = ref(undefined);
 
 const focused = ref(props.focused);
-const newActivityTitle = ref('');
+const newActivityTitle = ref(props.value);
 
 const searchStore = useSearchStore();
 
@@ -106,8 +114,15 @@ const showOptions = computed(() => {
 	return newActivityTitle.value.length > 0;
 });
 
+const newTypes = computed(() => {
+	if (props.newTypes) {
+		return props.newTypes;
+	}
+	return props.types;
+});
+
 const optionCount = computed(() => {
-	return searchStore.activities.length + props.types.length;
+	return searchStore.activities.length + newTypes.value.length;
 });
 
 const toggleInput = () => {
@@ -119,14 +134,14 @@ const onKeydown = (event: KeyboardEvent) => {
 	if (event.key === 'Enter') {
 		if (selectedOption.value === undefined) {
 			if (searchStore.activities.length === 0) {
-				onNewClick(props.types[0]);
+				onNewClick(newTypes.value[0]);
 			} else {
 				onOptionClick(searchStore.activities[0]);
 			}
 		} else if (selectedOption.value < searchStore.activities.length) {
 			onOptionClick(searchStore.activities[selectedOption.value]);
 		} else {
-			onNewClick(props.types[selectedOption.value - searchStore.activities.length]);
+			onNewClick(newTypes.value[selectedOption.value - searchStore.activities.length]);
 		}
 	} else if (event.key === 'Escape') {
 		toggleInput();
@@ -238,7 +253,7 @@ const onNewClick = (type: ActivityType) => {
           </template>
         </v-list-item>
         <v-list-item
-          v-for="(type, typeIndex) in props.types"
+          v-for="(type, typeIndex) in newTypes"
           :key="(type as string)"
           class="autocomplete__option"
           :class="{

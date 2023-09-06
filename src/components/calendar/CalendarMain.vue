@@ -51,6 +51,13 @@ watch(
 	}
 );
 
+watch(
+	() => props.selectedDate,
+	() => {
+		scrollToCurrentTime();
+	}
+);
+
 const editingOptions = computed(() => {
 	return {
 		title: false,
@@ -264,7 +271,7 @@ const eventDragCreate = (event: any) => {
 <template>
   <vue-cal
     ref="vuecalRef"
-    style="height: calc(100vh - 48px - 8px - 72px - 80px);"
+    style="height: calc(100vh - 8px - 16px - 72px - 80px);"
     :selected-date="selectedDate"
     class="v-card calendar"
     :active-view="activeView"
@@ -327,6 +334,10 @@ const eventDragCreate = (event: any) => {
 .vuecal__cell--today .vuecal__cell-date{
 	font-weight: bold;
 	color: rgb(var(--v-theme-primary-darken-2));
+}
+
+.vuecal__heading {
+  height: 2rem;
 }
 
 .vuecal__body {

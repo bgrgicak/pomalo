@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type Activity from '@/types/activity';
 import { ActivityType } from '@/types/activity';
-import Search from '../search/Search.vue';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
-
+import ActivitySelect from '../activity/ActivitySelect.vue';
 import type { PropType } from 'vue';
 
 const props = defineProps({
@@ -33,9 +32,6 @@ const parentTitle: ComputedRef<string | undefined> = computed(() => {
 });
 
 const onClick = (activity: Activity) => {
-	if (activity?._id) {
-		activityStore.get(activity._id);
-	}
 	const newValue = activity?._id;
 	activityStore.updateField(
 		props.activity._id,
@@ -47,7 +43,7 @@ const onClick = (activity: Activity) => {
 };
 </script>
 <template>
-  <Search
+  <ActivitySelect
     :types="parentTypes"
     :value="parentTitle"
     :new-types="parentTypes"
@@ -57,9 +53,12 @@ const onClick = (activity: Activity) => {
     :hide-timer="true"
     :hide-icon="true"
     :prevent-default="true"
+    icon=""
     :clearable="true"
+    variant="underlined"
+    :focused="true"
     class="activity-parent"
-    @click="onClick"
+    @optionClick="onClick"
   />
 </template>
 <style lang="scss">
