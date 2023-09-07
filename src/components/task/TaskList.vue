@@ -10,6 +10,7 @@ import ActivityArchive from '../activity/ActivityArchive.vue';
 import ActivityAdd from '../activity/ActivityAdd.vue';
 import { emptyActivity } from '@/data/activities';
 import { ref } from 'vue';
+import { useLayoutStore } from '@/stores/layout';
 
 const props = defineProps({
 	type: {
@@ -53,7 +54,7 @@ const activityList = computed(() => {
 });
 
 const activityListStore = useActivityListStore();
-
+const layoutStore = useLayoutStore();
 watch(
 	props,
 	() => {
@@ -87,16 +88,26 @@ const onNewListItemEnter = () => {
 		newTitle.value = '';
 	});
 };
+
+const toggleFilters = () => {
+	if (layoutStore.isLeftSidebarVisible) {
+		layoutStore.hideLeftSidebar();
+	} else {
+		layoutStore.showLeftSidebar();
+	}
+};
 </script>
 <template>
   <v-row
     v-if="!props.compact"
-    class="pa-4 pb-0"
+    class="pa-4 pb-0 pl-1"
   >
     <v-col cols="10">
-      <h2 class="activity-list__title mb-0">
-        {{ type + 's' }}
-      </h2>
+      <v-btn
+        icon="mdi-filter-variant"
+        variant="plain"
+        @click="toggleFilters"
+      />
     </v-col>
     <v-col
       cols="2"

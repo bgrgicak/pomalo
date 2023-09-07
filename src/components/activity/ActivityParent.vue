@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import type Activity from '@/types/activity';
-import { ActivityType } from '@/types/activity';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
-import { computed } from 'vue';
-import type { ComputedRef } from 'vue';
-import ActivitySelect from '../activity/ActivitySelect.vue';
 import type { PropType } from 'vue';
-import { useActivityListStore } from '@/stores/activity-list';
-import type { Ref } from 'vue';
-import { ref } from 'vue';
+import ProjectSelect from '../project/ProjectSelect.vue';
 
 const props = defineProps({
 	activity: {
@@ -19,35 +13,7 @@ const props = defineProps({
 });
 const emit = defineEmits(['change']);
 
-const listId: Ref<string | undefined> = ref(undefined);
-
-const activityListStore = useActivityListStore();
 const activityStore = useActivityStore();
-
-activityListStore.find(ActivityType.Project).then((newListId: string) => {
-	if (!newListId) {
-		return;
-	}
-	listId.value = newListId;
-});
-
-const parentTitle: ComputedRef<string | undefined> = computed(() => {
-	if (!props.activity.parent) {
-		return undefined;
-	}
-	activityStore.get(props.activity.parent);
-	if (!activityStore.activities[props.activity.parent]) {
-		return undefined;
-	}
-	return activityStore.activities[props.activity.parent].title;
-});
-
-const options = computed( () => {
-	if (!listId.value) {
-		return [];
-	}
-	return activityListStore.list[listId.value];
-});
 
 const onClick = (activityId: string) => {
 	const newValue = activityId ?? undefined;
@@ -61,12 +27,9 @@ const onClick = (activityId: string) => {
 };
 </script>
 <template>
-  <v-autocomplete
-    :model-value="parentTitle"
-    :items="options"
-    item-value="_id"
-    item-text="title"
-    @update:model-value="onClick"
+  <ProjectSelect
+    :model-value="props.activity.parent"
+    @update:modelValue="onClick"
   />
 </template>
 <style lang="scss">

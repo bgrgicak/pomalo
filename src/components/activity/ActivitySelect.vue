@@ -238,7 +238,7 @@ const onNewClick = (type: ActivityType) => {
     }"
   >
     <v-btn
-      v-if="!isInputFocused"
+      v-if="!isInputVisible"
       icon
       variant="text"
       @click="toggleInput"
