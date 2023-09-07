@@ -2,13 +2,9 @@
 import __ from '@/helper/translations';
 import { ref } from 'vue';
 import ProjectSelect from '../project/ProjectSelect.vue';
+import { useActivityFilterStore } from '@/stores/activity-filters';
 
-const filters = ref({
-	showCompleted: false,
-	project: undefined,
-	groupBy: undefined,
-	sortBy: undefined,
-});
+const activityFilterStore = useActivityFilterStore();
 
 const groupOptions = [
 	{
@@ -54,15 +50,17 @@ const sortOptions = [
       class="py-0"
     >
       <v-switch
-        v-model="filters.showCompleted"
+        :model-value="activityFilterStore.filters.completed"
         label="Show completed"
         color="primary"
         :hide-details="true"
+        @update:model-value="(value) => activityFilterStore.updateFilter('completed', value)"
       />
     </v-col>
     <v-col class="py-0">
       <ProjectSelect
-        v-model="filters.project"
+        :model-value="activityFilterStore.filters.project"
+        @update:model-value="(value) => activityFilterStore.updateFilter('project', value)"
       />
     </v-col>
   </v-row>
@@ -76,12 +74,13 @@ const sortOptions = [
     </v-col>
     <v-col class="py-0">
       <v-select
-        v-model="filters.groupBy"
         v-col
+        :model-value="activityFilterStore.filters.group"
         :items="groupOptions"
         label="Group by"
         :hide-details="true"
         :clearable="true"
+        @update:model-value="(value) => activityFilterStore.updateFilter('group', value)"
       />
     </v-col>
   </v-row>
@@ -95,11 +94,12 @@ const sortOptions = [
     </v-col>
     <v-col class="py-0">
       <v-select
-        v-model="filters.sortBy"
         v-col
+        :model-value="activityFilterStore.filters.sort"
         :items="sortOptions"
         label="Sort by"
         :hide-details="true"
+        @update:model-value="(value) => activityFilterStore.updateFilter('sort', value)"
       />
     </v-col>
   </v-row>
