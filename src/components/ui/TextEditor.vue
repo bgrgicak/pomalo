@@ -45,7 +45,9 @@ const options = {
 	plugins: 'lists link codesample paste',
 	toolbar: 'bold italic underline link codesample | bullist numlist',
 	menubar: false,
-	paste_as_text: true
+	paste_as_text: true,
+	skin: false,
+	content_css: false,
 };
 </script>
 <template>
