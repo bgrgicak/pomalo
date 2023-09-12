@@ -1,13 +1,8 @@
 import router from '@/router/router';
+import type { ActivityFilterGroup, ActivityFilterSort, ActivityFilterState } from '@/types/activity-filter';
 import { defineStore } from 'pinia';
 import { computed, ref, type Ref } from 'vue';
 
-interface ActivityFilterState {
-    completed?: boolean;
-    project?: string;
-    group?: string;
-    sort?: string;
-}
 
 export const useActivityFilterStore = defineStore(
 	'activity-filters',
@@ -19,8 +14,8 @@ export const useActivityFilterStore = defineStore(
 		const setStateFromRouter = () => {
 			state.value.completed = router.currentRoute.value.query.completed === 'true';
 			state.value.project = router.currentRoute.value.query.project as string | undefined;
-			state.value.group = router.currentRoute.value.query.group as string | undefined;
-			state.value.sort = router.currentRoute.value.query.sort as string | undefined;
+			state.value.group = router.currentRoute.value.query.group as ActivityFilterGroup | undefined;
+			state.value.sort = router.currentRoute.value.query.sort as ActivityFilterSort | undefined;
 		};
 		setStateFromRouter();
 
@@ -42,9 +37,9 @@ export const useActivityFilterStore = defineStore(
 			} else if ('project' === filter) {
 				state.value.project = value as string;
 			} else if ('group' === filter) {
-				state.value.group = value as string;
+				state.value.group = value as ActivityFilterGroup;
 			} else if ('sort' === filter) {
-				state.value.sort = value as string;
+				state.value.sort = value as ActivityFilterSort;
 			}
 
 			updateRouterState();

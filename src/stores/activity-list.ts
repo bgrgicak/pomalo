@@ -3,7 +3,6 @@ import type Activity from '@/types/activity';
 import { computed, ref, type Ref } from 'vue';
 import { useActivityStore } from './activities';
 import { ActivityType } from '@/types/activity';
-import { useActivityFilterStore } from './activity-filters';
 
 interface ActivityListStore {
 	[key: string]: string[];
@@ -19,7 +18,6 @@ export const useActivityListStore = defineStore(
 		const activityLists: Ref<ActivityListStore> = ref({});
 
 		const activityStore = useActivityStore();
-		const activityFilterState = useActivityFilterStore();
 
 		const list = computed((): ActivityList => {
 			const list: any = {};
@@ -69,21 +67,6 @@ export const useActivityListStore = defineStore(
 				if (!response) {
 					return Promise.reject([]);
 				}
-
-				return response.filter((activity: Activity) => {
-					console.log(activityFilterState.filters);
-					if (true === activityFilterState.filters.completed) {
-						if (undefined === activity.completedDate) {
-							return false;
-						}
-					} else if (false === activityFilterState.filters.completed) {
-						if (undefined !== activity.completedDate) {
-							return false;
-						}
-					}
-					return true;
-				});
-			}).then((response: Activity[]) => {	
 				return addActivityList(type, parent, response);
 			});
 		};

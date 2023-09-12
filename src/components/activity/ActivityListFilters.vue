@@ -3,36 +3,37 @@ import __ from '@/helper/translations';
 import { ref } from 'vue';
 import ProjectSelect from '../project/ProjectSelect.vue';
 import { useActivityFilterStore } from '@/stores/activity-filters';
+import { ActivityFilterGroup, ActivityFilterSort } from '@/types/activity-filter';
 
 const activityFilterStore = useActivityFilterStore();
 
 const groupOptions = [
 	{
 		'title': 'Completed',
-		'value': 'completed',
+		'value': ActivityFilterGroup.Completed,
 	},
 	{
 		'title': 'Project',
-		'value': 'project',
+		'value': ActivityFilterGroup.Project,
 	}
 ];
 
 const sortOptions = [
 	{
 		'title': 'Priority',
-		'value': 'priority',
+		'value': ActivityFilterSort.Priority,
 	},
 	{
 		'title': 'Name',
-		'value': 'name',
+		'value': ActivityFilterSort.Name,
 	},
 	{
 		'title': 'Due date',
-		'value': 'dueDate',
+		'value': ActivityFilterSort.DueDate,
 	},
 	{
 		'title': 'Created',
-		'value': 'created',
+		'value': ActivityFilterSort.Created,
 	},
 ];
 </script>

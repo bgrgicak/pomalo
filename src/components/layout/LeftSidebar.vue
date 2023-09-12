@@ -8,11 +8,12 @@ const hide = () => {
 };
 
 const clickOutsideConditional = (event: any) => {
+	console.log(event.target);
 	if (event.target) {
 		return ! event.target.classList.contains('v-list-item')
       && ! event.target.classList.contains('v-list-item-title');
 	}
-	return true;
+	return false;
 };
 </script>
 <template>
@@ -36,8 +37,4 @@ const clickOutsideConditional = (event: any) => {
 </template>
 <style scoped lang="scss">
 @import '@/styles/variables.scss';
-
-.left-sidebar {
-    top: $header-height !important;
-}
 </style>
