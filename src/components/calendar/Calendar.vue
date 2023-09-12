@@ -26,9 +26,6 @@ const allowedViews = computed(() => {
 			if ('years' === view) {
 				return false;
 			}
-			if (display.value.mobile.value && 'week' === view) {
-				return false;
-			}
 			return true;
 		}
 	);

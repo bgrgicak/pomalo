@@ -305,6 +305,8 @@ const eventDragCreate = (event: any) => {
 <style lang="scss">
 @import '@/styles/mixins.scss';
 
+$calendar-default-font-size: 0.75rem;
+
 .vuecal__cell--selected,
 .vuecal__cell--today,
 .vuecal__cell--current {
@@ -342,8 +344,12 @@ const eventDragCreate = (event: any) => {
 
 .vuecal__body {
 	overflow: auto;
+	font-size: $calendar-default-font-size;
 	.vuecal__bg {
 		overflow: visible;
+	}
+	> .vuecal__flex {
+		overflow-x: hidden;
 	}
 }
 
@@ -351,7 +357,7 @@ const eventDragCreate = (event: any) => {
     @include event-colors(var(--v-theme-primary), var(--v-theme-primary-darken-4));
     border: 1px solid #fff;
 	align-items: start;
-		overflow: hidden;
+	overflow: hidden;
 
 	&:hover {
 		min-height: 35px;
@@ -407,6 +413,24 @@ const eventDragCreate = (event: any) => {
 		.vuecal__weekdays-headings,
 		.vuecal__all-day {
 			padding-right: 0;
+		}
+	}
+
+	$time-column-width: 2.4rem;
+	.vuecal__weekdays-headings {
+		padding-left: $time-column-width;
+		font-size: $calendar-default-font-size;
+	}
+
+	.vuecal__time-column,
+	.vuecal__all-day-text {
+		width: $time-column-width !important;
+		padding: 0;
+	}
+	
+	.weekday-label {
+		span.xsmall {
+			display: none;
 		}
 	}
 }

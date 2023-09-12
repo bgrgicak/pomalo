@@ -74,6 +74,7 @@ const today = () => {
         rounded="0"
         group
         density="compact"
+        class="calendar-header__toggle"
         @update:modelValue="(value) => emit('update:activeView', value)"
       >
         <v-btn
@@ -128,3 +129,11 @@ const today = () => {
     </v-col>
   </v-row>
 </template>
+<style lang="scss">
+.calendar-header__toggle {
+  .v-btn {
+    min-width: 0; 
+    padding: 0 0.5rem;
+  }
+}
+</style>
