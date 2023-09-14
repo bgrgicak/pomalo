@@ -6,6 +6,7 @@ import 'tinymce/tinymce';
 import 'tinymce/plugins/lists';
 import 'tinymce/plugins/codesample';
 import 'tinymce/plugins/link';
+import 'tinymce/plugins/autolink';
 import 'tinymce/plugins/paste';
 import 'tinymce/themes/silver';
 import 'tinymce/icons/default';
@@ -42,7 +43,7 @@ const focusEditor = () => {
 };
 
 const options = {
-	plugins: 'lists link codesample paste',
+	plugins: 'lists link codesample paste autolink',
 	toolbar: 'bold italic underline link codesample | bullist numlist',
 	menubar: false,
 	paste_as_text: true,
