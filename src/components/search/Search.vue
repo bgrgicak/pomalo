@@ -82,6 +82,10 @@ const addActivity = (activity: Activity) => {
 };
 
 const openActivity = (activity: Activity) => {
+	if (ActivityType.Event === activity.type) {
+		openActivityPage(activity);
+		return;	
+	}
 	layoutStore.showRightSidebar(activity._id, props.event?.id);
 };
 </script>

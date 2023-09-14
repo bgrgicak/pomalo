@@ -41,7 +41,10 @@ const onFieldChange = (key: string, value: any) => {
 };
 </script>
 <template>
-  <v-card class="activity-details pa-4">
+  <v-card
+    v-if="props.activity"
+    class="activity-details pa-4"
+  >
     <v-container>
       <v-row
         v-if="!!activity?.archived"

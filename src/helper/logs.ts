@@ -2,7 +2,7 @@ import { LogType } from '@/types/log';
 import constants from './constants';
 
 const log = (value: string | Object, type?: LogType, context?: Object) => {
-	if (constants.environment.production) return;
+	// if (constants.environment.production) return;
 
 	switch (type) {
 	case LogType.Info:

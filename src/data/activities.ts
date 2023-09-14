@@ -1,5 +1,5 @@
 import type Activity from '@/types/activity';
-import type { ActivityEvent, ActivityType } from '@/types/activity';
+import { ActivityType, type ActivityEvent } from '@/types/activity';
 import Router from '@/router/router';
 import { getLocalDate, getUtcTimestamp, addDays, maxDate } from '../helper/date';
 import { newId } from './pouchdb';
@@ -12,6 +12,11 @@ import { settings } from '@/helper/settings';
 import { debug } from '@/helper/logs';
 
 export const getActivityLink = (activity: Activity): string => {
+	if (ActivityType.Event === activity.type && activity.events.length > 0) {
+		const latestEvent = activity.events[activity.events.length - 1];
+		const date = getUtcTimestamp(latestEvent.start);
+		return `/calendar/?date=${date}`;
+	}
 	return `/${activity.type}/${activity._id}/`;
 };
 
@@ -41,7 +46,9 @@ export const addDefaultsToActivity = (activity: Activity): Activity => {
 };
 
 export const openActivityPage = async (activity: Activity) => {
-	return Router.push(`/${activity.type}/${activity._id}/`);
+	return Router.push(
+		getActivityLink(activity)
+	);
 };
 
 export const calculateActivityStartEndDate = (activity: Activity) => {
