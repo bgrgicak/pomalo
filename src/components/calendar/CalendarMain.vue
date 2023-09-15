@@ -98,6 +98,10 @@ const cellHeight = computed(() => {
 const cellClick = (cellDate: Date) => {
 	calendarStore.focusCell(cellDate);
 	eventUnfocus();
+	const eventClick = props.vuecal.mutableEvents.findIndex((event: VueCalEvent) => cellDate >= event.start && event.end && cellDate <= event.end);
+	if (-1 === eventClick) {
+		calendarStore.removeNewEvent();
+	}
 };
 const eventUnfocus = () => {
 	calendarStore.unfocusEvent();
