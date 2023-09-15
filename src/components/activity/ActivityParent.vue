@@ -10,6 +10,7 @@ import type { PropType } from 'vue';
 import { useActivityListStore } from '@/stores/activity-list';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
+import { openActivityPage } from '@/data/activities';
 
 const props = defineProps({
 	activity: {
@@ -31,15 +32,19 @@ activityListStore.find(ActivityType.Project).then((newListId: string) => {
 	listId.value = newListId;
 });
 
-const parentTitle: ComputedRef<string | undefined> = computed(() => {
+const parent = computed(() => {
 	if (!props.activity.parent) {
 		return undefined;
 	}
 	activityStore.get(props.activity.parent);
-	if (!activityStore.activities[props.activity.parent]) {
+	return activityStore.activities[props.activity.parent];
+});
+
+const parentTitle: ComputedRef<string | undefined> = computed(() => {
+	if (!parent.value) {
 		return undefined;
 	}
-	return activityStore.activities[props.activity.parent].title;
+	return parent.value.title;
 });
 
 const options = computed( () => {
@@ -59,6 +64,13 @@ const onClick = (activityId: string) => {
 		emit('change', newValue);
 	});
 };
+
+const openParent = () => {
+	if (!parent.value) {
+		return;
+	}
+	openActivityPage(parent.value);
+};
 </script>
 <template>
   <v-autocomplete
@@ -66,6 +78,8 @@ const onClick = (activityId: string) => {
     :items="options"
     item-value="_id"
     item-text="title"
+    :append-icon="props.activity.parent ? 'mdi-open-in-new' : undefined"
+    @click:append="openParent"
     @update:model-value="onClick"
   />
 </template>
