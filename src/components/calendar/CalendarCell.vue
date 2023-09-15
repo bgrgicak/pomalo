@@ -55,6 +55,7 @@ const addNewEvent = (activity: Activity) => {
       :search-options="{archived: false}"
       @newClick="addNewEvent"
       @optionClick="addEvent"
+      @onEscape="calendarStore.removeNewEvent"
     />
   </v-card-title>
   <v-card-subtitle>

@@ -22,6 +22,7 @@ export const useCalendarStore = defineStore(
 		const timerStore = useTimerStore();
 
 		const isLoading = computed((): boolean => state.value.loading);
+		const hasNewEvent = computed((): boolean => !!state.value.newEvent);
 		const focusedEvent = computed((): CalendarEvent | undefined => state.value.focusedEvent);
 		const clipboard = computed((): CalendarClipboard | undefined => state.value.clipboard);
 		const focusedCell = computed((): Date | undefined => state.value.focusedCell);
@@ -114,6 +115,7 @@ export const useCalendarStore = defineStore(
 			focusedCell,
 			clipboard,
 			load,
+			hasNewEvent,
 			addActivityId,
 			addNewEvent,
 			removeNewEvent,
