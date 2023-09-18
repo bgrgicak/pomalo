@@ -249,7 +249,7 @@ const addActivity = (activity: Activity) => {
             #label
           >
             <div
-              class="project-label" 
+              class="project-label prevent-outside-close" 
               variant="text"
               @click="() => emit('showActivitySidebar',project[0].activity)"
               @dblclick="() => emit('openActivity',project[0].activity)"

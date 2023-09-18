@@ -16,6 +16,7 @@ import { getTimeDifference } from '@/helper/date';
 import { settings } from '@/helper/settings';
 import { addMilliseconds } from '@/helper/date';
 import CalendarCell from './CalendarCell.vue';
+import type { ActivityEvent } from '@/types/activity';
 
 const props = defineProps({
 	vuecal: {
@@ -95,11 +96,11 @@ const cellHeight = computed(() => {
 });
 
 const cellClick = (cellDate: Date) => {
-	deleteOlderNewEvents(cellDate);
 	calendarStore.focusCell(cellDate);
-	const newEvent = props.vuecal.mutableEvents.findIndex((event: VueCalEvent) => !event.id && cellDate === event.start);
-	if (-1 === newEvent) {
-		eventUnfocus();
+	eventUnfocus();
+	const eventClick = props.vuecal.mutableEvents.findIndex((event: VueCalEvent) => cellDate >= event.start && event.end && cellDate <= event.end);
+	if (-1 === eventClick) {
+		calendarStore.removeNewEvent();
 	}
 };
 const eventUnfocus = () => {
@@ -121,32 +122,53 @@ const eventClick = (event: any) => {
 	}
 };
 
-const eventOnDrop = (event: any) => {
+const snapEvent = (event: CalendarEvent) => {
 	const snapDifference = settings.calendar.snapDifference;
+
+	const nowStartDifference = getTimeDifference(getLocalDate(), event.start);
+	if (nowStartDifference < snapDifference && nowStartDifference > -snapDifference) {
+		event.start = getLocalDate();
+		return event;
+	}
+
+	if (event.end) {
+		const nowEndDifference = getTimeDifference(getLocalDate(), event.end);
+		if (nowEndDifference < snapDifference && nowEndDifference > -snapDifference) {
+			event.end = getLocalDate();
+			return event;
+		}
+	}
+
 	const overlapEnd = props.vuecal.mutableEvents.find((e: VueCalEvent) => {
-		return e.id !== event.event.id && e.start <= event.event.end && e.end >= event.event.end;
+		return e.id?.toString() !== event.id && event.end && e.start <= event.end && e.end >= event.end;
 	});
-	if (overlapEnd) {
-		const difference = getTimeDifference(overlapEnd.start, event.event.end);
+	if (overlapEnd && event.end) {
+		const difference = getTimeDifference(overlapEnd.start, event.end);
 		if (difference < snapDifference && difference > -snapDifference) {
-			event.event.start = addMilliseconds(event.event.start, -difference);
-			event.event.end = overlapEnd.start;
+			event.start = addMilliseconds(event.start, -difference);
+			event.end = overlapEnd.start;
+			return event;
 		}
 	}
 
 	const overlapStart = props.vuecal.mutableEvents.find((e: VueCalEvent) => {
-		return e.id !== event.event.id
-			&& e.start <= event.event.start
-			&& e.end >= event.event.start;
+		return e.id?.toString() !== event.id
+			&& e.start <= event.start
+			&& e.end >= event.start;
 	});
-	if (overlapStart) {
-		const difference = getTimeDifference(overlapStart.end, event.event.start);
+	if (overlapStart && event.end) {
+		const difference = getTimeDifference(overlapStart.end, event.start);
 		if (difference < snapDifference && difference > -snapDifference) {
-			event.event.end = addMilliseconds(event.event.end, difference);
-			event.event.start = overlapStart.end;
+			event.end = addMilliseconds(event.end, difference);
+			event.start = overlapStart.end;
+			return event;
 		}
 	}
 
+	return event;
+};
+
+const eventOnDrop = (event: any) => {
 	eventDurationChange(event);
 };
 
@@ -154,15 +176,18 @@ const eventDurationChange = (event: any) => {
 	if (!event.event.eventId) {
 		return;
 	}
+
+	const activityEvent = snapEvent(event.event);
+
 	emit(
 		'updateEvent',
-		event.event.id,
+		activityEvent.id,
 		{
-			id: event.event.eventId,
-			start: event.event.start,
-			end: event.event.end,
+			id: activityEvent.eventId,
+			start: activityEvent.start,
+			end: activityEvent.end,
 		},
-		event.event.repeatIteration
+		activityEvent.repeatIteration
 	);
 	return true;
 };
@@ -265,7 +290,8 @@ const onReady = (options: any) => {
 };
 
 const eventDragCreate = (event: any) => {
-	emit('addEvent', event.start, event.end);
+	const activityEvent = snapEvent(event);
+	emit('addEvent', activityEvent.start, activityEvent.end);
 };
 </script>
 <template>

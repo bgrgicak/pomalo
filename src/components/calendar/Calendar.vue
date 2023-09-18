@@ -42,6 +42,7 @@ const initialActiveView = () => {
 const calendarStore = useCalendarStore();
 const activityStore = useActivityStore();
 const layoutStore = useLayoutStore();
+const noticeStore = useNoticeStore();
 
 const activeView = ref(initialActiveView());
 
@@ -130,7 +131,9 @@ const maybeCopyPasteEvent = (keyboardEvent: any) => {
 							end,
 						)
 					)
-				);
+				).then(() => {
+					calendarStore.removeFromClipboard();
+				});
 			});
 		}
 	}
@@ -166,6 +169,13 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
 const removeEvent = (activityId: string, eventId: string) => {
 	activityStore.get(activityId).then((activity: Activity | void) => {
 		if (!activity) {
+			return;
+		}
+		if (activity.readonly) {
+			noticeStore.addNotice({
+				type: NoticeType.Warning,
+				title: __('Cannot delete readonly event.'),
+			});
 			return;
 		}
 		activityStore.update(

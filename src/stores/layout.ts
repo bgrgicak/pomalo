@@ -58,14 +58,6 @@ export const useLayoutStore = defineStore(
 			setPreviewItem();
 		};
 
-		const toggleRightSidebar = () => {
-			if (isRightSidebarVisible.value) {
-				hideRightSidebar();
-			} else {
-				showRightSidebar();
-			}
-		};
-
 		const updateMenuVisibility = (visible: boolean) => {
 			state.value.menuVisibility = visible;
 		};
@@ -82,7 +74,6 @@ export const useLayoutStore = defineStore(
 			hideLeftSidebar,
 			showRightSidebar,
 			hideRightSidebar,
-			toggleRightSidebar,
 			updateMenuVisibility,
 		};
 	}

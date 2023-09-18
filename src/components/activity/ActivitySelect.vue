@@ -80,7 +80,7 @@ const props = defineProps({
 	},
 });
 
-const emit = defineEmits(['optionClick', 'newClick']);
+const emit = defineEmits(['optionClick', 'newClick', 'onEscape']);
 
 const selectedOption: Ref<number|undefined> = ref(undefined);
 const selectOptionsRef: Ref<any | undefined> = ref(undefined);
@@ -196,6 +196,7 @@ const onKeydown = (event: KeyboardEvent) => {
 		}
 	} else if (event.key === 'Escape') {
 		toggleInput();
+		emit('onEscape');
 	}
 	// if arrow up or down is pressed
 	if (event.key === 'ArrowUp') {
