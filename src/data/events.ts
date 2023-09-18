@@ -138,7 +138,7 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 					const endDay = event.end ? event.end : getLocalDate();
 					const isEditable = !isCurrentActivity && true !== activity.readonly;
 
-					let className = 'v-card calendar-event__' + activity.type;
+					let className = 'v-card prevent-outside-close calendar-event__' + activity.type;
 					if (true === activity.readonly) {
 						className += ' calendar-event__readonly';
 					}

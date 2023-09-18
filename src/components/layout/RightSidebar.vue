@@ -40,7 +40,8 @@ const clickOutsideConditional = (event: any) => {
 		return ! event.target.classList.contains('activity-list__link')
       && ! event.target.classList.contains('v-list-item')
       && ! event.target.classList.contains('v-list-item-title')
-      && ! event.target.classList.contains('prevent-outside-close');
+      && ! event.target.classList.contains('prevent-outside-close')
+      && ! event.target.parent.classList.contains('prevent-outside-close');
 	}
 	return true;
 };
