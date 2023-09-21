@@ -7,6 +7,21 @@ import { ActivityFilterGroup, ActivityFilterSort } from '@/types/activity-filter
 
 const activityFilterStore = useActivityFilterStore();
 
+const statusOptions = [
+	{
+		'title': 'Any',
+		'value': 'any',
+	},
+	{
+		'title': 'Completed',
+		'value': 'completed',
+	},
+	{
+		'title': 'Not completed',
+		'value': '',
+	}
+];
+
 const groupOptions = [
 	{
 		'title': 'Completed',
@@ -50,12 +65,14 @@ const sortOptions = [
       cols="12"
       class="py-0"
     >
-      <v-switch
-        :model-value="activityFilterStore.filters.completed"
-        label="Show completed"
-        color="primary"
+      <v-select
+        v-col
+        :model-value="activityFilterStore.filters.status"
+        :items="statusOptions"
+        label="Status"
         :hide-details="true"
-        @update:model-value="(value) => activityFilterStore.updateFilter('completed', value)"
+        :clearable="true"
+        @update:model-value="(value) => activityFilterStore.updateFilter('status', value)"
       />
     </v-col>
     <v-col class="py-0">

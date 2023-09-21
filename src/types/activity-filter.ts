@@ -11,7 +11,7 @@ export enum ActivityFilterSort {
 }
 
 export interface ActivityFilterState {
-    completed?: boolean;
+    status?: string;
     project?: string;
     group?: ActivityFilterGroup;
     sort?: ActivityFilterSort;

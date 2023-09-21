@@ -12,7 +12,7 @@ export const useActivityFilterStore = defineStore(
 		const filters = computed(() => state.value);
 
 		const setStateFromRouter = () => {
-			state.value.completed = router.currentRoute.value.query.completed === 'true';
+			state.value.status = router.currentRoute.value.query.status as string | undefined;
 			state.value.project = router.currentRoute.value.query.project as string | undefined;
 			state.value.group = router.currentRoute.value.query.group as ActivityFilterGroup | undefined;
 			state.value.sort = router.currentRoute.value.query.sort as ActivityFilterSort | undefined;
@@ -23,7 +23,7 @@ export const useActivityFilterStore = defineStore(
 			router.push({
 				query: {
 					...router.currentRoute.value.query,
-					completed: state.value.completed ? 'true' : undefined,
+					status: state.value.status,
 					project: state.value.project,
 					group: state.value.group,
 					sort: state.value.sort,
@@ -32,8 +32,8 @@ export const useActivityFilterStore = defineStore(
 		};
 
 		const updateFilter = (filter: string, value: string | boolean | undefined) => {
-			if ('completed' === filter) {
-				state.value.completed = value as boolean;
+			if ('status' === filter) {
+				state.value.status = value ? value as string : undefined;
 			} else if ('project' === filter) {
 				state.value.project = value as string;
 			} else if ('group' === filter) {
