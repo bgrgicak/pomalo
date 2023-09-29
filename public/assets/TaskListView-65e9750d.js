@@ -1,0 +1,1 @@
+import{d as a,o as e,c as s,K as t,aa as n,ab as c}from'./index-fe8b870b.js';const i=a({__name:'TaskListView',setup(o){return(p,r)=>(e(),s(n,{type:t(c).Task},null,8,['type']));}});export{i as default};

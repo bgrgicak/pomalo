@@ -1,0 +1,1 @@
+import{d as e,o as t,c as a,K as c,aa as o,ab as s}from'./index-fe8b870b.js';const i=e({__name:'ProjectListView',setup(n){return(r,p)=>(t(),a(o,{type:c(s).Project},null,8,['type']));}});export{i as default};

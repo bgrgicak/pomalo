@@ -1,0 +1,1 @@
+import{_ as e}from'./Calendar.vue_vue_type_script_setup_true_lang-52488518.js';import{d as o,o as a,c as r}from'./index-fe8b870b.js';const m=o({__name:'DashboardView',setup(s){return(t,_)=>(a(),r(e));}});export{m as default};
