@@ -2,6 +2,7 @@
 import __ from '@/helper/translations';
 import { ref, type PropType, type Ref } from 'vue';
 
+import 'tinymce';
 import 'tinymce/tinymce';
 import 'tinymce/plugins/lists';
 import 'tinymce/plugins/codesample';
