@@ -120,4 +120,18 @@ const sortOptions = [
       />
     </v-col>
   </v-row>
+  <v-row class="px-4">
+    <v-col
+      cols="12"
+      class="text-center"
+    >
+      <v-btn
+        color="primary"
+        :block="true"
+        @click="() => activityFilterStore.setDefaults()"
+      >
+        {{ __('Set as default') }}
+      </v-btn>
+    </v-col>
+  </v-row>
 </template>
