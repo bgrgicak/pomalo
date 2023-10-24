@@ -1,20 +1,19 @@
 
 <script lang="ts" setup>
+import { emptyActivity } from '@/data/activities';
 import __ from '@/helper/translations';
+import { useActivityFilterStore } from '@/stores/activity-filters';
 import { useActivityListStore } from '@/stores/activity-list';
+import { useLayoutStore } from '@/stores/layout';
+import { useProjectStore } from '@/stores/projects';
 import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
-import { computed, watch, type PropType } from 'vue';
-import TimerToggle from '../timer/TimerToggle.vue';
-import ActivityArchive from '../activity/ActivityArchive.vue';
-import ActivityAdd from '../activity/ActivityAdd.vue';
-import { emptyActivity } from '@/data/activities';
-import { ref } from 'vue';
-import { useLayoutStore } from '@/stores/layout';
-import { useActivityFilterStore } from '@/stores/activity-filters';
+import { ActivityFilterGroup, ActivityFilterSort } from '@/types/activity-filter';
 import type { ComputedRef } from 'vue';
-import { ActivityFilterGroup } from '@/types/activity-filter';
-import { useProjectStore } from '@/stores/projects';
+import { computed, ref, watch, type PropType } from 'vue';
+import ActivityAdd from '../activity/ActivityAdd.vue';
+import ActivityArchive from '../activity/ActivityArchive.vue';
+import TimerToggle from '../timer/TimerToggle.vue';
 
 const props = defineProps({
 	type: {
@@ -48,7 +47,7 @@ const emit = defineEmits([
 const activityFilterStore = useActivityFilterStore();
 const projectStore = useProjectStore();
 
-const newTitle = ref('');
+const newTitle = ref({} as {[key: string]: string});
 
 const activityList = computed(() => {
 	if (!props.listId) {
@@ -62,6 +61,7 @@ const activityList = computed(() => {
 
 interface Group {
   name: string;
+  activityId?: string;
   activities: Activity[];
 }
 
@@ -110,6 +110,7 @@ const groupList: ComputedRef<Group[]> = computed(() => {
 					if (!groups[activity.parent]) {
 						groups[activity.parent] = {
 							name: projectStore.getTitle(activity.parent),
+              activityId: activity.parent,
 							activities: [],
 						};
 					}
@@ -120,9 +121,33 @@ const groupList: ComputedRef<Group[]> = computed(() => {
 			}
 		});
 	}
-	return Object.values(groups).filter(
+	return Object.values(groups)
+  .filter(
 		(group: Group) => group.activities.length > 0
-	);
+	)
+  .map((group: Group) => {
+    group.activities = group.activities.sort(
+      (a: Activity, b: Activity) => {
+        if (activityFilterStore.filters.sort === ActivityFilterSort.Created) {
+          return a.created > b.created ? -1 : 1;
+        } else if (activityFilterStore.filters.sort === ActivityFilterSort.DueDate) {
+          if (!a.dueDate) {
+            return -1;
+          } else if (!b.dueDate) {
+            return 1;
+          }
+          return a.dueDate > b.dueDate ? 1 : -1;
+        } else if (activityFilterStore.filters.sort === ActivityFilterSort.Name) {
+          return a.title.localeCompare(b.title);
+        }
+        return 0;
+      }
+    );
+    return group;
+  })
+  .sort((a: Group, b: Group) => {
+    return a.name.localeCompare(b.name);
+  });
 });
 
 const activityListStore = useActivityListStore();
@@ -152,12 +177,17 @@ const onNewListItemEnter = (group: Group) => {
 		return;
 	}
 	const newActivity = emptyActivity(props.type);
-	newActivity.title = newTitle.value;
+	newActivity.title = newTitle.value[group.name];
 	if (props.parent) {
 		newActivity.parent = props.parent;
 	}
+
+  if ( group.activityId && activityFilterStore.filters.group === ActivityFilterGroup.Project) {
+    newActivity.parent = group.activityId;
+  }
+
 	activityListStore.add(newActivity, props.listId, false).then(() => {
-		newTitle.value = '';
+		newTitle.value[group.name] = '';
 	});
 };
 
@@ -254,7 +284,7 @@ const toggleFilters = () => {
           <tr>
             <td class="activity-list__row activity-list__new">
               <v-text-field
-                v-model="newTitle"
+                v-model="newTitle[ group.name ]"
                 :placeholder="__('Add ') + props.type"
                 variant="plain"
                 density="compact"
