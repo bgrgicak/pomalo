@@ -67,9 +67,6 @@ const addNewEvent = (activity: Activity) => {
 .calendar-event__new {
   overflow: visible !important;
   min-height: 60px !important;
-  &:hover {
-    min-height: 60px !important;
-  }
 
   .calendar-cell__title {
     overflow: visible;
@@ -86,6 +83,11 @@ const addNewEvent = (activity: Activity) => {
 
   .v-card-subtitle {
     display: none;
+  }
+}
+.calendar-event__completed {
+  .calendar-cell__title {
+    text-decoration: line-through;
   }
 }
 </style>

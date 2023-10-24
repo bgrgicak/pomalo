@@ -171,7 +171,7 @@ const removeEvent = (activityId: string, eventId: string) => {
 		if (!activity) {
 			return;
 		}
-		if (activity.readonly) {
+		if (activity.readonly && !activity.archived) {
 			noticeStore.addNotice({
 				type: NoticeType.Warning,
 				title: __('Cannot delete readonly event.'),

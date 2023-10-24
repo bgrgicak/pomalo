@@ -1,10 +1,10 @@
+import { parseEventsFromActivities } from '@/data/events';
+import { getUtcTimestamp } from '@/helper/date';
+import type { CalendarClipboard, CalendarClipboardType, CalendarEvent, CalendarState } from '@/types/calendar';
 import { defineStore } from 'pinia';
 import { computed, ref, type Ref } from 'vue';
 import { useActivityStore } from './activities';
-import { parseEventsFromActivities } from '@/data/events';
-import { getUtcTimestamp } from '@/helper/date';
 import { useTimerStore } from './timer';
-import type { CalendarState, CalendarEvent, CalendarClipboardType, CalendarClipboard } from '@/types/calendar';
 
 
 export const useCalendarStore = defineStore(
