@@ -142,6 +142,9 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 					if (true === activity.readonly) {
 						className += ' calendar-event__readonly';
 					}
+					if (activity.completedDate) {
+						className += ' calendar-event__completed';
+					}
 					const eventData = {
 						id: activity._id,
 						title: activity.title,

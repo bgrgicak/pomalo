@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { display } from '@/plugins/vuetify';
+import { useLayoutStore } from '@/stores/layout';
 import { RouterView } from 'vue-router';
+
+const layoutStore = useLayoutStore();
 </script>
 <template>
   <v-main
     class="main pa-0"
-    :class="{'main--mobile': display.mobile.value}"
+    :class="{
+      'main--mobile': display.mobile.value,
+      'left-sidebar': layoutStore.isLeftSidebarVisible,
+    }"
   >
     <RouterView />
   </v-main>
@@ -23,7 +29,10 @@ html, body {
 	width: calc(100vw - $navigation-width);
 	overflow: auto;
 	height: calc(100vh - $header-height);
-
+	&.left-sidebar {
+		left: $navigation-width + 244px;
+		width: calc(100vw - $navigation-width - 244px);
+	}
 	&.main--mobile {
 		left: 0;
 		width: 100%;

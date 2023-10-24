@@ -1,15 +1,20 @@
 
 <script lang="ts" setup>
+import { emptyActivity } from '@/data/activities';
 import __ from '@/helper/translations';
+import { useActivityFilterStore } from '@/stores/activity-filters';
 import { useActivityListStore } from '@/stores/activity-list';
+import { useLayoutStore } from '@/stores/layout';
+import { useProjectStore } from '@/stores/projects';
 import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
-import { computed, watch, type PropType } from 'vue';
-import TimerToggle from '../timer/TimerToggle.vue';
-import ActivityArchive from '../activity/ActivityArchive.vue';
+import { ActivityFilterGroup, type ActivityGroup } from '@/types/activity-filter';
+import type { ComputedRef } from 'vue';
+import { computed, ref, watch, type PropType } from 'vue';
+import { filterActivityList, groupActivities, sortActivities, sortActivityGroups } from '../../data/activity-list';
 import ActivityAdd from '../activity/ActivityAdd.vue';
-import { emptyActivity } from '@/data/activities';
-import { ref } from 'vue';
+import ActivityArchive from '../activity/ActivityArchive.vue';
+import TimerToggle from '../timer/TimerToggle.vue';
 
 const props = defineProps({
 	type: {
@@ -40,7 +45,10 @@ const emit = defineEmits([
 	'removeActivity'
 ]);
 
-const newTitle = ref('');
+const activityFilterStore = useActivityFilterStore();
+const projectStore = useProjectStore();
+
+const newTitle = ref({} as {[key: string]: string});
 
 const activityList = computed(() => {
 	if (!props.listId) {
@@ -52,8 +60,28 @@ const activityList = computed(() => {
 	return activityListStore.list[props.listId];
 });
 
-const activityListStore = useActivityListStore();
+const groupList: ComputedRef<ActivityGroup[]> = computed(() => {
+	if (!activityList.value) {
+		return [];
+	}
 
+	
+	return sortActivityGroups(
+		sortActivities(
+			groupActivities(
+				filterActivityList(
+					activityList.value,
+					activityFilterStore.filters
+				),
+				activityFilterStore.filters
+			),
+			activityFilterStore.filters
+		)
+	);
+});
+
+const activityListStore = useActivityListStore();
+const layoutStore = useLayoutStore();
 watch(
 	props,
 	() => {
@@ -74,29 +102,44 @@ const removeActivity = (activityId: string) => {
 	emit('removeActivity', activityId);
 };
 
-const onNewListItemEnter = () => {
+const onNewListItemEnter = (group: ActivityGroup) => {
 	if (!newTitle.value) {
 		return;
 	}
 	const newActivity = emptyActivity(props.type);
-	newActivity.title = newTitle.value;
+	newActivity.title = newTitle.value[group.name];
 	if (props.parent) {
 		newActivity.parent = props.parent;
 	}
+
+	if ( group.activityId && activityFilterStore.filters.group === ActivityFilterGroup.Project) {
+		newActivity.parent = group.activityId;
+	}
+
 	activityListStore.add(newActivity, props.listId, false).then(() => {
-		newTitle.value = '';
+		newTitle.value[group.name] = '';
 	});
+};
+
+const toggleFilters = () => {
+	if (layoutStore.isLeftSidebarVisible) {
+		layoutStore.hideLeftSidebar();
+	} else {
+		layoutStore.showLeftSidebar();
+	}
 };
 </script>
 <template>
   <v-row
     v-if="!props.compact"
-    class="pa-4 pb-0"
+    class="pa-4 pb-0 pl-1"
   >
     <v-col cols="10">
-      <h2 class="activity-list__title mb-0">
-        {{ type + 's' }}
-      </h2>
+      <v-btn
+        icon="mdi-filter-variant"
+        variant="plain"
+        @click="toggleFilters"
+      />
     </v-col>
     <v-col
       cols="2"
@@ -110,63 +153,102 @@ const onNewListItemEnter = () => {
     </v-col>
   </v-row>
   <v-table class="activity-list">
-    <thead v-if="!props.compact">
-      <tr>
-        <th>{{ __('Title') }}</th>
-        <th
-          v-for="(headerItem, headerIndex) in props.headerItems"
-          :key="headerIndex"
-        >
-          {{ headerItem.name }}
-        </th>
-        <th />
-      </tr>
-    </thead>
     <tbody>
-      <tr
-        v-for="item in activityList"
-        :key="item._id"
-        class="activity-list__row"
+      <v-table
+        v-for="group in groupList"
+        :key="group.name"
+        class="activity-list__group"
       >
-        <td
-          :class="['activity-list__item', 'activity-list__link', item.completedDate ? 'activity-list__link--completed' : '']"
-          @click="() => emit('showActivitySidebar', item)"
-          @dblclick="() => emit('openActivity', item)"
-        >
-          {{ item.title }}
-        </td>
-        <td class="activity-list__item activity-list__item--actions">
-          <TimerToggle :activity="item" />
-          <ActivityArchive
-            :activity="item"
-            :small="true"
-            :redirect-after-remove="false"
-            @onArchived="removeActivity"
-          />
-        </td>
-      </tr>
-      <tr>
-        <td class="activity-list__new">
-          <v-text-field
-            v-model="newTitle"
-            :placeholder="__('Add ') + props.type"
-            variant="plain"
-            @keyup.enter="onNewListItemEnter"
-          />
-        </td>
-      </tr>
+        <thead v-if="!props.compact">
+          <tr
+            v-if="1 < groupList.length"
+          >
+            <th class="activity-list__group-title">
+              <h3 class="activity-list__title pt-6 pb-2">
+                {{ group.name }}
+              </h3>
+            </th>
+            <th
+              v-for="(headerItem, headerIndex) in props.headerItems"
+              :key="headerIndex"
+            />
+            <th />
+          </tr>
+          <tr>
+            <th>{{ __('Title') }}</th>
+            <th
+              v-for="(headerItem, headerIndex) in props.headerItems"
+              :key="headerIndex"
+            >
+              {{ headerItem.name }}
+            </th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="item in group.activities"
+            :key="item._id"
+            class="activity-list__row"
+          >
+            <td
+              :class="['activity-list__item', 'activity-list__link', item.completedDate ? 'activity-list__link--completed' : '']"
+              @click="() => emit('showActivitySidebar', item)"
+              @dblclick="() => emit('openActivity', item)"
+            >
+              {{ item.title }}
+            </td>
+            <td
+              class="activity-list__item activity-list__item--actions"
+              align="right"
+            >
+              <TimerToggle :activity="item" />
+              <ActivityArchive
+                :activity="item"
+                :small="true"
+                :redirect-after-remove="false"
+                @onArchived="removeActivity"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td class="activity-list__row activity-list__new">
+              <v-text-field
+                v-model="newTitle[ group.name ]"
+                :placeholder="__('Add ') + props.type"
+                variant="plain"
+                density="compact"
+                :hide-details="true"
+                @keyup.enter="() => onNewListItemEnter(group)"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
     </tbody>
   </v-table>
 </template>
   <style lang="scss">
+  $row-height: 2rem;
+  $font-size: 0.9rem;
   .activity-list {
     padding-bottom: 2rem;
-      table {
+    font-size: $font-size;
+    table {
       border-collapse: collapse; 
+
+      td,
+      th,
+      .v-btn {
+        height: $row-height !important;
+      }
     }
   }
   .activity-list__title {
     text-transform: capitalize;
+  }
+  .activity-list__group-title {
+    width: 100%;
   }
   .activity-list__row {
     border-bottom: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
@@ -188,6 +270,11 @@ const onNewListItemEnter = () => {
     text-decoration: line-through;
   }
   .activity-list__new {
-    width: 100%;
+    border-bottom: none;
+    .v-field__input {
+      padding: 0 !important;
+      height: $row-height;
+      font-size: $font-size;
+    }
   }
   </style>

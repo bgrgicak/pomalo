@@ -305,7 +305,6 @@ const eventDragCreate = (event: any) => {
     :events="events"
     :click-to-navigate="false"
     :dblclick-to-navigate="['year', 'month'].includes(activeView)"
-    :snap-to-time="15"
     hide-view-selector
     hide-title-bar
     watch-realtime="true"
@@ -384,11 +383,6 @@ $calendar-default-font-size: 0.75rem;
     border: 1px solid #fff;
 	align-items: start;
 	overflow: hidden;
-
-	&:hover {
-		min-height: 35px;
-		z-index: 10;
-	}
 
     &.calendar-event__task {
         @include event-colors(var(--v-theme-task), var(--v-theme-task-darken-4));

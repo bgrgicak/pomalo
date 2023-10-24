@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import type Activity from '@/types/activity';
-import { ActivityType } from '@/types/activity';
 import __ from '@/helper/translations';
 import { useActivityStore } from '@/stores/activities';
-import { computed } from 'vue';
-import type { ComputedRef } from 'vue';
-import ActivitySelect from '../activity/ActivitySelect.vue';
-import type { PropType } from 'vue';
+import type { ComputedRef, PropType } from 'vue';
 import { useActivityListStore } from '@/stores/activity-list';
 import type { Ref } from 'vue';
 import { ref } from 'vue';
 import { openActivityPage } from '@/data/activities';
+import { computed } from 'vue';
+import { ActivityType } from '@/types/activity';
 
 const props = defineProps({
 	activity: {
@@ -22,8 +20,8 @@ const emit = defineEmits(['change']);
 
 const listId: Ref<string | undefined> = ref(undefined);
 
-const activityListStore = useActivityListStore();
 const activityStore = useActivityStore();
+const activityListStore = useActivityListStore();
 
 activityListStore.find(ActivityType.Project).then((newListId: string) => {
 	if (!newListId) {
@@ -73,12 +71,13 @@ const openParent = () => {
 };
 </script>
 <template>
-  <v-autocomplete
+  <ProjectSelect
     :model-value="parentTitle"
     :items="options"
     item-value="_id"
     item-text="title"
     :append-icon="props.activity.parent ? 'mdi-open-in-new' : undefined"
+    @update:modelValue="onClick"
     @click:append="openParent"
     @update:model-value="onClick"
   />
