@@ -8,9 +8,10 @@ import { useLayoutStore } from '@/stores/layout';
 import { useProjectStore } from '@/stores/projects';
 import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
-import { ActivityFilterGroup, ActivityFilterSort } from '@/types/activity-filter';
+import { ActivityFilterGroup, type ActivityGroup } from '@/types/activity-filter';
 import type { ComputedRef } from 'vue';
 import { computed, ref, watch, type PropType } from 'vue';
+import { filterActivityList, groupActivities, sortActivities, sortActivityGroups } from '../../data/activity-list';
 import ActivityAdd from '../activity/ActivityAdd.vue';
 import ActivityArchive from '../activity/ActivityArchive.vue';
 import TimerToggle from '../timer/TimerToggle.vue';
@@ -59,95 +60,24 @@ const activityList = computed(() => {
 	return activityListStore.list[props.listId];
 });
 
-interface Group {
-  name: string;
-  activityId?: string;
-  activities: Activity[];
-}
-
-const groupList: ComputedRef<Group[]> = computed(() => {
+const groupList: ComputedRef<ActivityGroup[]> = computed(() => {
 	if (!activityList.value) {
 		return [];
 	}
 
-	const groups: {[key: string]: Group} = {
-		other: {
-			name: __('Other'),
-			activities: [] as Activity[],
-		},
-		inProgress: {
-			name: __('In progress'),
-			activities: [] as Activity[],
-		},
-		notStarted: {
-			name: __('Not started'),
-			activities: [] as Activity[],
-		},
-		completed: {
-			name: __('Completed'),
-			activities: [] as Activity[],
-		},
-		noProject: {
-			name: __('No project'),
-			activities: [] as Activity[],
-		},
-	};
-
-	if (!activityFilterStore.filters.group) {
-		groups.other.activities = activityList.value;
-	} else {
-		activityList.value.forEach((activity: Activity) => {
-			if (activityFilterStore.filters.group === ActivityFilterGroup.Completed) {
-				if (activity.completedDate) {
-					groups.completed.activities.push(activity);
-				} else if ( activity.events && activity.events.length > 0) {
-					groups.inProgress.activities.push(activity);
-				} else {
-					groups.notStarted.activities.push(activity);
-				}
-			} else if (activityFilterStore.filters.group === ActivityFilterGroup.Project) {
-				if (activity.parent) {
-					if (!groups[activity.parent]) {
-						groups[activity.parent] = {
-							name: projectStore.getTitle(activity.parent),
-              activityId: activity.parent,
-							activities: [],
-						};
-					}
-					groups[activity.parent].activities.push(activity);
-				} else {
-					groups.noProject.activities.push(activity);
-				}
-			}
-		});
-	}
-	return Object.values(groups)
-  .filter(
-		(group: Group) => group.activities.length > 0
-	)
-  .map((group: Group) => {
-    group.activities = group.activities.sort(
-      (a: Activity, b: Activity) => {
-        if (activityFilterStore.filters.sort === ActivityFilterSort.Created) {
-          return a.created > b.created ? -1 : 1;
-        } else if (activityFilterStore.filters.sort === ActivityFilterSort.DueDate) {
-          if (!a.dueDate) {
-            return -1;
-          } else if (!b.dueDate) {
-            return 1;
-          }
-          return a.dueDate > b.dueDate ? 1 : -1;
-        } else if (activityFilterStore.filters.sort === ActivityFilterSort.Name) {
-          return a.title.localeCompare(b.title);
-        }
-        return 0;
-      }
-    );
-    return group;
-  })
-  .sort((a: Group, b: Group) => {
-    return a.name.localeCompare(b.name);
-  });
+	
+	return sortActivityGroups(
+		sortActivities(
+			groupActivities(
+				filterActivityList(
+					activityList.value,
+					activityFilterStore.filters
+				),
+				activityFilterStore.filters
+			),
+			activityFilterStore.filters
+		)
+	);
 });
 
 const activityListStore = useActivityListStore();
@@ -172,7 +102,7 @@ const removeActivity = (activityId: string) => {
 	emit('removeActivity', activityId);
 };
 
-const onNewListItemEnter = (group: Group) => {
+const onNewListItemEnter = (group: ActivityGroup) => {
 	if (!newTitle.value) {
 		return;
 	}
@@ -182,9 +112,9 @@ const onNewListItemEnter = (group: Group) => {
 		newActivity.parent = props.parent;
 	}
 
-  if ( group.activityId && activityFilterStore.filters.group === ActivityFilterGroup.Project) {
-    newActivity.parent = group.activityId;
-  }
+	if ( group.activityId && activityFilterStore.filters.group === ActivityFilterGroup.Project) {
+		newActivity.parent = group.activityId;
+	}
 
 	activityListStore.add(newActivity, props.listId, false).then(() => {
 		newTitle.value[group.name] = '';

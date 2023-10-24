@@ -1,24 +1,23 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
-import { ref } from 'vue';
-import ProjectSelect from '../project/ProjectSelect.vue';
 import { useActivityFilterStore } from '@/stores/activity-filters';
-import { ActivityFilterGroup, ActivityFilterSort } from '@/types/activity-filter';
+import { ActivityFilterGroup, ActivityFilterSort, ActivityFilterStatus } from '@/types/activity-filter';
+import ProjectSelect from '../project/ProjectSelect.vue';
 
 const activityFilterStore = useActivityFilterStore();
 
 const statusOptions = [
 	{
-		'title': 'Any',
-		'value': 'any',
+		'title': __('Any'),
+		'value': ActivityFilterStatus.Any,
 	},
 	{
-		'title': 'Completed',
-		'value': 'completed',
+		'title': __('Completed'),
+		'value': ActivityFilterStatus.Completed,
 	},
 	{
-		'title': 'Not completed',
-		'value': '',
+		'title': __('Not completed'),
+		'value': ActivityFilterStatus.NotCompleted,
 	}
 ];
 
@@ -71,13 +70,13 @@ const sortOptions = [
         :items="statusOptions"
         label="Status"
         :hide-details="true"
-        :clearable="true"
         @update:model-value="(value) => activityFilterStore.updateFilter('status', value)"
       />
     </v-col>
     <v-col class="py-0">
       <ProjectSelect
         :model-value="activityFilterStore.filters.project"
+        :clearable="true"
         @update:model-value="(value) => activityFilterStore.updateFilter('project', value)"
       />
     </v-col>

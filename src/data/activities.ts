@@ -1,15 +1,15 @@
-import type Activity from '@/types/activity';
-import { ActivityType, type ActivityEvent } from '@/types/activity';
+import { debug } from '@/helper/logs';
+import { settings } from '@/helper/settings';
 import Router from '@/router/router';
-import { getLocalDate, getUtcTimestamp, addDays, maxDate } from '../helper/date';
-import { newId } from './pouchdb';
-import type { ActivityDocument } from '@/types/activity-document';
-import { getEstimatedDays, getEstimatedHours, getWorkedTime } from './priority';
 import { useActivityStore } from '@/stores/activities';
 import { useNoticeStore } from '@/stores/notices';
+import type Activity from '@/types/activity';
+import { ActivityType, type ActivityEvent } from '@/types/activity';
+import type { ActivityDocument } from '@/types/activity-document';
 import { NoticeType } from '@/types/notice';
-import { settings } from '@/helper/settings';
-import { debug } from '@/helper/logs';
+import { addDays, getLocalDate, getUtcTimestamp, maxDate } from '../helper/date';
+import { newId } from './pouchdb';
+import { getEstimatedDays, getEstimatedHours, getWorkedTime } from './priority';
 
 export const getActivityLink = (activity: Activity): string => {
 	if (ActivityType.Event === activity.type && activity.events.length > 0) {

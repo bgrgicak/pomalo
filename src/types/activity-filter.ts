@@ -1,3 +1,5 @@
+import type Activity from './activity';
+
 export enum ActivityFilterGroup {
     Project = 'project',
     Completed = 'completed',
@@ -10,9 +12,21 @@ export enum ActivityFilterSort {
     Created = 'created',
 }
 
+export enum ActivityFilterStatus {
+    Any = 'any',
+    Completed = 'completed',
+    NotCompleted = '',
+}
+
 export interface ActivityFilterState {
-    status?: string;
+    status?: ActivityFilterStatus;
     project?: string;
     group?: ActivityFilterGroup;
     sort?: ActivityFilterSort;
+}
+
+export interface ActivityGroup {
+    name: string;
+    activityId?: string;
+    activities: Activity[];
 }

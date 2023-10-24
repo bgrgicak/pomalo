@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useLayoutStore } from '@/stores/layout';
 import ActivityListFilters from '@/components/activity/ActivityListFilters.vue';
+import { useLayoutStore } from '@/stores/layout';
 
 const layoutStore = useLayoutStore();
 const hide = () => {
@@ -8,7 +8,6 @@ const hide = () => {
 };
 
 const clickOutsideConditional = (event: any) => {
-	console.log(event.target);
 	if (event.target) {
 		return ! event.target.classList.contains('v-list-item')
       && ! event.target.classList.contains('v-list-item-title');

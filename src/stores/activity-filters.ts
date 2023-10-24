@@ -1,5 +1,5 @@
 import router from '@/router/router';
-import type { ActivityFilterGroup, ActivityFilterSort, ActivityFilterState } from '@/types/activity-filter';
+import type { ActivityFilterGroup, ActivityFilterSort, ActivityFilterState, ActivityFilterStatus } from '@/types/activity-filter';
 import { defineStore } from 'pinia';
 import { computed, ref, type Ref } from 'vue';
 
@@ -12,7 +12,7 @@ export const useActivityFilterStore = defineStore(
 		const filters = computed(() => state.value);
 
 		const setStateFromRouter = () => {
-			state.value.status = router.currentRoute.value.query.status as string | undefined;
+			state.value.status = router.currentRoute.value.query.status as ActivityFilterStatus | undefined;
 			state.value.project = router.currentRoute.value.query.project as string | undefined;
 			state.value.group = router.currentRoute.value.query.group as ActivityFilterGroup | undefined;
 			state.value.sort = router.currentRoute.value.query.sort as ActivityFilterSort | undefined;
@@ -33,7 +33,7 @@ export const useActivityFilterStore = defineStore(
 
 		const updateFilter = (filter: string, value: string | boolean | undefined) => {
 			if ('status' === filter) {
-				state.value.status = value ? value as string : undefined;
+				state.value.status = value ? value as ActivityFilterStatus : undefined;
 			} else if ('project' === filter) {
 				state.value.project = value as string;
 			} else if ('group' === filter) {
