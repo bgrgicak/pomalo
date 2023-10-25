@@ -123,9 +123,17 @@ const maybeCopyPasteEvent = (keyboardEvent: any) => {
 					)
 				);
 
+				let updateActivity = Object.assign({}, activity);
+				if (CalendarClipboardType.Cut === calendarStore.clipboard!.type) {
+					updateActivity = removeEventFromActivity(
+						updateActivity,
+						calendarStore.clipboard!.eventId,
+					);
+				}
+
 				activityStore.update(
 					addEventToActivity(
-						activity,
+						updateActivity,
 						newEvent(
 							start,
 							end,
