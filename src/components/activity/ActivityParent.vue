@@ -9,6 +9,7 @@ import { ref } from 'vue';
 import { openActivityPage } from '@/data/activities';
 import { computed } from 'vue';
 import { ActivityType } from '@/types/activity';
+import ProjectSelect from '../project/ProjectSelect.vue';
 
 const props = defineProps({
 	activity: {
@@ -38,13 +39,6 @@ const parent = computed(() => {
 	return activityStore.activities[props.activity.parent];
 });
 
-const parentTitle: ComputedRef<string | undefined> = computed(() => {
-	if (!parent.value) {
-		return undefined;
-	}
-	return parent.value.title;
-});
-
 const options = computed( () => {
 	if (!listId.value) {
 		return [];
@@ -72,7 +66,7 @@ const openParent = () => {
 </script>
 <template>
   <ProjectSelect
-    :model-value="parentTitle"
+    :model-value="props.activity.parent"
     :items="options"
     item-value="_id"
     item-text="title"

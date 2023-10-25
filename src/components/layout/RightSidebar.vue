@@ -37,11 +37,14 @@ watch(
 
 const clickOutsideConditional = (event: any) => {
 	if (event.target) {
-		return ! event.target.classList.contains('activity-list__link')
-      && ! event.target.classList.contains('v-list-item')
-      && ! event.target.classList.contains('v-list-item-title')
-      && ! event.target.classList.contains('prevent-outside-close')
-      && ! event.target.parent.classList.contains('prevent-outside-close');
+		return !event.target.classList.contains('activity-list__link')
+      && !event.target.classList.contains('v-list-item')
+      && !event.target.classList.contains('v-list-item-title')
+      && !event.target.classList.contains('prevent-outside-close')
+      && !(
+      	event.target.parent &&
+        event.target.parent.classList.contains('prevent-outside-close')
+      );
 	}
 	return true;
 };
@@ -91,25 +94,25 @@ const clickOutsideConditional = (event: any) => {
 @import '@/styles/variables.scss';
 
 .right-sidebar {
-    top: $header-height !important;
-    height: calc(100vh - #{$header-height}) !important;
-    overflow-y: auto;
-    min-width: 350px;
+  top: $header-height !important;
+  height: calc(100vh - #{$header-height}) !important;
+  overflow-y: auto;
+  min-width: 350px;
 
-    .v-navigation-drawer__content {
-        >.v-card {
-            padding-top: 0 !important;
-            height: 100%;
+  .v-navigation-drawer__content {
+    >.v-card {
+      padding-top: 0 !important;
+      height: 100%;
 
-            .v-container {
-                padding-top: 0 !important;
-            }
-        }
+      .v-container {
+        padding-top: 0 !important;
+      }
     }
+  }
 }
 
 .right-sidebar__header {
-    display: flex;
-    height: $sidebar-header-height;
+  display: flex;
+  height: $sidebar-header-height;
 }
 </style>
