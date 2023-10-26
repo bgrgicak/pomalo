@@ -2,18 +2,6 @@
 import __ from '@/helper/translations';
 import { ref, type PropType, type Ref } from 'vue';
 
-import 'tinymce';
-import 'tinymce/tinymce';
-import 'tinymce/plugins/lists';
-import 'tinymce/plugins/codesample';
-import 'tinymce/plugins/link';
-import 'tinymce/plugins/autolink';
-import 'tinymce/plugins/paste';
-import 'tinymce/themes/silver';
-import 'tinymce/icons/default';
-import 'tinymce/skins/ui/oxide/skin.css';
-import Editor from '@tinymce/tinymce-vue';
-
 const props = defineProps({
 	modelValue: {
 		type: String as PropType<string>,
@@ -27,29 +15,22 @@ const props = defineProps({
 		type: Boolean,
 		default: true,
 	},
-}); 
+});
 const emit = defineEmits(['update:modelValue']);
 
 const focused: Ref<boolean> = ref(false);
 const editor: Ref<any> = ref(null);
 const textEditorRef: Ref<any> = ref(null);
+// Prevent value changes from triggering an update
+const value = props.modelValue;
 
-const onChange = (value: string) => {
-	emit('update:modelValue', value);
+const onChange = (payload: any) => {
+	emit('update:modelValue', payload?.originalTarget.innerHTML ?? '');
 };
 const focusEditor = () => {
 	if (editor.value) {
 		editor.value.focus();
 	}
-};
-
-const options = {
-	plugins: 'lists link codesample paste autolink',
-	toolbar: 'bold italic underline link codesample | bullist numlist',
-	menubar: false,
-	paste_as_text: true,
-	skin: false,
-	content_css: false,
 };
 </script>
 <template>
@@ -60,16 +41,16 @@ const options = {
     :focused="focused"
     @click="focusEditor"
   >
-    <Editor
-      :disabled="props.readonly"
-      :init="options"
-      :model-value="props.modelValue"
-      :inline="true"
-      tag-name="div"
-      @update:model-value="onChange"
+    <!-- eslint-disable vue/no-v-html -->
+    <div
+      class="text-editor__inner"
+      :contenteditable="!props.readonly"
+      @keyup="onChange"
       @focus="focused = true"
       @blur="focused = false"
+      v-html="value"
     />
+    <!--eslint-enable-->
   </v-input>
 </template>
 <style lang="scss">
@@ -89,7 +70,7 @@ const options = {
         	border-color: rgba(var(--v-border-color), var(--v-field-border-opacity));
 		}
     }
-	.mce-content-body {
+	textarea {
 		font-size: 1rem;
 		width: 100%;
 		min-height: 200px;

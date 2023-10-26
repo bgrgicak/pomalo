@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@infectoone/vue-ganttastic": "^2.2.0",
-    "@tinymce/tinymce-vue": "^5.1.1",
     "ical.js": "^1.5.0",
     "pinia": "^2.0.32",
     "pouchdb": "^8.0.1",
