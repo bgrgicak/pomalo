@@ -17,6 +17,7 @@
   "dependencies": {
     "@infectoone/vue-ganttastic": "^2.2.0",
     "ical.js": "^1.5.0",
+    "pell": "^1.0.6",
     "pinia": "^2.0.32",
     "pouchdb": "^8.0.1",
     "pouchdb-find": "^8.0.1",
