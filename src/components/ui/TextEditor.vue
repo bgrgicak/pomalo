@@ -127,6 +127,11 @@ $texeditor-height: 400px;
 		width: 100%;
 		min-height: $texeditor-height;
 		outline: none;
+		overflow: hidden;
+	}
+	.texteditor__content > * {
+		inline-size: 100%;
+  		overflow-wrap: break-word;
 	}
 	.v-input__details {
 		display: none;
