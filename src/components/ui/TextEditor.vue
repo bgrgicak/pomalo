@@ -1,3 +1,4 @@
+<!-- eslint-disable semi -->
 <script setup lang="ts">
 import __ from '@/helper/translations';
 import { ref, type PropType, type Ref } from 'vue';
@@ -30,6 +31,15 @@ const addLinks = (value: string) => {
 		return '<a href="' + url + '">' + url + '</a>';
 	});
 };
+
+const createElementFromHTML = (htmlString: string): Node => {
+	var div = document.createElement('div');
+	div.innerHTML = htmlString.trim();
+	if (!div.firstChild) {
+		return document.createTextNode(htmlString);
+	}
+	return div.firstChild as Node;
+}
 
 const prepare = (value: string) => {
 	if (!value) {
@@ -87,6 +97,19 @@ watch(
 		});
 		peelEditor.content.addEventListener('blur', () => {
 			focused.value = false;
+		});
+		peelEditor.content.addEventListener('paste', (event: any) => {
+			let paste = event.clipboardData.getData('text');
+			paste = addLinks(paste);
+
+			const selection = window.getSelection();
+			if (!selection?.rangeCount) {
+				return false;
+			}
+			selection.deleteFromDocument();
+			selection.getRangeAt(0).insertNode(createElementFromHTML(paste));
+
+			event.preventDefault();
 		});
 	},
 );
