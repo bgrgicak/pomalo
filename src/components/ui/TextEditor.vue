@@ -24,6 +24,20 @@ const focused: Ref<boolean> = ref(false);
 const editor: Ref<any> = ref(null);
 const textEditorRef: Ref<any> = ref(null);
 
+const addLinks = (value: string) => {
+	var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+	return value.replace(urlRegex, (url) => {
+		return '<a href="' + url + '">' + url + '</a>';
+	});
+};
+
+const prepare = (value: string) => {
+	if (!value) {
+		return '';
+	}
+	return addLinks(value);
+};
+
 watch(
 	editor,
 	() => {
@@ -33,10 +47,11 @@ watch(
 		const peelEditor = pell.init({
 			element: editor.value,
 			onChange: (html: string) => {
-				emit('update:modelValue', html);
+				const newValue = prepare(html);
+				emit('update:modelValue', newValue);
 			},
 			defaultParagraphSeparator: 'p',
-			styleWithCSS: true,
+			styleWithCSS: false,
 			actions: [
 				'bold',
 				'underline',
@@ -62,7 +77,7 @@ watch(
 			classes: {
 				actionbar: 'v-btn-group v-btn-group--density-default v-btn-toggle mb-4',
 				button: 'v-btn v-btn--flat v-btn--icon v-btn--density-default v-btn--size-default v-btn--variant-outlined',
-				content: 'texteditor__content',
+				content: 'text-editor__content',
 				selected: 'v-btn--active'
 			}
 		});
@@ -81,6 +96,12 @@ const focusEditor = () => {
 		editor.value.focus();
 	}
 };
+
+const editorClick = ( event: any ) => {
+	if ( ( event.ctrlKey || event.metaKey ) && event.target.tagName === 'A') {
+		window.open(event.target.href, '_blank');
+	}
+};
 </script>
 <template>
   <v-input
@@ -92,12 +113,13 @@ const focusEditor = () => {
   >
     <pre
       ref="editor"
-      class="texteditor__inner"
+      class="text-editor__inner"
+      @click="editorClick"
     />
   </v-input>
 </template>
 <style lang="scss">
-$texeditor-height: 400px;
+$text-editor-height: 400px;
 .text-editor {
     border: thin solid rgba(var(--v-border-color), var(--v-disabled-opacity));
 	.v-input__control {
@@ -121,15 +143,15 @@ $texeditor-height: 400px;
 			display: flex;
 		}
     }
-	.texteditor__inner,
-	.texteditor__content {
+	.text-editor__inner,
+	.text-editor__content {
 		font-size: 1rem;
 		width: 100%;
-		min-height: $texeditor-height;
+		min-height: $text-editor-height;
 		outline: none;
 		overflow: hidden;
 	}
-	.texteditor__content > * {
+	.text-editor__content > * {
 		inline-size: 100%;
   		overflow-wrap: break-word;
 	}
