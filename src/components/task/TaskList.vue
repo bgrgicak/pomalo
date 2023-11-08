@@ -8,13 +8,14 @@ import { useLayoutStore } from '@/stores/layout';
 import { useProjectStore } from '@/stores/projects';
 import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
-import { ActivityFilterGroup, type ActivityGroup } from '@/types/activity-filter';
+import { ActivityFilterGroup, type ActivityFilterState, type ActivityGroup } from '@/types/activity-filter';
 import type { ComputedRef } from 'vue';
 import { computed, ref, watch, type PropType } from 'vue';
 import { filterActivityList, groupActivities, sortActivities, sortActivityGroups } from '../../data/activity-list';
 import ActivityAdd from '../activity/ActivityAdd.vue';
 import ActivityArchive from '../activity/ActivityArchive.vue';
 import TimerToggle from '../timer/TimerToggle.vue';
+import TaskCompleted from './TaskCompleted.vue';
 
 const props = defineProps({
 	type: {
@@ -37,6 +38,10 @@ const props = defineProps({
 		type: String,
 		default: '',
 	},
+	filters: {
+		type: Object as PropType<ActivityFilterState>,
+		default: undefined,
+	},
 });
 const emit = defineEmits([
 	'openActivity',
@@ -46,9 +51,17 @@ const emit = defineEmits([
 ]);
 
 const activityFilterStore = useActivityFilterStore();
-const projectStore = useProjectStore();
+const activityListStore = useActivityListStore();
+const layoutStore = useLayoutStore();
 
 const newTitle = ref({} as {[key: string]: string});
+
+const filters = computed(() => {
+	if (props.filters) {
+		return props.filters;
+	}
+	return activityFilterStore.filters;
+});
 
 const activityList = computed(() => {
 	if (!props.listId) {
@@ -61,27 +74,28 @@ const activityList = computed(() => {
 });
 
 const groupList: ComputedRef<ActivityGroup[]> = computed(() => {
-	if (!activityList.value) {
-		return [];
+	if (!activityList.value || !activityList.value.length) {
+		return [
+			{
+				name: __('Other'),
+				activities: []
+			},
+		];
 	}
 
-	
 	return sortActivityGroups(
 		sortActivities(
 			groupActivities(
 				filterActivityList(
 					activityList.value,
-					activityFilterStore.filters
+					filters.value
 				),
-				activityFilterStore.filters
+				filters.value
 			),
-			activityFilterStore.filters
+			filters.value
 		)
 	);
 });
-
-const activityListStore = useActivityListStore();
-const layoutStore = useLayoutStore();
 watch(
 	props,
 	() => {
@@ -89,7 +103,7 @@ watch(
 			emit('updateListId', id);
 		});
 	},
-	{ 
+	{
 		immediate: true,
 	}
 );
@@ -202,13 +216,19 @@ const toggleFilters = () => {
               class="activity-list__item activity-list__item--actions"
               align="right"
             >
-              <TimerToggle :activity="item" />
-              <ActivityArchive
-                :activity="item"
-                :small="true"
-                :redirect-after-remove="false"
-                @onArchived="removeActivity"
-              />
+              <div class="activity-list__item--actions-inner">
+                <TimerToggle :activity="item" />
+                <TaskCompleted
+                  :activity="item"
+                  :compact="true"
+                />
+                <ActivityArchive
+                  :activity="item"
+                  :small="true"
+                  :redirect-after-remove="false"
+                  @onArchived="removeActivity"
+                />
+              </div>
             </td>
           </tr>
           <tr>
@@ -235,7 +255,7 @@ const toggleFilters = () => {
     padding-bottom: 2rem;
     font-size: $font-size;
     table {
-      border-collapse: collapse; 
+      border-collapse: collapse;
 
       td,
       th,
@@ -261,11 +281,11 @@ const toggleFilters = () => {
     grid-auto-flow: column;
     display: grid;
   }
-  
+
   .activity-list__link {
     cursor: pointer;
   }
-  
+
   .activity-list__link--completed {
     text-decoration: line-through;
   }
@@ -276,5 +296,9 @@ const toggleFilters = () => {
       height: $row-height;
       font-size: $font-size;
     }
+  }
+  .activity-list__item--actions-inner {
+    display: flex;
+    justify-content: flex-end;
   }
   </style>

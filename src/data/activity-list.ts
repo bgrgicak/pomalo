@@ -4,7 +4,7 @@ import type Activity from '@/types/activity';
 import { ActivityFilterGroup, ActivityFilterSort, ActivityFilterStatus, type ActivityFilterState, type ActivityGroup } from '@/types/activity-filter';
 
 export const filterActivityList = (activities: Activity[], filters: ActivityFilterState): Activity[] => {
-	let filteredActivities = activities;
+	let filteredActivities = [...activities];
 
 	filteredActivities = filteredActivities.filter(
 		(activity) => {

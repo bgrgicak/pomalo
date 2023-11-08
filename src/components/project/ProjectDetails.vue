@@ -4,6 +4,7 @@ import ActivityList from '../activity/ActivityList.vue';
 import type { PropType } from 'vue';
 import type Activity from '@/types/activity';
 import __ from '@/helper/translations';
+import { ActivityFilterStatus } from '../../types/activity-filter';
 
 const props = defineProps({
 	activity: {
@@ -33,7 +34,8 @@ const props = defineProps({
         :compact="true"
         :parent="props.activity._id"
         :items="[]"
-      />    
+        :filters="{status: ActivityFilterStatus.Any}"
+      />
     </v-col>
   </v-row>
 </template>
