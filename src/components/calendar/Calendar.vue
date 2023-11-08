@@ -16,7 +16,6 @@ import { NoticeType } from '@/types/notice';
 import CalendarMain from './CalendarMain.vue';
 import { allViews, defaultView, defaultSmallView } from '@/plugins/vuecal';
 import { watch } from 'vue';
-import { display } from '@/plugins/vuetify';
 import { addEventToActivity, newCalendarEvent } from '@/data/events';
 import { settings } from '@/helper/settings';
 

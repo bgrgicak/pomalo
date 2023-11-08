@@ -81,7 +81,7 @@ watch(
 		projects.value = projectList
 			.map(
 				(activity: Activity) => {
-					let tasks: any[] = []; 
+					let tasks: any[] = [];
 					if (taskListIds.value[activity._id] && activityListStore.list[taskListIds.value[activity._id]]) {
 						tasks = activityListStore.list[taskListIds.value[activity._id]].map(mapActivityToGanttBar);
 					}
@@ -118,12 +118,12 @@ watch(
 );
 
 const duration = computed(() => {
-	let start: Date | undefined = undefined;
+	let start: Date | undefined = getLocalDate();
 	let end: Date | undefined = undefined;
 	projects.value.forEach(project => {
 		project.forEach((task: any) => {
 			if (!start || (task.start && task.start < start)) {
-				start = task.start;
+				// start = task.start;
 			}
 			if (!end || (task.end && task.end > end)) {
 				end = task.end;
@@ -180,7 +180,7 @@ const onDragEnd = (item: any) => {
 		startDate: setTime(
 			getLocalDate(item.bar.start)
 		),
-		dueDate: setTime(		
+		dueDate: setTime(
 			getLocalDate(item.bar.end)
 		),
 	});
@@ -249,7 +249,7 @@ const addActivity = (activity: Activity) => {
             #label
           >
             <div
-              class="project-label prevent-outside-close" 
+              class="project-label prevent-outside-close"
               variant="text"
               @click="() => emit('showActivitySidebar',project[0].activity)"
               @dblclick="() => emit('openActivity',project[0].activity)"
@@ -277,7 +277,7 @@ $row-height: 52px;
 $project-label-height: 48px;
 $border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 
-.project-list-chart {
+.project-list__chart {
   width: 100%;
   height: 100%;
   overflow: auto;

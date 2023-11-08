@@ -2,10 +2,9 @@ import { parseEventsFromActivities } from '@/data/events';
 import { getUtcTimestamp } from '@/helper/date';
 import type { CalendarClipboard, CalendarClipboardType, CalendarEvent, CalendarState } from '@/types/calendar';
 import { defineStore } from 'pinia';
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref, type Ref, watch } from 'vue';
 import { useActivityStore } from './activities';
 import { useTimerStore } from './timer';
-
 
 export const useCalendarStore = defineStore(
 	'calendar',
@@ -20,6 +19,29 @@ export const useCalendarStore = defineStore(
 
 		const activityStore = useActivityStore();
 		const timerStore = useTimerStore();
+
+		watch(
+			activityStore.list,
+			(activities) => {
+				if ( !state.value.startTime || !state.value.endTime ) {
+					return;
+				}
+				for (const activity of activities) {
+					if (
+						(
+							activity.eventFirstStart &&
+							activity.eventFirstStart >= state.value.endTime
+						) ||
+						(
+							activity.eventLastEnd &&
+							activity.eventLastEnd <= state.value.startTime
+						)
+					) {
+						addActivityId(activity._id);
+					}
+				}
+			}
+		);
 
 		const isLoading = computed((): boolean => state.value.loading);
 		const hasNewEvent = computed((): boolean => !!state.value.newEvent);

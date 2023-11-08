@@ -16,7 +16,6 @@ import { getTimeDifference } from '@/helper/date';
 import { settings } from '@/helper/settings';
 import { addMilliseconds } from '@/helper/date';
 import CalendarCell from './CalendarCell.vue';
-import type { ActivityEvent } from '@/types/activity';
 
 const props = defineProps({
 	vuecal: {
@@ -408,7 +407,7 @@ $calendar-default-font-size: 0.75rem;
     &.vuecal__event--focus {
         box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
     }
-	
+
 	.v-card-title {
 		text-align: left;
 		text-transform: capitalize;
@@ -447,7 +446,7 @@ $calendar-default-font-size: 0.75rem;
 		width: $time-column-width !important;
 		padding: 0;
 	}
-	
+
 	.weekday-label {
 		span.xsmall {
 			display: none;
