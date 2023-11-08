@@ -2,8 +2,11 @@
 <script setup lang="ts">
 import __ from '@/helper/translations';
 import { ref, type PropType, type Ref } from 'vue';
-import pell from 'pell';
 import { watch } from 'vue';
+import Squire from 'squire-rte';
+import DOMPurify from 'dompurify';
+
+(window as any).DOMPurify = DOMPurify;
 
 const props = defineProps({
 	modelValue: {
@@ -21,32 +24,10 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue']);
 
+const squire: Ref<Squire|undefined> = ref(undefined);
 const focused: Ref<boolean> = ref(false);
 const editor: Ref<any> = ref(null);
 const textEditorRef: Ref<any> = ref(null);
-
-const addLinks = (value: string) => {
-	var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-	return value.replace(urlRegex, (url) => {
-		return '<a href="' + url + '">' + url + '</a>';
-	});
-};
-
-const createElementFromHTML = (htmlString: string): Node => {
-	var div = document.createElement('div');
-	div.innerHTML = htmlString.trim();
-	if (!div.firstChild) {
-		return document.createTextNode(htmlString);
-	}
-	return div.firstChild as Node;
-}
-
-const prepare = (value: string) => {
-	if (!value) {
-		return '';
-	}
-	return addLinks(value);
-};
 
 watch(
 	editor,
@@ -54,63 +35,22 @@ watch(
 		if (!editor.value) {
 			return;
 		}
-		const peelEditor = pell.init({
-			element: editor.value,
-			onChange: (html: string) => {
-				const newValue = prepare(html);
-				emit('update:modelValue', newValue);
-			},
-			defaultParagraphSeparator: 'p',
-			styleWithCSS: false,
-			actions: [
-				'bold',
-				'underline',
-				{
-					name: 'italic',
-					result: () => pell.exec('italic')
-				},
-				{
-					name: 'image',
-					result: () => {
-						const url = window.prompt('Enter the image URL');
-						if (url) pell.exec('insertImage', url);
-					}
-				},
-				{
-					name: 'link',
-					result: () => {
-						const url = window.prompt('Enter the link URL');
-						if (url) pell.exec('createLink', url);
-					}
-				}
-			],
-			classes: {
-				actionbar: 'v-btn-group v-btn-group--density-default v-btn-toggle mb-4',
-				button: 'v-btn v-btn--flat v-btn--icon v-btn--density-default v-btn--size-default v-btn--variant-outlined',
-				content: 'text-editor__content',
-				selected: 'v-btn--active'
+		squire.value = new Squire(
+			editor.value
+		);
+		squire.value.setHTML( props.modelValue ?? '' );
+		squire.value.addEventListener('input', () => {
+			if ( ! squire.value ) {
+				return;
 			}
+			emit('update:modelValue', squire.value.getHTML());
 		});
-		peelEditor.content.innerHTML = props.modelValue;
-		peelEditor.content.addEventListener('focus', () => {
-			focused.value = true;
-		});
-		peelEditor.content.addEventListener('blur', () => {
-			focused.value = false;
-		});
-		peelEditor.content.addEventListener('paste', (event: any) => {
-			let paste = event.clipboardData.getData('text');
-			paste = addLinks(paste);
-
-			const selection = window.getSelection();
-			if (!selection?.rangeCount) {
-				return false;
+		return () => {
+			if ( ! squire.value ) {
+				return;
 			}
-			selection.deleteFromDocument();
-			selection.getRangeAt(0).insertNode(createElementFromHTML(paste));
-
-			event.preventDefault();
-		});
+			squire.value.destroy();
+		};
 	},
 );
 
