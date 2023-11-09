@@ -46,8 +46,8 @@ export default defineConfig({
 				'display': 'standalone',
 				'name': 'Pomalo'
 			},
-			filename: 'sw.ts',
-			srcDir: 'src/service-worker',
+			filename: 'sw.js',
+			srcDir: 'public/',
 		})
 	],
 	resolve: {

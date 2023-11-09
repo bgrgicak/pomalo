@@ -11,6 +11,9 @@ export const syncIntervalMilliseconds = () => {
 
 export const getCalendarUrls = (): string[] => {
 	const calendars = useSettingsStore().get('calendarIcalUrls');
+	if (!calendars) {
+		return [];
+	}
 	return calendars.split('\n');
 };
 
