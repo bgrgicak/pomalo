@@ -5,6 +5,7 @@ import __ from '@/helper/translations';
 import { removeAllIndexes } from '@/data/pouchdb';
 import database from '@/data/pouchdb';
 import { reParseAllDocuments } from '@/data/activities';
+import { removeAllCalendarEvents } from '@/data/events';
 
 const removeAllIndexesFromDatabase = () => removeAllIndexes(database);
 
@@ -19,8 +20,15 @@ const actions: Setting[] = [
 	{
 		id: 'removeAllIndexes',
 		label: __('Remove all indexes'),
-		name: __('Remove'),
+		name: __('Remove indexes'),
 		action: removeAllIndexesFromDatabase,
+		type: SettingType.Button,
+	},
+	{
+		id: 'removeAllCalendarEvents',
+		label: __('Remove all calendar events'),
+		name: __('Remove calendar events'),
+		action: removeAllCalendarEvents,
 		type: SettingType.Button,
 	},
 ];

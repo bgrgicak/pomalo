@@ -3,6 +3,11 @@ import { RepeatInterval, type ActivityEvent, ActivityType } from '@/types/activi
 import { daysBetweenDates, getLocalDate, getWeekStartAndEnd, weeksBetweenDates } from '../helper/date';
 import type { CalendarEvent } from '@/types/calendar';
 import { newId } from './pouchdb';
+import { getCalendarUrls, resetLastCalendarSync } from '../service-worker/ical-sync';
+import { useActivityStore } from '../stores/activities';
+import { useNoticeStore } from '../stores/notices';
+import { NoticeType } from '../types/notice';
+import { useProjectStore } from '../stores/projects';
 
 export const getEventFromActivity = (activity: Activity, eventId: string): ActivityEvent | undefined => {
 	return activity.events.find(event => event.id === eventId);
@@ -121,6 +126,7 @@ const isDayInRepeatCycle = (day: Date, event: ActivityEvent): boolean => {
 
 export const parseEventsFromActivities = (activities: Activity[], startTime: Date, endTime: Date, currentActivityId?: string): CalendarEvent[] => {
 	const events: CalendarEvent[] = [];
+	const projectStore = useProjectStore();
 	if (activities) {
 		activities.forEach((activity: Activity) => {
 			activity.events
@@ -138,6 +144,8 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 					const endDay = event.end ? event.end : getLocalDate();
 					const isEditable = !isCurrentActivity && true !== activity.readonly;
 
+					const content = activity.parent ? projectStore.getTitle(activity.parent) : '';
+
 					let className = 'v-card prevent-outside-close calendar-event__' + activity.type;
 					if (true === activity.readonly) {
 						className += ' calendar-event__readonly';
@@ -148,7 +156,7 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 					const eventData = {
 						id: activity._id,
 						title: activity.title,
-						content: '',
+						content,
 						class: className,
 						deletable: false,
 						resizable: isEditable,
@@ -201,4 +209,31 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 		});
 	};
 	return events;
+};
+
+export const removeAllCalendarEvents = () => {
+	getCalendarUrls().forEach(async (calendarUrl) => {
+		const activityStore = useActivityStore();
+		activityStore.find({
+			selector: {
+				'parent': {
+					'$eq': calendarUrl
+				}
+			},
+		}).then((documents) => {
+			if (!documents) {
+				return;
+			}
+			documents.forEach((document) => {
+				activityStore.remove(document._id);
+			});
+			resetLastCalendarSync(calendarUrl);
+			useNoticeStore().addNotice(
+				{
+					type: NoticeType.Success,
+					title: documents.length + ' calendar events removed',
+				}
+			);
+		});
+	});
 };

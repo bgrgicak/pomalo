@@ -1,5 +1,5 @@
 import { addMilliseconds, getLocalDate } from '@/helper/date';
-import { debug } from '@/helper/logs';
+import { debug, info } from '@/helper/logs';
 import { settings } from '@/helper/settings';
 import type Activity from '@/types/activity';
 import { ActivityType, RepeatInterval, type ActivityEvent } from '@/types/activity';
@@ -42,32 +42,39 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 		const jcalData = ICAL.parse(await response.text());
 		const comp = new ICAL.Component(jcalData);
 		const eventIds: string[] = [];
+		const activities: { [key: string]: Activity } = {};
 		comp.getAllSubcomponents('vevent').forEach((vEvent: any) => {
 			const event = new ICAL.Event(vEvent);
 			const id = 'eventCalendar-' + event.uid;
 			eventIds.push(id);
 
 			const lastModified = event.component.getFirstPropertyValue('last-modified').toJSDate();
-			if (lastCalendarSync && lastModified < lastCalendarSync) {
+			if (lastCalendarSync && lastModified < lastCalendarSync ) {
 				return;
 			}
-			const activity: Activity = {
-				_id: id,
-				title: event.summary,
-				description: event.description,
-				created: getLocalDate(),
-				type: ActivityType.Event,
-				readonly: true,
-				parent: calendarUrl,
-				members: [],
-				events: [],
-				alarms: [],
-				aboveActivities: [],
-				belowActivities: [],
-			};
+			if ( ! activities[id] ) {
+				activities[id] = {
+					_id: id,
+					title: event.summary,
+					description: event.description,
+					created: getLocalDate(),
+					type: ActivityType.Event,
+					readonly: true,
+					parent: calendarUrl,
+					members: [],
+					events: [],
+					alarms: [],
+					aboveActivities: [],
+					belowActivities: [],
+				};
+			} else {
+				activities[id].title = event.summary;
+				activities[id].description = event.description;
+			}
 
+			const activityEventId = 'activityEvent-' + btoa(encodeURIComponent(JSON.stringify(event)));
 			const activityEvent: ActivityEvent = {
-				id: 'activityEvent' + event.uid,
+				id: activityEventId,
 				start: event.startDate.toJSDate(),
 				end: event.endDate.toJSDate()
 			};
@@ -134,13 +141,17 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 					);
 				}
 			}
-			activity.events = [activityEvent];
+
+			activities[id].events = [
+				...activities[id].events,
+				activityEvent
+			];
 
 			event.component.getAllSubcomponents('valarm').forEach((alarm: any) => {
 				const alarmEvent = new ICAL.Event(alarm);
 				const trigger = alarmEvent.component.getFirstPropertyValue('trigger');
 				if (trigger.weeks || trigger.days || trigger.hours || trigger.minutes || trigger.seconds) {
-					activity.alarms.push({
+					activities[id].alarms.push({
 						weeks: trigger.weeks ?? 0,
 						days: trigger.days ?? 0,
 						hours: trigger.hours ?? 0,
@@ -151,10 +162,9 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				}
 			});
 
-			debug('Adding activity', activity);
 			postMessage({
 				type: 'calendar-sync',
-				activity,
+				activity: activities[id],
 			});
 		});
 

@@ -42,3 +42,11 @@ export const updateLastCalendarSync = (calendarUrl: string) => {
 	);
 	settingsStore.save();
 };
+
+export const resetLastCalendarSync = (calendarUrl: string) => {
+	const settingsStore = useSettingsStore();
+	settingsStore.remove(
+		lastCalendarSyncSettingsKey(calendarUrl),
+	);
+	settingsStore.save();
+};

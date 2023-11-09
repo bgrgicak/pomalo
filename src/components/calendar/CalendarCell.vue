@@ -61,6 +61,9 @@ const addNewEvent = (activity: Activity) => {
   <v-card-subtitle>
     {{ event.start.formatTime('hh:mm') + ' - ' + event.end.formatTime('hh:mm') }}
   </v-card-subtitle>
+  <v-card-text>
+    {{ props.event.content }}
+  </v-card-text>
 </template>
 <style lang="scss">
 
@@ -89,5 +92,21 @@ const addNewEvent = (activity: Activity) => {
   .calendar-cell__title {
     text-decoration: line-through;
   }
+}
+.vuecal__event {
+	.v-card-title {
+		text-align: left;
+		text-transform: capitalize;
+		font-size: 1rem;
+		padding: 0.5rem 0.5rem 0 0.5rem;
+		line-height: 1rem;
+	}
+	.v-card-subtitle,
+	.v-card-text {
+		text-align: left;
+		font-size: 0.75rem;
+		padding: 0 0.5rem;
+		line-height: 1rem;
+	}
 }
 </style>

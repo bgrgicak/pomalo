@@ -407,20 +407,6 @@ $calendar-default-font-size: 0.75rem;
     &.vuecal__event--focus {
         box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
     }
-
-	.v-card-title {
-		text-align: left;
-		text-transform: capitalize;
-		font-size: 1rem;
-		padding: 0.5rem 0.5rem 0 0.5rem;
-		line-height: 1rem;
-	}
-	.v-card-subtitle {
-		text-align: left;
-		font-size: 0.75rem;
-		padding: 0 0.5rem;
-		line-height: 1rem;
-	}
 }
 
 .vuecal__event-resize-handle {

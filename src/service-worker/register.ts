@@ -42,6 +42,7 @@ export const updateSW = registerSW({
 				if (event.data.type === 'calendar-sync') {
 					activityStore.addOrUpdate(event.data.activity);
 				} else if (event.data.type === 'calendar-sync-all-ids') {
+					// Remove all calendar events that are not in the calendar anymore
 					const { eventIds, calendarUrl } = event.data;
 					activityStore.find(
 						{

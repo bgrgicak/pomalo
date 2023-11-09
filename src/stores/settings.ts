@@ -36,6 +36,10 @@ export const useSettingsStore = defineStore(
 			state.value.settings[id] = value;
 		};
 
+		const remove = (id: string) => {
+			delete state.value.settings[id];
+		};
+
 		const save = () => {
 			localStorage.setItem(
 				constants.localStorage.settingsKey,
@@ -48,6 +52,7 @@ export const useSettingsStore = defineStore(
 			settings,
 			get,
 			update,
+			remove,
 			save
 		};
 	},
