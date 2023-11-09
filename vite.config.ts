@@ -46,8 +46,8 @@ export default defineConfig({
 				'display': 'standalone',
 				'name': 'Pomalo'
 			},
-			filename: 'sw.js',
-			srcDir: 'public/',
+			filename: process.env.NODE_ENV === 'production' ? 'sw.ts' : 'sw.js',
+			srcDir: process.env.NODE_ENV === 'production' ? 'src/service-worker' : 'public/',
 		})
 	],
 	resolve: {
