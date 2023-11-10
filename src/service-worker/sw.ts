@@ -1,5 +1,4 @@
 import { addMilliseconds, getLocalDate } from '@/helper/date';
-import { debug, info } from '@/helper/logs';
 import { settings } from '@/helper/settings';
 import type Activity from '@/types/activity';
 import { ActivityType, RepeatInterval, type ActivityEvent } from '@/types/activity';
@@ -72,7 +71,10 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				activities[id].description = event.description;
 			}
 
-			const activityEventId = 'activityEvent-' + btoa(encodeURIComponent(JSON.stringify(event)));
+			const activityEventId = 'activityEvent'
+				+ id
+				+ event.startDate.toJSDate().getTime()
+				+ event.endDate.toJSDate().getTime();
 			const activityEvent: ActivityEvent = {
 				id: activityEventId,
 				start: event.startDate.toJSDate(),
