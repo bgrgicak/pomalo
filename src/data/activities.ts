@@ -26,7 +26,7 @@ export const emptyActivity = (type: ActivityType): Activity => {
 		title: '',
 		description: '',
 		type,
-		created: new Date(),
+		created: getLocalDate(),
 		members: [],
 		events: [],
 		alarms: [],

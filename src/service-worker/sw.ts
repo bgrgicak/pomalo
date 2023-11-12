@@ -4,6 +4,7 @@ import type Activity from '@/types/activity';
 import { ActivityType, RepeatInterval, type ActivityEvent } from '@/types/activity';
 // @ts-ignore-next-line
 import ICAL from 'ical.js';
+import { debug } from '../helper/logs';
 
 
 const isAllDayEvent = (event: ActivityEvent): boolean => {
@@ -19,13 +20,13 @@ const isAllDayEvent = (event: ActivityEvent): boolean => {
 const getEventEndFromRepeatCount = (start: Date, repeat?: RepeatInterval, repeatCount: number = 1): Date => {
 	const end = structuredClone(start);
 	if (repeat === RepeatInterval.Daily) {
-		return new Date(end.setDate(end.getDate() + repeatCount));
+		return getLocalDate(end.setDate(end.getDate() + repeatCount));
 	} else if (repeat === RepeatInterval.Weekly) {
-		return new Date(end.setDate(end.getDate() + repeatCount * 7));
+		return getLocalDate(end.setDate(end.getDate() + repeatCount * 7));
 	} else if (repeat === RepeatInterval.Monthly) {
-		return new Date(end.setMonth(end.getMonth() + repeatCount));
+		return getLocalDate(end.setMonth(end.getMonth() + repeatCount));
 	} else if (repeat === RepeatInterval.Yearly) {
-		return new Date(end.setFullYear(end.getFullYear() + repeatCount));
+		return getLocalDate(end.setFullYear(end.getFullYear() + repeatCount));
 	}
 	return end;
 };
@@ -38,17 +39,37 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 			redirect: 'follow',
 		}
 	).then(async (response) => {
+		// console.log(await response.text());
 		const jcalData = ICAL.parse(await response.text());
 		const comp = new ICAL.Component(jcalData);
 		const eventIds: string[] = [];
 		const activities: { [key: string]: Activity } = {};
+		const keys = {};
+
+
+		const vtimezone = comp.getFirstSubcomponent('vtimezone');
+		let timezone = undefined;
+		if (vtimezone) {
+			timezone = new ICAL.Timezone(vtimezone);
+			console.log(timezone);
+		}
 		comp.getAllSubcomponents('vevent').forEach((vEvent: any) => {
 			const event = new ICAL.Event(vEvent);
 			const id = 'eventCalendar-' + event.uid;
 			eventIds.push(id);
 
+			let run = false;
+			if ( event.summary === 'Team Fire Code Chat' ) {
+				run = true;
+				vEvent.jCal[1].forEach(element => {
+					keys[element[0]] = element[3];
+				});
+				event.startDate.zone = timezone;
+				event.endDate.zone = timezone;
+				debug(getLocalDate(event.startDate.toJSDate()));
+			}
 			const lastModified = event.component.getFirstPropertyValue('last-modified').toJSDate();
-			if (lastCalendarSync && lastModified < lastCalendarSync ) {
+			if (lastCalendarSync && lastModified < lastCalendarSync && !run) {
 				return;
 			}
 			if ( ! activities[id] ) {
@@ -77,8 +98,8 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				+ event.endDate.toJSDate().getTime();
 			const activityEvent: ActivityEvent = {
 				id: activityEventId,
-				start: event.startDate.toJSDate(),
-				end: event.endDate.toJSDate()
+				start: getLocalDate(event.startDate.toJSDate()),
+				end: getLocalDate(event.endDate.toJSDate())
 			};
 			activityEvent.allDay = isAllDayEvent(activityEvent);
 			if (activityEvent.allDay && activityEvent.end) {
@@ -170,6 +191,8 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 			});
 		});
 
+		debug(Object.keys(keys));
+
 		postMessage({
 			type: 'calendar-sync-all-ids',
 			eventIds,
@@ -179,5 +202,5 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 };
 onmessage = (event: MessageEvent) => {
 	const { calendarUrl, lastCalendarSync } = JSON.parse(event.data);
-	syncCalendar(calendarUrl, new Date(lastCalendarSync));
+	syncCalendar(calendarUrl, getLocalDate(lastCalendarSync));
 };

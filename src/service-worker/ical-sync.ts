@@ -1,4 +1,4 @@
-import { getUtcTimestamp, isValidDate } from '@/helper/date';
+import { getLocalDate, getUtcTimestamp, isValidDate } from '@/helper/date';
 import { settings } from '@/helper/settings';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -23,7 +23,7 @@ export const lastCalendarSyncSettingsKey = (calendarUrl: string) => {
 };
 
 export const getLastCalendarSync = (calendarUrl: string): Date | undefined => {
-	let lastCalendarSync: Date | undefined = new Date(
+	let lastCalendarSync: Date | undefined = getLocalDate(
 		useSettingsStore().get(
 			lastCalendarSyncSettingsKey(calendarUrl)
 		)

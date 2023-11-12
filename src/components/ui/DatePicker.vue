@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getSystemDateFormat, isValidDate } from '@/helper/date';
+import { getLocalDate, getSystemDateFormat, isValidDate } from '@/helper/date';
 import __ from '@/helper/translations';
 import type { Ref } from 'vue';
 import type { PropType } from 'vue';
@@ -93,7 +93,7 @@ const maxDate = computed(() => {
 
 const getNewValue = (newValue: any) => {
 	if (timeValue.value) {
-		newValue = new Date(
+		newValue = getLocalDate(
 			newValue.toLocaleDateString() + ' ' + timeValue.value
 		);
 	}
@@ -102,7 +102,7 @@ const getNewValue = (newValue: any) => {
 
 const onSave = (value: Date|undefined) => {
 	if ('' !== timeError.value) {
-		return false; 
+		return false;
 	}
 	// trigger save if only time changed
 	if (undefined === value && false === dateChanged.value) {

@@ -4,6 +4,7 @@ import { defaultView } from '@/plugins/vuecal';
 import type { PropType } from 'vue';
 import { computed } from 'vue';
 import type VueCal from 'vue-cal';
+import { getLocalDate } from '../../helper/date';
 
 const props = defineProps({
 	vuecal: {
@@ -53,7 +54,7 @@ const today = () => {
 	if (!props.vuecal) {
 		return;
 	}
-	props.vuecal.switchView(props.activeView, new Date());
+	props.vuecal.switchView(props.activeView, getLocalDate());
 };
 
 
@@ -132,7 +133,7 @@ const today = () => {
 <style lang="scss">
 .calendar-header__toggle {
   .v-btn {
-    min-width: 0; 
+    min-width: 0;
     padding: 0 0.5rem;
   }
 }
