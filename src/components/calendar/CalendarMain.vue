@@ -422,7 +422,7 @@ $calendar-default-font-size: 0.75rem;
 	}
 
 	$time-column-width: 2.4rem;
-	.vuecal__weekdays-headings {
+	.vuecal--week-view .vuecal__weekdays-headings {
 		padding-left: $time-column-width;
 		font-size: $calendar-default-font-size;
 	}
@@ -433,6 +433,9 @@ $calendar-default-font-size: 0.75rem;
 		padding: 0;
 	}
 
+	.vuecal__all-day .vuecal__flex.vuecal__cells.week-view {
+		width: calc(100% - #{$time-column-width}) !important;
+	}
 	.weekday-label {
 		span.xsmall {
 			display: none;
