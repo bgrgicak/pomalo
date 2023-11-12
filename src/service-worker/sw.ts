@@ -44,32 +44,12 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 		const comp = new ICAL.Component(jcalData);
 		const eventIds: string[] = [];
 		const activities: { [key: string]: Activity } = {};
-		const keys = {};
-
-
-		const vtimezone = comp.getFirstSubcomponent('vtimezone');
-		let timezone = undefined;
-		if (vtimezone) {
-			timezone = new ICAL.Timezone(vtimezone);
-			console.log(timezone);
-		}
 		comp.getAllSubcomponents('vevent').forEach((vEvent: any) => {
 			const event = new ICAL.Event(vEvent);
 			const id = 'eventCalendar-' + event.uid;
 			eventIds.push(id);
-
-			let run = false;
-			if ( event.summary === 'Team Fire Code Chat' ) {
-				run = true;
-				vEvent.jCal[1].forEach(element => {
-					keys[element[0]] = element[3];
-				});
-				event.startDate.zone = timezone;
-				event.endDate.zone = timezone;
-				debug(getLocalDate(event.startDate.toJSDate()));
-			}
 			const lastModified = event.component.getFirstPropertyValue('last-modified').toJSDate();
-			if (lastCalendarSync && lastModified < lastCalendarSync && !run) {
+			if (lastCalendarSync && lastModified < lastCalendarSync) {
 				return;
 			}
 			if ( ! activities[id] ) {
@@ -190,8 +170,6 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				activity: activities[id],
 			});
 		});
-
-		debug(Object.keys(keys));
 
 		postMessage({
 			type: 'calendar-sync-all-ids',

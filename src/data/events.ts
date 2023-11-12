@@ -1,6 +1,6 @@
 import type Activity from '@/types/activity';
-import { RepeatInterval, type ActivityEvent, ActivityType } from '@/types/activity';
-import { daysBetweenDates, getLocalDate, getWeekStartAndEnd, weeksBetweenDates } from '../helper/date';
+import { RepeatInterval, type ActivityEvent } from '@/types/activity';
+import { daysBetweenDates, getLocalDate, getWeekStartAndEnd, setDateAndCopyTime, weeksBetweenDates } from '../helper/date';
 import type { CalendarEvent } from '@/types/calendar';
 import { newId } from './pouchdb';
 import { getCalendarUrls, resetLastCalendarSync } from '../service-worker/ical-sync';
@@ -177,12 +177,14 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 						}
 						while (iteratorDay <= lastDay) {
 							if (isDayInRepeatCycle(iteratorDay, event)) {
-								const eventStart = structuredClone(iteratorDay);
-								eventStart.setHours(event.start.getHours());
-								eventStart.setMinutes(event.start.getMinutes());
-								const eventEnd = structuredClone(iteratorDay);
-								eventEnd.setHours(endDay.getHours());
-								eventEnd.setMinutes(endDay.getMinutes());
+								const eventStart = setDateAndCopyTime(
+									iteratorDay,
+									event.start
+								);
+								const eventEnd = setDateAndCopyTime(
+									iteratorDay,
+									endDay
+								);
 
 								const isRepeatIteration = !(
 									event.start.getTime() === eventStart.getTime() &&

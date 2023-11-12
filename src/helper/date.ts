@@ -1,3 +1,16 @@
+import { toDate } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
+
+export const secondInMilliseconds = 1000;
+export const minuteInMilliseconds = secondInMilliseconds * 60;
+export const hourInMilliseconds = minuteInMilliseconds * 60;
+export const dayInMilliseconds = hourInMilliseconds * 24;
+export const weekInMilliseconds = dayInMilliseconds * 7;
+export const yearInMilliseconds = dayInMilliseconds * 365;
+export const daysInAYear = 365;
+
+export const maxDate = () => new Date(8640000000000000);
+
 export const getSystemDateFormat = () => {
 	let customDate = new Date(2222, 11, 18);
 	let strDate = customDate.toLocaleDateString();
@@ -17,16 +30,6 @@ const prepareDate = (date?: Date | string | number) => {
 	}
 	return date;
 };
-
-export const secondInMilliseconds = 1000;
-export const minuteInMilliseconds = secondInMilliseconds * 60;
-export const hourInMilliseconds = minuteInMilliseconds * 60;
-export const dayInMilliseconds = hourInMilliseconds * 24;
-export const weekInMilliseconds = dayInMilliseconds * 7;
-export const yearInMilliseconds = dayInMilliseconds * 365;
-export const daysInAYear = 365;
-
-export const maxDate = () => new Date(8640000000000000);
 
 /**
  * Convert UTC date to local date string
@@ -119,4 +122,19 @@ export const setTime = (date: Date, hours: number = 0, minutes: number = 0, seco
 	date.setMinutes(minutes);
 	date.setSeconds(seconds);
 	return date;
+};
+
+/**
+ * Combine a date and a time to a new date
+ * This keeps the timezone from dateWithNewTime
+ * @param newDate Date to use
+ * @param dateWithNewTime Time and Timezone to use
+ * @returns
+ */
+export const setDateAndCopyTime = (newDate: Date, dateWithNewTime: Date) => {
+	const charactersInDate = 15;
+	return new Date(
+		newDate.toString().substring(0, charactersInDate) +
+		dateWithNewTime.toString().substring(charactersInDate)
+	);
 };
