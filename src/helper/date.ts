@@ -128,10 +128,27 @@ export const setTime = (date: Date, hours: number = 0, minutes: number = 0, seco
  * @param dateWithNewTime Time and Timezone to use
  * @returns
  */
-export const setDateAndCopyTime = (newDate: Date, dateWithNewTime: Date) => {
+export const copyTimeFromDate = (newDate: Date, dateWithNewTime: Date) => {
 	const charactersInDate = 15;
 	return new Date(
 		newDate.toString().substring(0, charactersInDate) +
 		dateWithNewTime.toString().substring(charactersInDate)
 	);
+};
+
+export const setToEndOfHour = (date: Date) => {
+	if ( !date ) {
+		return date;
+	}
+	if (date.getMinutes() === 0) {
+		date.setMinutes(59);
+		date.setSeconds(59);
+		if (date.getHours() === 0) {
+			date.setHours(23);
+			date.setDate(date.getDate() - 1);
+		} else {
+			date.setHours(date.getHours() - 1);
+		}
+	}
+	return date;
 };
