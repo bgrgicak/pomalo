@@ -5,6 +5,7 @@ import { getCalendarUrls, getLastCalendarSync, syncIntervalMilliseconds, updateL
 import { useActivityStore } from '@/stores/activities';
 import { minuteInMilliseconds } from '@/helper/date';
 import type Activity from '@/types/activity';
+import constants from '../helper/constants';
 
 const syncCalendar = (worker: Worker) => {
 	getCalendarUrls().forEach(async (calendarUrl) => {
@@ -33,14 +34,19 @@ export const updateSW = registerSW({
 			);
 			setTimeout(
 				() => syncCalendar(worker),
-				minuteInMilliseconds
+				constants.environment.development ? 1 : minuteInMilliseconds
 			);
 
 			worker.onmessage = (event: MessageEvent) => {
 				debug('SW message', event.data);
 				const activityStore  = useActivityStore();
 				if (event.data.type === 'calendar-sync') {
-					activityStore.addOrUpdate(event.data.activity);
+					if (!event.data.activities) {
+						return;
+					}
+					(Object.values(event.data.activities) as Activity[]).forEach( ( activity: Activity ) => {
+						activityStore.addOrUpdate(activity);
+					} );
 				} else if (event.data.type === 'calendar-sync-all-ids') {
 					// Remove all calendar events that are not in the calendar anymore
 					const { eventIds, calendarUrl } = event.data;

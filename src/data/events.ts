@@ -216,6 +216,7 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 export const removeAllCalendarEvents = () => {
 	getCalendarUrls().forEach(async (calendarUrl) => {
 		const activityStore = useActivityStore();
+		let total = 0;
 		activityStore.find({
 			selector: {
 				'parent': {
@@ -230,12 +231,13 @@ export const removeAllCalendarEvents = () => {
 				activityStore.remove(document._id);
 			});
 			resetLastCalendarSync(calendarUrl);
-			useNoticeStore().addNotice(
-				{
-					type: NoticeType.Success,
-					title: documents.length + ' calendar events removed',
-				}
-			);
+			total += documents.length;
 		});
+		useNoticeStore().addNotice(
+			{
+				type: NoticeType.Success,
+				title: total + ' calendar events removed',
+			}
+		);
 	});
 };

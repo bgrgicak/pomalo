@@ -39,16 +39,16 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 			redirect: 'follow',
 		}
 	).then(async (response) => {
-		// console.log(await response.text());
 		const jcalData = ICAL.parse(await response.text());
 		const comp = new ICAL.Component(jcalData);
-		const eventIds: string[] = [];
 		const activities: { [key: string]: Activity } = {};
+		const eventIds: string[] = [];
 		comp.getAllSubcomponents('vevent').forEach((vEvent: any) => {
 			const event = new ICAL.Event(vEvent);
 			const id = 'eventCalendar-' + event.uid;
 			eventIds.push(id);
 			const lastModified = event.component.getFirstPropertyValue('last-modified').toJSDate();
+
 			if (lastCalendarSync && lastModified < lastCalendarSync) {
 				return;
 			}
@@ -164,11 +164,11 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 					});
 				}
 			});
+		});
 
-			postMessage({
-				type: 'calendar-sync',
-				activity: activities[id],
-			});
+		postMessage({
+			type: 'calendar-sync',
+			activities: Object.values(activities),
 		});
 
 		postMessage({
@@ -179,6 +179,9 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 	});
 };
 onmessage = (event: MessageEvent) => {
-	const { calendarUrl, lastCalendarSync } = JSON.parse(event.data);
-	syncCalendar(calendarUrl, getLocalDate(lastCalendarSync));
+	let { calendarUrl, lastCalendarSync } = JSON.parse(event.data);
+	if (lastCalendarSync) {
+		lastCalendarSync = getLocalDate(lastCalendarSync);
+	}
+	syncCalendar(calendarUrl, lastCalendarSync);
 };

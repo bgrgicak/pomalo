@@ -23,11 +23,13 @@ export const lastCalendarSyncSettingsKey = (calendarUrl: string) => {
 };
 
 export const getLastCalendarSync = (calendarUrl: string): Date | undefined => {
-	let lastCalendarSync: Date | undefined = getLocalDate(
-		useSettingsStore().get(
-			lastCalendarSyncSettingsKey(calendarUrl)
-		)
+	let lastCalendarSync: Date | undefined = useSettingsStore().get(
+		lastCalendarSyncSettingsKey(calendarUrl)
 	);
+	if (!lastCalendarSync) {
+		return undefined;
+	}
+	lastCalendarSync = getLocalDate(lastCalendarSync);
 	if (!isValidDate(lastCalendarSync)) {
 		lastCalendarSync = undefined;
 	}
