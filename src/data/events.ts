@@ -1,6 +1,6 @@
 import type Activity from '@/types/activity';
 import { RepeatInterval, type ActivityEvent } from '@/types/activity';
-import { daysBetweenDates, getLocalDate, getWeekStartAndEnd, copyTimeFromDate, weeksBetweenDates } from '../helper/date';
+import { daysBetweenDates, getWeekStartAndEnd, copyTimeFromDate, weeksBetweenDates, getLocalDate } from '../helper/date';
 import type { CalendarEvent } from '@/types/calendar';
 import { newId } from './pouchdb';
 import { getCalendarUrls, resetLastCalendarSync } from '../service-worker/ical-sync';
@@ -124,14 +124,63 @@ const isDayInRepeatCycle = (day: Date, event: ActivityEvent): boolean => {
 	return false;
 };
 
+const defaultCalendarEvent = (activity: Activity, event: ActivityEvent, isCurrentActivity: boolean = false): CalendarEvent => {
+	const projectStore = useProjectStore();
+	const isEditable = !isCurrentActivity && true !== activity.readonly;
+
+	const content = activity.parent ? projectStore.getTitle(activity.parent) : '';
+
+	let className = 'v-card prevent-outside-close calendar-event__' + activity.type;
+	if (true === activity.readonly) {
+		className += ' calendar-event__readonly';
+	}
+	if (activity.completedDate) {
+		className += ' calendar-event__completed';
+	}
+	return {
+		id: activity._id,
+		title: activity.title,
+		content,
+		class: className,
+		deletable: false,
+		resizable: isEditable,
+		draggable: isEditable,
+		background: false,
+		eventId: event.id,
+		allDay: event.allDay,
+		repeatIteration: false,
+		start: undefined as Date | undefined,
+		end: undefined as Date | undefined,
+		recurrenceId: event.recurrenceId,
+	} as CalendarEvent;
+};
+
+const getRecurrenceEvents = (activity: Activity, startTime: Date, endTime: Date) => {
+	const recurrenceEvents: {[key:string]: ActivityEvent} = {};
+	activity.events.forEach((event: ActivityEvent) => {
+		if ( event.recurrenceId && event.recurrenceId >= startTime && event.recurrenceId <= endTime ) {
+			recurrenceEvents[event.recurrenceId.toString()] = event;
+		}
+	} );
+	return recurrenceEvents;
+};
+
 export const parseEventsFromActivities = (activities: Activity[], startTime: Date, endTime: Date, currentActivityId?: string): CalendarEvent[] => {
 	const events: CalendarEvent[] = [];
-	const projectStore = useProjectStore();
+	const addEvent = (event: CalendarEvent) => {
+		events.push( {
+			...event
+		} );
+	};
 	if (activities) {
 		activities.forEach((activity: Activity) => {
+			const recurrenceEvents = getRecurrenceEvents(activity, startTime, endTime);
 			activity.events
 				.filter((event: ActivityEvent) => {
 					if (event.start > endTime) {
+						return false;
+					}
+					if (event.recurrenceId) {
 						return false;
 					}
 					if (event.repeat) {
@@ -141,31 +190,9 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 				})
 				.forEach((event) => {
 					const isCurrentActivity = currentActivityId === activity._id;
+
 					const endDay = event.end ? event.end : getLocalDate();
-					const isEditable = !isCurrentActivity && true !== activity.readonly;
-
-					const content = activity.parent ? projectStore.getTitle(activity.parent) : '';
-
-					let className = 'v-card prevent-outside-close calendar-event__' + activity.type;
-					if (true === activity.readonly) {
-						className += ' calendar-event__readonly';
-					}
-					if (activity.completedDate) {
-						className += ' calendar-event__completed';
-					}
-					const eventData = {
-						id: activity._id,
-						title: activity.title,
-						content,
-						class: className,
-						deletable: false,
-						resizable: isEditable,
-						draggable: isEditable,
-						background: false,
-						eventId: event.id,
-						allDay: event.allDay,
-						repeatIteration: false,
-					};
+					const eventData = defaultCalendarEvent(activity, event, isCurrentActivity);
 					if (event.repeat) {
 						const iteratorDay = structuredClone(
 							startTime.getTime() > event.start.getTime()
@@ -176,7 +203,15 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 							lastDay = endTime;
 						}
 						while (iteratorDay <= lastDay) {
-							if (isDayInRepeatCycle(iteratorDay, event)) {
+							// Check if there is a recurrence event for this day
+							if ( recurrenceEvents[iteratorDay.toString()] ) {
+								const recurrenceEvent = recurrenceEvents[iteratorDay.toString()];
+								addEvent({
+									...eventData,
+									start: recurrenceEvent.start,
+									end: recurrenceEvent.end ? recurrenceEvent.end : getLocalDate(),
+								});
+							} else if (isDayInRepeatCycle(iteratorDay, event)) {
 								const eventStart = copyTimeFromDate(
 									iteratorDay,
 									event.start
@@ -190,22 +225,23 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 									event.start.getTime() === eventStart.getTime() &&
                                     endDay.getTime() === eventEnd.getTime()
 								);
-								events.push({
+
+								addEvent({
 									...eventData,
 									start: eventStart,
 									end: eventEnd,
 									repeatIteration: isRepeatIteration,
-								} as CalendarEvent);
+								});
 							}
 							iteratorDay.setDate(iteratorDay.getDate() + 1);
 						}
 
 					} else {
-						events.push({
+						addEvent({
 							...eventData,
 							start: event.start,
 							end: endDay,
-						} as CalendarEvent);
+						});
 					}
 				});
 		});
