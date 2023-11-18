@@ -38,7 +38,7 @@ const onChange = (checked: boolean) => {
     class="pa-4"
     :model-value="!!props.activity.completedDate"
     :label="__('Completed')"
-    :disabled="props.activity.archived"
+    :disabled="!props.activity.archived"
     @change="(event: any) => onChange(event.target.checked)"
   />
   <v-btn
@@ -47,7 +47,7 @@ const onChange = (checked: boolean) => {
     class="p0-4"
     icon="mdi-check"
     variant="text"
-    :disabled="props.activity.archived"
+    :disabled="!props.activity.archived"
     @click="() => onChange(!props.activity.completedDate)"
   />
 </template>

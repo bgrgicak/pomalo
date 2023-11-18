@@ -1,7 +1,7 @@
 import type { ActivityType } from './activity';
 
 export interface SearchOptions {
-    archived?: boolean,
+    archived?: Date,
     types?: ActivityType[],
 }
 

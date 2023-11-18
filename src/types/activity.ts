@@ -100,7 +100,7 @@ interface Activity {
     description: string,
     type: ActivityType,
     parent?: string,
-    archived?: boolean,
+    archived?: Date,
 
     readonly?: boolean,
 

@@ -24,7 +24,7 @@ export const useActivityListStore = defineStore(
 			Object.keys(activityLists.value).forEach((key) => {
 				list[key] = activityLists.value[key].filter((id: string) => {
 					return activityStore.activities[id]
-						&& true !== activityStore.activities[id].archived;
+						&& undefined === activityStore.activities[id].archived;
 				}).map((id: string) => {
 					return activityStore.activities[id];
 				});
@@ -37,7 +37,7 @@ export const useActivityListStore = defineStore(
 				if (parent) {
 					return activity.parent === parent;
 				}
-				return true !== activity.archived;
+				return undefined === activity.archived;
 			}).map((activity: Activity) => activity._id);
 		};
 
@@ -71,7 +71,7 @@ export const useActivityListStore = defineStore(
 			});
 		};
 
-		const find = (type: ActivityType, parent?: string): Promise<string> => {	
+		const find = (type: ActivityType, parent?: string): Promise<string> => {
 			return activityStore.find({
 				selector: {
 					type,

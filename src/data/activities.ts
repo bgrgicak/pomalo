@@ -34,7 +34,7 @@ export const emptyActivity = (type: ActivityType): Activity => {
 		belowActivities: [],
 		calculatedEstimatedTime: 0,
 		calculatedTimeSpent: 0,
-		archived: false,
+		archived: undefined,
 	};
 };
 
@@ -140,6 +140,7 @@ export const parseDocumentToActivity = (doc: ActivityDocument): Activity => {
 		dueDate: doc.dueDate ? getLocalDate(doc.dueDate) : undefined,
 		eventFirstStart: doc.eventFirstStart ? getLocalDate(doc.eventFirstStart) : undefined,
 		eventLastEnd: doc.eventLastEnd ? getLocalDate(doc.eventLastEnd) : undefined,
+		archived: doc.archived ? getLocalDate(doc.archived) : undefined,
 		events: doc.events ? doc.events.map((event) => {
 			return {
 				...event,
@@ -161,6 +162,7 @@ export const parseActivityToDocument = (activity: Activity): ActivityDocument =>
 		dueDate: activity.dueDate ? getUtcTimestamp(activity.dueDate) : undefined,
 		eventFirstStart: activity.eventFirstStart ? getUtcTimestamp(activity.eventFirstStart) : undefined,
 		eventLastEnd: activity.eventLastEnd ? getUtcTimestamp(activity.eventLastEnd) : undefined,
+		archived: activity.archived ? getUtcTimestamp(activity.archived) : undefined,
 		events: activity.events ? activity.events.map((event) => {
 			return {
 				...event,
@@ -171,6 +173,15 @@ export const parseActivityToDocument = (activity: Activity): ActivityDocument =>
 			};
 		}) : [],
 	};
+};
+
+const updateActivityStructure = (document: Activity): Activity => {
+	if ((document.archived as any) === true) {
+		document.archived = getLocalDate();
+	} else if ((document.archived as any) === false) {
+		document.archived = undefined;
+	}
+	return document;
 };
 
 export const reParseAllDocuments = () => {
@@ -186,7 +197,11 @@ export const reParseAllDocuments = () => {
 			return;
 		}
 		documents.forEach((document) => {
-			activityStore.update(document);
+			activityStore.update(
+				updateActivityStructure(
+					document
+				)
+			);
 		});
 		useNoticeStore().addNotice(
 			{

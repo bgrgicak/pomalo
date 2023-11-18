@@ -52,7 +52,7 @@ const addNewEvent = (activity: Activity) => {
       class="mb-1"
       :event="event"
       :focused="true"
-      :search-options="{archived: false}"
+      :search-options="{archived: undefined}"
       @newClick="addNewEvent"
       @optionClick="addEvent"
       @onEscape="calendarStore.removeNewEvent"

@@ -73,8 +73,3 @@ const archiveActivity = (activity: Activity) => {
     @click="archiveActivity(props.activity)"
   />
 </template>
-<style scoped lang="scss">
-.activity-archive--small {
-  
-}
-</style>

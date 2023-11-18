@@ -40,7 +40,9 @@ export const useSearchStore = defineStore(
 				};
 			}
 			if (undefined !== options?.archived) {
-				searchOptions.selector.archived = options.archived;
+				searchOptions.selector.archived = {
+					$exists: true,
+				};
 			}
 			return activityStore.find(
 				searchOptions

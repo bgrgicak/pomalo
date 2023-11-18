@@ -183,6 +183,10 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 					if (event.recurrenceId) {
 						return false;
 					}
+					if (activity.archived && startTime > activity.archived) {
+						return false;
+					}
+
 					if (event.repeat) {
 						return !event.repeatEnd || event.repeatEnd >= startTime;
 					}
@@ -252,7 +256,6 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 export const removeAllCalendarEvents = () => {
 	getCalendarUrls().forEach(async (calendarUrl) => {
 		const activityStore = useActivityStore();
-		let total = 0;
 		activityStore.find({
 			selector: {
 				'parent': {
@@ -267,12 +270,11 @@ export const removeAllCalendarEvents = () => {
 				activityStore.remove(document._id);
 			});
 			resetLastCalendarSync(calendarUrl);
-			total += documents.length;
 		});
 		useNoticeStore().addNotice(
 			{
 				type: NoticeType.Success,
-				title: total + ' calendar events removed',
+				title: 'All calendar events were removed',
 			}
 		);
 	});

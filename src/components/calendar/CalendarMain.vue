@@ -16,6 +16,7 @@ import { getTimeDifference } from '@/helper/date';
 import { settings } from '@/helper/settings';
 import { addMilliseconds } from '@/helper/date';
 import CalendarCell from './CalendarCell.vue';
+import { info } from '../../helper/logs';
 
 const props = defineProps({
 	vuecal: {
@@ -108,6 +109,7 @@ const eventUnfocus = () => {
 };
 
 const eventClick = (event: any) => {
+	info('eventClick', event);
 	// If already focused, it's a double click.
 	if (event.eventId === calendarStore.focusedEvent?.eventId) {
 		layoutStore.showRightSidebar(

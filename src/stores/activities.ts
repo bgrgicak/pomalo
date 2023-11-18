@@ -8,6 +8,7 @@ import { computed, ref, type Ref } from 'vue';
 import { addDefaultsToActivity, calculateActivity, parseActivityToDocument, parseDocumentToActivity } from '@/data/activities';
 import type { ActivityDocument } from '@/types/activity-document';
 import constants from '@/helper/constants';
+import { getLocalDate } from '../helper/date';
 
 export interface ActivityMap {
   [key: string]: Activity;
@@ -192,7 +193,7 @@ export const useActivityStore = defineStore(
 					return Promise.reject(__('Activity not found'));
 				}
 				const updatedDocument = Object.assign({}, document);
-				updatedDocument.archived = true;
+				updatedDocument.archived = getLocalDate();
 				updatedDocument.readonly = true;
 				return put({
 					...updatedDocument,
