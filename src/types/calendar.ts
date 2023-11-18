@@ -11,6 +11,7 @@ export interface CalendarEvent {
     deletable?: boolean;
     resizable?: boolean;
     background?: boolean;
+    recurrenceId?: Date;
 }
 
 export interface CalendarState {

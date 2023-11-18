@@ -79,7 +79,8 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 			const activityEvent: ActivityEvent = {
 				id: activityEventId,
 				start: getLocalDate(event.startDate.toJSDate()),
-				end: getLocalDate(event.endDate.toJSDate())
+				end: getLocalDate(event.endDate.toJSDate()),
+				status: event.component.getFirstPropertyValue('status'),
 			};
 			activityEvent.allDay = isAllDayEvent(activityEvent);
 			if (activityEvent.allDay && activityEvent.end) {
@@ -106,7 +107,9 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 					}
 				}
 				if (repeatRules.until) {
-					activityEvent.repeatEnd = repeatRules.until.toJSDate();
+					activityEvent.repeatEnd = getLocalDate(
+						repeatRules.until.toJSDate()
+					);
 				} else if (repeatRules.count) {
 					activityEvent.repeatEnd = addMilliseconds(
 						getEventEndFromRepeatCount(
@@ -143,6 +146,12 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 						}
 					);
 				}
+			}
+			const recurrenceId = event.component.getFirstPropertyValue('recurrence-id');
+			if ( recurrenceId ) {
+				activityEvent.recurrenceId = getLocalDate(
+					recurrenceId.toJSDate()
+				);
 			}
 
 			activities[id].events = [

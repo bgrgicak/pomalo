@@ -146,6 +146,7 @@ export const parseDocumentToActivity = (doc: ActivityDocument): Activity => {
 				start: getLocalDate(event.start),
 				end: event.end ? getLocalDate(event.end) : undefined,
 				repeatEnd: event.repeatEnd ? getLocalDate(event.repeatEnd) : undefined,
+				recurrenceId: event.recurrenceId ? getLocalDate(event.recurrenceId) : undefined,
 			};
 		}) : [],
 	};
@@ -166,6 +167,7 @@ export const parseActivityToDocument = (activity: Activity): ActivityDocument =>
 				start: getUtcTimestamp(event.start),
 				end: event.end ? getUtcTimestamp(event.end) : undefined,
 				repeatEnd: event.repeatEnd ? getUtcTimestamp(event.repeatEnd) : undefined,
+				recurrenceId: event.recurrenceId ? getUtcTimestamp(event.recurrenceId) : undefined,
 			};
 		}) : [],
 	};

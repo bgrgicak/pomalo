@@ -63,6 +63,8 @@ export interface ActivityEvent {
     repeatEnd?: Date,
     repeatDays?: number[],
     repeatInterval?: number,
+    recurrenceId?: Date,
+    status?: string,
 };
 
 export interface ActivityMembers {
