@@ -34,7 +34,7 @@ export const updateSW = registerSW({
 			);
 			setTimeout(
 				() => syncCalendar(worker),
-				constants.environment.development ? 1 : minuteInMilliseconds
+				constants.environment.development ? 10 : minuteInMilliseconds
 			);
 
 			worker.onmessage = (event: MessageEvent) => {
@@ -44,9 +44,9 @@ export const updateSW = registerSW({
 					if (!event.data.activities) {
 						return;
 					}
-					(Object.values(event.data.activities) as Activity[]).forEach( ( activity: Activity ) => {
-						activityStore.addOrUpdate(activity);
-					} );
+					activityStore.bulkPut(
+						(Object.values(event.data.activities) as Activity[])
+					);
 				} else if (event.data.type === 'calendar-sync-all-ids') {
 					// Remove all calendar events that are not in the calendar anymore
 					const { eventIds, calendarUrl } = event.data;

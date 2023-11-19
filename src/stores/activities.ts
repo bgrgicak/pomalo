@@ -122,6 +122,12 @@ export const useActivityStore = defineStore(
 			);
 		};
 
+		const bulkPut = (activities: Activity[]) => {
+			return database.bulkDocs(
+				activities.map((activity) => parseActivityToDocument(calculateActivity(activity)))
+			);
+		};
+
 		const add = (activity: Activity) => {
 			const newDocument = Object.assign({}, activity);
 			return put(newDocument).catch(error => {
@@ -225,6 +231,7 @@ export const useActivityStore = defineStore(
 			list,
 			find,
 			query,
+			bulkPut,
 			add,
 			get,
 			update,

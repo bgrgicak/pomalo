@@ -48,7 +48,7 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 			const id = 'eventCalendar-' + event.uid;
 			eventIds.push(id);
 			const lastModified = event.component.getFirstPropertyValue('last-modified').toJSDate();
-			if ( event.summary === 'Team Fire sync call' ) {
+			if ( event.summary === 'Fuel weekly meeting' ) {
 				debug(vEvent.jCal[1]);
 			}
 
