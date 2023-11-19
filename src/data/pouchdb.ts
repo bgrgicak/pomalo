@@ -95,7 +95,12 @@ const createViews = async (database: PouchDB.Database) => {
 	}
 };
 
-const database = new PouchDB(constants.databaseName);
+const database = new PouchDB(
+	constants.databaseName,
+	{
+		auto_compaction: true,
+	}
+);
 PouchDB.plugin(PouchDBFind);
 
 database.info().then(() => {

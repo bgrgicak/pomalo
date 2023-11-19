@@ -217,7 +217,7 @@ const onIntervalChange = (value: any) => {
             variant="text"
             multiple
             group
-            @update:modelValue="(value: string) => onEventFieldChange('repeatDays', value)"
+            @update:modelValue="(value: number[]) => onEventFieldChange('repeatDays', value)"
           >
             <v-btn
               v-for="day in repeatDaysOfWeekOptions"

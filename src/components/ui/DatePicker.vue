@@ -101,11 +101,12 @@ const getNewValue = (newValue: any) => {
 };
 
 const onSave = (value: Date|undefined) => {
+	console.log('onSave', value);
 	if ('' !== timeError.value) {
 		return false;
 	}
 	// trigger save if only time changed
-	if (undefined === value && false === dateChanged.value) {
+	if (false === dateChanged.value) {
 		onChangeDate(props.value);
 	}
 	dateChanged.value = false;
@@ -136,6 +137,7 @@ const show = () => {
 	showDatepicker.value = true;
 };
 const hide = () => {
+	timeValue.value = getPropTime(props.value);
 	showDatepicker.value = false;
 };
 const clickOutsideConditional = (event: any) => {
@@ -177,6 +179,7 @@ const onClick = (e: any) => {
         closeConditional: clickOutsideConditional
       }"
       title=""
+      :elevation="6"
       :model-value="(value as any)"
       :min="minDate"
       :max="maxDate"
@@ -185,23 +188,44 @@ const onClick = (e: any) => {
       @click:save="onSave"
       @click="onClick"
     >
-      <template #header>
-        <v-text-field
-          v-if="showTime"
-          class="date-picker__time"
-          :label="__('Time')"
-          :readonly="props.readonly"
-          :model-value="timeValue"
-          type="time"
-          @update:modelValue="onChangeTime"
-        />
-        <v-alert
-          v-if="timeError"
-          type="error"
-          class="mx-4 mb-6"
-        >
-          {{ timeError }}
-        </v-alert>
+      <template #header />
+      <template #actions>
+        <v-row class="ma-0">
+          <v-col>
+            <v-text-field
+              v-if="showTime"
+              class="date-picker__time"
+              :label="__('Time')"
+              :readonly="props.readonly"
+              :model-value="timeValue"
+              type="time"
+              @update:modelValue="onChangeTime"
+              @keydown.enter="() => onSave(getNewValue(value))"
+            />
+            <v-alert
+              v-if="timeError"
+              type="error"
+              class="ma-0"
+            >
+              {{ timeError }}
+            </v-alert>
+          </v-col>
+        </v-row>
+        <v-row class="ma-0">
+          <v-col class="date-picker__actions">
+            <v-btn
+              @click="hide"
+            >
+              {{ __('Cancel') }}
+            </v-btn>
+            <v-btn
+              color="primary"
+              @click="() => onSave(getNewValue(value))"
+            >
+              {{ __('Save') }}
+            </v-btn>
+          </v-col>
+        </v-row>
       </template>
     </v-date-picker>
   </div>
@@ -227,7 +251,7 @@ const onClick = (e: any) => {
 		//Picker width is forced to 360px, so we need to adjust the position and scale
 		transform: scale(0.8);
 		left: -36px;
-		top: -28px;
+		top: -36px;
 
 		.v-picker__header {
 			order: 2;
@@ -239,6 +263,14 @@ const onClick = (e: any) => {
 			order: 3;
 		}
 	}
+	.v-picker-title {
+		display: none;
+	}
+
+	.v-picker__actions {
+		flex-direction: column;
+		align-items: stretch;
+	}
 }
 
 .date-picker__date {
@@ -248,10 +280,7 @@ const onClick = (e: any) => {
 .date-picker__time {
     width: 100%;
     border-left: unset;
-	padding-inline-start: 24px;
-	padding-top: 4px;
-	padding-bottom: 4px;
-	padding-inline-end: 12px;
+  	padding: 0;
 
 	.v-select {
 		display: inline-block;
@@ -264,6 +293,10 @@ const onClick = (e: any) => {
     .v-field__input {
         padding-left: 6px;
     }
+}
+.date-picker__actions {
+	justify-content: flex-end;
+  	display: flex;
 }
 </style>
 
