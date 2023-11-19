@@ -5,7 +5,6 @@ import __ from '@/helper/translations';
 import { useActivityFilterStore } from '@/stores/activity-filters';
 import { useActivityListStore } from '@/stores/activity-list';
 import { useLayoutStore } from '@/stores/layout';
-import { useProjectStore } from '@/stores/projects';
 import type Activity from '@/types/activity';
 import type { ActivityType } from '@/types/activity';
 import { ActivityFilterGroup, type ActivityFilterState, type ActivityGroup } from '@/types/activity-filter';
