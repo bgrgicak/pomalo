@@ -54,6 +54,24 @@ export const RepeatLabels: Object = {
 	},
 };
 
+export interface ActivityEventAttendee {
+    email: string,
+    status: string,
+};
+
+export enum ActivityEventStatus {
+    None = '',
+    Tentative = 'TENTATIVE',
+    Confirmed = 'CONFIRMED',
+    Cancelled = 'CANCELLED',
+};
+
+export enum ActivityEventTransparency {
+    None = '',
+    Transparent = 'TRANSPARENT',
+    Opaque = 'OPAQUE',
+};
+
 export interface ActivityEvent {
     id: string,
     start: Date,
@@ -64,7 +82,10 @@ export interface ActivityEvent {
     repeatDays?: number[],
     repeatInterval?: number,
     recurrenceId?: Date,
-    status?: string,
+    status?: ActivityEventStatus,
+    attendees?: ActivityEventAttendee[],
+    transparency?: ActivityEventTransparency,
+    organizer?: string,
 };
 
 export interface ActivityMembers {

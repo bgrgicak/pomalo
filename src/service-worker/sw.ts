@@ -31,6 +31,20 @@ const getEventEndFromRepeatCount = (start: Date, repeat?: RepeatInterval, repeat
 	return end;
 };
 
+const getEmailFromAttendee = (attendee: any): string => {
+	const emailRegex = /mailto:(.*)/g;
+	const match = emailRegex.exec(attendee);
+	console.log(match);
+	if (match) {
+		return match[1];
+	}
+	return '';
+};
+
+const getStatusFromAttendee = (attendee: any): string => {
+	return attendee.getParameter('partstat');
+};
+
 const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 	fetch(
 		settings.calendar.syncProxyServer + calendarUrl,
@@ -48,11 +62,8 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 			const id = 'eventCalendar-' + event.uid;
 			eventIds.push(id);
 			const lastModified = event.component.getFirstPropertyValue('last-modified').toJSDate();
-			if ( event.summary === 'Fuel weekly meeting' ) {
-				debug(vEvent.jCal[1]);
-			}
 
-			if (lastCalendarSync && lastModified < lastCalendarSync) {
+			if (lastCalendarSync && lastModified < lastCalendarSync && event.summary !== 'Fuel weekly meeting') {
 				return;
 			}
 			if ( ! activities[id] ) {
@@ -84,6 +95,9 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				start: getLocalDate(event.startDate.toJSDate()),
 				end: getLocalDate(event.endDate.toJSDate()),
 				status: event.component.getFirstPropertyValue('status'),
+				transparency: event.component.getFirstPropertyValue('transp'),
+				organizer: getEmailFromAttendee( event.component.getFirstPropertyValue('organizer') ),
+				attendees: []
 			};
 			activityEvent.allDay = isAllDayEvent(activityEvent);
 			if (activityEvent.allDay && activityEvent.end) {
@@ -156,6 +170,15 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 					recurrenceId.toJSDate()
 				);
 			}
+			event.component.getAllProperties('attendee').forEach((attendeeData: any) => {
+				const attendee = new ICAL.Event(attendeeData);
+				console.log(attendee.component);
+				// tslint:disable-next-line: unknown
+				// activityEvent.attendees.push({
+				// 	email: getEmailFromAttendee(attendee.component.getFirstPropertyValue('partstat')),
+				// 	status: attendee.component.getFirstPropertyValue('partstat'),
+				// });
+			});
 
 			activities[id].events = [
 				...activities[id].events,
