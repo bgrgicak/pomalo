@@ -38,7 +38,8 @@ const maybeSyncRemote = (database: PouchDB.Database) => {
 				auth: {
 					username,
 					password,
-				}
+				},
+				auto_compaction: true,
 			}
 		);
 		remoteDatabase.info().then(() => {
