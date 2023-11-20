@@ -31,18 +31,13 @@ const getEventEndFromRepeatCount = (start: Date, repeat?: RepeatInterval, repeat
 	return end;
 };
 
-const getEmailFromAttendee = (attendee: any): string => {
+const getEmailFromAttendee = (attendee: string): string => {
 	const emailRegex = /mailto:(.*)/g;
 	const match = emailRegex.exec(attendee);
-	console.log(match);
 	if (match) {
 		return match[1];
 	}
 	return '';
-};
-
-const getStatusFromAttendee = (attendee: any): string => {
-	return attendee.getParameter('partstat');
 };
 
 const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
@@ -57,6 +52,9 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 		const comp = new ICAL.Component(jcalData);
 		const activities: { [key: string]: Activity } = {};
 		const eventIds: string[] = [];
+		// In Google Calendar, the calendar name is the same as the email address
+		const calName = comp.getFirstPropertyValue('x-wr-calname');
+
 		comp.getAllSubcomponents('vevent').forEach((vEvent: any) => {
 			const event = new ICAL.Event(vEvent);
 			const id = 'eventCalendar-' + event.uid;
@@ -94,9 +92,12 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				id: activityEventId,
 				start: getLocalDate(event.startDate.toJSDate()),
 				end: getLocalDate(event.endDate.toJSDate()),
-				status: event.component.getFirstPropertyValue('status'),
 				transparency: event.component.getFirstPropertyValue('transp'),
-				organizer: getEmailFromAttendee( event.component.getFirstPropertyValue('organizer') ),
+				status: event.component.getFirstPropertyValue('status'),
+				organizer: {
+					email: getEmailFromAttendee( event.component.getFirstPropertyValue('organizer') ),
+					status: event.component.getFirstPropertyValue('status')
+				},
 				attendees: []
 			};
 			activityEvent.allDay = isAllDayEvent(activityEvent);
@@ -171,13 +172,18 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 				);
 			}
 			event.component.getAllProperties('attendee').forEach((attendeeData: any) => {
-				const attendee = new ICAL.Event(attendeeData);
-				console.log(attendee.component);
-				// tslint:disable-next-line: unknown
-				// activityEvent.attendees.push({
-				// 	email: getEmailFromAttendee(attendee.component.getFirstPropertyValue('partstat')),
-				// 	status: attendee.component.getFirstPropertyValue('partstat'),
-				// });
+				if (attendeeData.jCal && attendeeData.jCal[0] === 'attendee') {
+					// @ts-ignore-next-line undefined
+					activityEvent.attendees.push({
+						email: calName,
+						status: attendeeData.jCal[1]?.partstat,
+					});
+
+					// If calendar owner is attendee, set status
+					if (calName === calName) {
+						activityEvent.status = attendeeData.jCal[1]?.partstat;
+					}
+				}
 			});
 
 			activities[id].events = [

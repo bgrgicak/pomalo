@@ -64,6 +64,7 @@ export enum ActivityEventStatus {
     Tentative = 'TENTATIVE',
     Confirmed = 'CONFIRMED',
     Cancelled = 'CANCELLED',
+    Declined = 'DECLINED',
 };
 
 export enum ActivityEventTransparency {
@@ -85,7 +86,7 @@ export interface ActivityEvent {
     status?: ActivityEventStatus,
     attendees?: ActivityEventAttendee[],
     transparency?: ActivityEventTransparency,
-    organizer?: string,
+    organizer?: ActivityEventAttendee,
 };
 
 export interface ActivityMembers {

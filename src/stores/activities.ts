@@ -124,8 +124,15 @@ export const useActivityStore = defineStore(
 
 		const bulkPut = (activities: Activity[]) => {
 			return database.bulkDocs(
-				activities.map((activity) => parseActivityToDocument(calculateActivity(activity)))
-			);
+				activities.map((activity) => {
+					return {
+						...parseActivityToDocument(calculateActivity(activity)),
+						_rev: activity._id as string ?? undefined,
+					};
+				})
+			).catch(error => {
+				log(error, LogType.Error);
+			});
 		};
 
 		const add = (activity: Activity) => {

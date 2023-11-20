@@ -1,5 +1,5 @@
 import type Activity from '@/types/activity';
-import { RepeatInterval, type ActivityEvent } from '@/types/activity';
+import { RepeatInterval, type ActivityEvent, ActivityEventStatus } from '@/types/activity';
 import { daysBetweenDates, getWeekStartAndEnd, copyTimeFromDate, weeksBetweenDates, getLocalDate } from '../helper/date';
 import type { CalendarEvent } from '@/types/calendar';
 import { newId } from './pouchdb';
@@ -177,6 +177,9 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 			const recurrenceEvents = getRecurrenceEvents(activity, startTime, endTime);
 			activity.events
 				.filter((event: ActivityEvent) => {
+					if (event.status === ActivityEventStatus.Cancelled || event.status === ActivityEventStatus.Declined) {
+						return false;
+					}
 					if (event.start > endTime) {
 						return false;
 					}
