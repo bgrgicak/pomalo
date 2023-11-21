@@ -18,8 +18,9 @@ export const getSystemDateFormat = () => {
 	return format;
 };
 
-const prepareDate = (date?: Date | string | number) => {
-	if (!date) {
+const prepareDate = (date?: Date | string | number | boolean) => {
+	// date === true is used for legacy reasons
+	if (!date || date === true) {
 		return new Date();
 	}
 	if (typeof date === 'string' || typeof date === 'number') {

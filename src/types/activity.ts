@@ -1,4 +1,5 @@
 import __ from '@/helper/translations';
+import exp from 'constants';
 
 export enum Importance {
     NotImportant = 1,
@@ -73,6 +74,18 @@ export enum ActivityEventTransparency {
     Opaque = 'OPAQUE',
 };
 
+export interface ActivityEventLink {
+    title?: string,
+    url: string,
+};
+
+export enum ActivityEventClass {
+    None = '',
+    Public = 'PUBLIC',
+    Private = 'PRIVATE',
+    Confidential = 'CONFIDENTIAL',
+};
+
 export interface ActivityEvent {
     id: string,
     start: Date,
@@ -87,6 +100,17 @@ export interface ActivityEvent {
     attendees?: ActivityEventAttendee[],
     transparency?: ActivityEventTransparency,
     organizer?: ActivityEventAttendee,
+    url?: string,
+    attachment?: string,
+    class?: ActivityEventClass,
+    location?: string,
+    exceptionDates?: Date[],
+    sequence?: number,
+    additionalDates?: Date[],
+    geo?: {
+        lat: number,
+        lng: number,
+    },
 };
 
 export interface ActivityMembers {
@@ -119,6 +143,7 @@ interface Activity {
     _rev?: string,
     title: string,
     created: Date,
+    updated?: Date,
     description: string,
     type: ActivityType,
     parent?: string,

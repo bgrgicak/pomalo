@@ -61,7 +61,7 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 			eventIds.push(id);
 			const lastModified = event.component.getFirstPropertyValue('last-modified').toJSDate();
 
-			if (lastCalendarSync && lastModified < lastCalendarSync && event.summary !== 'Fuel weekly meeting') {
+			if (lastCalendarSync && lastModified < lastCalendarSync) {
 				return;
 			}
 			if ( ! activities[id] ) {
@@ -98,7 +98,8 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 					email: getEmailFromAttendee( event.component.getFirstPropertyValue('organizer') ),
 					status: event.component.getFirstPropertyValue('status')
 				},
-				attendees: []
+				attendees: [],
+				exceptionDates: [],
 			};
 			activityEvent.allDay = isAllDayEvent(activityEvent);
 			if (activityEvent.allDay && activityEvent.end) {
@@ -184,6 +185,39 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 						activityEvent.status = attendeeData.jCal[1]?.partstat;
 					}
 				}
+			});
+
+			event.component.getAllProperties('exdate').forEach((exdateProp: any) => {
+				const exdate = exdateProp.getFirstValue();
+				// @ts-ignore-next-line undefined
+				activityEvent.exceptionDates.push(
+					getLocalDate(exdate.toJSDate())
+				);
+			});
+
+			event.component.getAllProperties('location').forEach((locationProp: any) => {
+				const location = locationProp.getFirstValue();
+				activityEvent.location = location;
+			});
+
+			event.component.getAllProperties('sequence').forEach((prop: any) => {
+				const value = prop.getFirstValue();
+				activityEvent.sequence = value;
+			});
+
+			event.component.getAllProperties('url').forEach((prop: any) => {
+				const value = prop.getFirstValue();
+				activityEvent.url = value;
+			});
+
+			event.component.getAllProperties('attach').forEach((prop: any) => {
+				const value = prop.getFirstValue();
+				activityEvent.attachment = value;
+			});
+
+			event.component.getAllProperties('class').forEach((prop: any) => {
+				const value = prop.getFirstValue();
+				activityEvent.class = value;
 			});
 
 			activities[id].events = [

@@ -135,6 +135,7 @@ export const parseDocumentToActivity = (doc: ActivityDocument): Activity => {
 	return {
 		...doc,
 		created: getLocalDate(doc.created),
+		updated: doc.updated ? getLocalDate(doc.updated) : undefined,
 		completedDate: doc.completedDate ? getLocalDate(doc.completedDate) : undefined,
 		startDate: doc.startDate ? getLocalDate(doc.startDate) : undefined,
 		dueDate: doc.dueDate ? getLocalDate(doc.dueDate) : undefined,
@@ -148,6 +149,12 @@ export const parseDocumentToActivity = (doc: ActivityDocument): Activity => {
 				end: event.end ? getLocalDate(event.end) : undefined,
 				repeatEnd: event.repeatEnd ? getLocalDate(event.repeatEnd) : undefined,
 				recurrenceId: event.recurrenceId ? getLocalDate(event.recurrenceId) : undefined,
+				additionalDates: event.additionalDates ? event.additionalDates.map((date) => {
+					return getLocalDate(date);
+				}) : [],
+				exceptionDates: event.exceptionDates ? event.exceptionDates.map((date) => {
+					return getLocalDate(date);
+				}) : [],
 			};
 		}) : [],
 	};
@@ -157,6 +164,7 @@ export const parseActivityToDocument = (activity: Activity): ActivityDocument =>
 	return {
 		...activity,
 		created: getUtcTimestamp(activity.created),
+		updated: activity.updated ? getUtcTimestamp(activity.updated) : undefined,
 		completedDate: activity.completedDate ? getUtcTimestamp(activity.completedDate) : undefined,
 		startDate: activity.startDate ? getUtcTimestamp(activity.startDate) : undefined,
 		dueDate: activity.dueDate ? getUtcTimestamp(activity.dueDate) : undefined,
@@ -170,12 +178,19 @@ export const parseActivityToDocument = (activity: Activity): ActivityDocument =>
 				end: event.end ? getUtcTimestamp(event.end) : undefined,
 				repeatEnd: event.repeatEnd ? getUtcTimestamp(event.repeatEnd) : undefined,
 				recurrenceId: event.recurrenceId ? getUtcTimestamp(event.recurrenceId) : undefined,
+				exceptionDates: event.exceptionDates ? event.exceptionDates.map((date) => {
+					return getUtcTimestamp(date);
+				}) : [],
+				additionalDates: event.additionalDates ? event.additionalDates.map((date) => {
+					return getUtcTimestamp(date);
+				}) : [],
 			};
 		}) : [],
 	};
 };
 
 const updateActivityStructure = (document: Activity): Activity => {
+	// Moving archived from boolean to date
 	if ((document.archived as any) === true) {
 		document.archived = getLocalDate();
 	} else if ((document.archived as any) === false) {
