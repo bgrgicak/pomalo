@@ -149,9 +149,6 @@ export const parseDocumentToActivity = (doc: ActivityDocument): Activity => {
 				end: event.end ? getLocalDate(event.end) : undefined,
 				repeatEnd: event.repeatEnd ? getLocalDate(event.repeatEnd) : undefined,
 				recurrenceId: event.recurrenceId ? getLocalDate(event.recurrenceId) : undefined,
-				additionalDates: event.additionalDates ? event.additionalDates.map((date) => {
-					return getLocalDate(date);
-				}) : [],
 				exceptionDates: event.exceptionDates ? event.exceptionDates.map((date) => {
 					return getLocalDate(date);
 				}) : [],
@@ -179,9 +176,6 @@ export const parseActivityToDocument = (activity: Activity): ActivityDocument =>
 				repeatEnd: event.repeatEnd ? getUtcTimestamp(event.repeatEnd) : undefined,
 				recurrenceId: event.recurrenceId ? getUtcTimestamp(event.recurrenceId) : undefined,
 				exceptionDates: event.exceptionDates ? event.exceptionDates.map((date) => {
-					return getUtcTimestamp(date);
-				}) : [],
-				additionalDates: event.additionalDates ? event.additionalDates.map((date) => {
 					return getUtcTimestamp(date);
 				}) : [],
 			};

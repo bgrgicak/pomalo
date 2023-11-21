@@ -95,6 +95,7 @@ export interface ActivityEvent {
     repeatEnd?: Date,
     repeatDays?: number[],
     repeatInterval?: number,
+
     recurrenceId?: Date,
     status?: ActivityEventStatus,
     attendees?: ActivityEventAttendee[],
@@ -106,11 +107,6 @@ export interface ActivityEvent {
     location?: string,
     exceptionDates?: Date[],
     sequence?: number,
-    additionalDates?: Date[],
-    geo?: {
-        lat: number,
-        lng: number,
-    },
 };
 
 export interface ActivityMembers {
