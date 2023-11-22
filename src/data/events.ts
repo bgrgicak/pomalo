@@ -167,6 +167,7 @@ const defaultCalendarEvent = (activity: Activity, event: ActivityEvent, isCurren
 		start: undefined as Date | undefined,
 		end: undefined as Date | undefined,
 		recurrenceId: event.recurrenceId,
+		type: activity.type,
 	} as CalendarEvent;
 };
 

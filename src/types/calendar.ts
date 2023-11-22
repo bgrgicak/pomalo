@@ -1,9 +1,12 @@
+import type { ActivityType } from './activity';
+
 export interface CalendarEvent {
     id?: string;
     eventId: string;
     title?: string;
     start: Date;
     end: Date | undefined;
+    type?: ActivityType;
     repeatIteration?: boolean;
     allDay?: boolean;
     content?: string;

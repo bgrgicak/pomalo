@@ -59,6 +59,15 @@ const routes: Route[] = [
 		],
 	},
 	{
+		path: '/analytics',
+		name: __('Analytics'),
+		icon: 'mdi-poll',
+		component: () => import('../views/AnalyticsView.vue'),
+		menu: [
+			MenuType.Main,
+		],
+	},
+	{
 		path: '/sign-in',
 		name: __('Sign in'),
 		icon: 'mdi-login',

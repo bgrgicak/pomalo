@@ -37,6 +37,11 @@ export const toLocaleDateString = (date?: Date | string | number) => {
 	return date.toLocaleDateString();
 };
 
+export const toTimeString = (date?: Date | string | number) => {
+	date = prepareDate(date);
+	return new Date(date).toISOString().slice(11,19);
+};
+
 export const toInputDateString = (date?: Date | string | number) => {
 	date = prepareDate(date);
 	const padTo2Digits = (num: any) => {
