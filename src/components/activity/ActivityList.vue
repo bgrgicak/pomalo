@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { emptyActivity, openActivityPage } from '@/data/activities';
+import { openActivityPage } from '@/data/activities';
 import { useLayoutStore } from '@/stores/layout';
 import type Activity from '@/types/activity';
 import { ActivityType } from '@/types/activity';
@@ -62,7 +62,7 @@ const removeActivity = (activityId: string) => {
     @updateListId="listId = $event"
     @removeActivity="removeActivity"
   />
-  <ProjectList 
+  <ProjectList
     v-else-if="props.type === ActivityType.Project"
     :type="props.type"
     :header-items="props.headerItems"

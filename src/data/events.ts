@@ -1,6 +1,6 @@
 import type Activity from '@/types/activity';
 import { RepeatInterval, type ActivityEvent, ActivityEventStatus } from '@/types/activity';
-import { daysBetweenDates, getWeekStartAndEnd, copyTimeFromDate, weeksBetweenDates, getLocalDate } from '../helper/date';
+import { daysBetweenDates, getWeekStartAndEnd, copyTimeFromDate, weeksBetweenDates, getLocalDate, setTime, copyTimezoneDate } from '../helper/date';
 import type { CalendarEvent } from '@/types/calendar';
 import { newId } from './pouchdb';
 import { getCalendarUrls, resetLastCalendarSync } from '../service-worker/ical-sync';
@@ -105,7 +105,22 @@ const isInInterval = (day: Date, event: ActivityEvent): boolean => {
 	return false;
 };
 
+const isExceptionDate = (day: Date, event: ActivityEvent): boolean => {
+	if (!event.exceptionDates) {
+		return false;
+	}
+	return event.exceptionDates.some((exceptionDate) => {
+		return setTime(day).getTime() ===  copyTimezoneDate(
+			setTime(exceptionDate),
+			exceptionDate
+		).getTime();
+	});
+};
+
 const isDayInRepeatCycle = (day: Date, event: ActivityEvent): boolean => {
+	if (isExceptionDate(day, event)) {
+		return false;
+	}
 	if (!isInInterval(day, event)) {
 		return false;
 	}
@@ -180,6 +195,10 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 					if (event.status === ActivityEventStatus.Cancelled || event.status === ActivityEventStatus.Declined) {
 						return false;
 					}
+					if (event?.organizer?.status === ActivityEventStatus.Cancelled) {
+						return false;
+					}
+
 					if (event.start > endTime) {
 						return false;
 					}
@@ -210,7 +229,6 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 							lastDay = endTime;
 						}
 						while (iteratorDay <= lastDay) {
-							// Check if there is a recurrence event for this day
 							if ( recurrenceEvents[iteratorDay.toString()] ) {
 								const recurrenceEvent = recurrenceEvents[iteratorDay.toString()];
 								addEvent({

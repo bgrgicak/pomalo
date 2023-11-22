@@ -115,10 +115,11 @@ export const addDays = (date: Date, days: number) => {
 	return addMilliseconds(date, days * dayInMilliseconds);
 };
 
-export const setTime = (date: Date, hours: number = 0, minutes: number = 0, seconds: number = 0) => {
+export const setTime = (date: Date, hours: number = 0, minutes: number = 0, seconds: number = 0, milliseconds: number = 0) => {
 	date.setHours(hours);
 	date.setMinutes(minutes);
 	date.setSeconds(seconds);
+	date.setMilliseconds(milliseconds);
 	return date;
 };
 
@@ -134,6 +135,14 @@ export const copyTimeFromDate = (newDate: Date, dateWithNewTime: Date) => {
 	return new Date(
 		newDate.toString().substring(0, charactersInDate) +
 		dateWithNewTime.toString().substring(charactersInDate)
+	);
+};
+
+export const copyTimezoneDate = (newDate: Date, dateWithNewTimezone: Date) => {
+	const charactersInDate = 25;
+	return new Date(
+		newDate.toString().substring(0, charactersInDate) +
+		dateWithNewTimezone.toString().substring(charactersInDate)
 	);
 };
 
