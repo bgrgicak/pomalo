@@ -86,13 +86,24 @@ export const getTimePassed = (start: Date | string | number, end?: Date | string
 		.padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
+/**
+ * Returns the first and last day of the week
+ * @param date
+ * @returns object with start and end date
+ */
 export const getWeekStartAndEnd = (date?: Date | string | number) => {
-	var d = getLocalDate(prepareDate(date));
-	var to = d.setTime(d.getTime() - (d.getDay() ? d.getDay() : 7) * dayInMilliseconds);
-	var from = d.setTime(d.getTime() - 6 * dayInMilliseconds);
+	const currentDate = getLocalDate(date);
+	const day = currentDate.getDay();
+	const start = setTime(currentDate);
+	start.setDate(currentDate.getDate() - day + (day === 0 ? -6 : 1));
+
+	const end = setTime(
+		structuredClone(start),
+	);
+	end.setDate(start.getDate() + 6);
 	return {
-		start: new Date(from),
-		end: new Date(to),
+		start,
+		end,
 	};
 };
 
