@@ -34,20 +34,6 @@ watch(
 		firstLoad.value = false;
 	}
 );
-
-const clickOutsideConditional = (event: any) => {
-	if (event.target) {
-		return !event.target.classList.contains('activity-list__link')
-      && !event.target.classList.contains('v-list-item')
-      && !event.target.classList.contains('v-list-item-title')
-      && !event.target.classList.contains('prevent-outside-close')
-      && !(
-      	event.target.parent &&
-        event.target.parent.classList.contains('prevent-outside-close')
-      );
-	}
-	return true;
-};
 </script>
 <template>
   <v-navigation-drawer
@@ -56,38 +42,32 @@ const clickOutsideConditional = (event: any) => {
     :width="350"
     :model-value="layoutStore.isRightSidebarVisible"
     class="right-sidebar"
+    :temporary="true"
     @update:model-value="hide"
   >
-    <div
-      v-click-outside.self="{
-        handler: hide,
-        closeConditional: clickOutsideConditional
-      }"
-    >
-      <header class="right-sidebar__header py-3">
-        <v-btn
-          v-if="activity"
-          icon="mdi-arrow-expand"
-          variant="plain"
-          size="56"
-          class="right-sidebar__expand ml-2"
-          :href="getActivityLink(activity)"
-        />
-        <v-spacer />
-        <v-btn
-          icon="mdi-close"
-          variant="plain"
-          size="56"
-          class="right-sidebar__close mr-2"
-          @click="hide"
-        />
-      </header>
-      <ActivityMain
-        :activity="activity"
-        :event="event"
-        :small="true"
+    <header class="right-sidebar__header py-3">
+      <v-btn
+        v-if="activity"
+        icon="mdi-arrow-expand"
+        variant="plain"
+        size="56"
+        class="right-sidebar__expand ml-2"
+        :href="getActivityLink(activity)"
       />
-    </div>
+      <v-spacer />
+      <v-btn
+        icon="mdi-close"
+        variant="plain"
+        size="56"
+        class="right-sidebar__close mr-2"
+        @click="hide"
+      />
+    </header>
+    <ActivityMain
+      :activity="activity"
+      :event="event"
+      :small="true"
+    />
   </v-navigation-drawer>
 </template>
 <style lang="scss">
