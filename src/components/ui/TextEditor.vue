@@ -62,7 +62,7 @@ const focusEditor = () => {
 
 const editorClick = ( event: any ) => {
 	if ( ( event.ctrlKey || event.metaKey ) && event.target.tagName === 'A') {
-		window.open(event.target.href, '_blank');
+		window.open(event.target.href, '_self');
 	}
 };
 </script>

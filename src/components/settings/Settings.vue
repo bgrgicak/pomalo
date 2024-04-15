@@ -65,9 +65,10 @@ const prepareSetting = (setting: Setting) => {
   </v-container>
 </template>
 <style lang="scss">
+@import '@/styles/variables.scss';
 .settings.v-container {
     overflow-y: auto;
-    max-height: 100%;
+    max-height: calc(100vh - $header-height);
     max-width: 100%;
 
     .v-list {
