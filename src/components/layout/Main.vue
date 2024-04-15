@@ -16,12 +16,12 @@ const layoutStore = useLayoutStore();
     <RouterView />
   </v-main>
 </template>
-<style scoped lang="scss">
+<style lang="scss">
 @import '@/styles/variables.scss';
 html, body {
 		overflow: hidden;
 }
-.main {
+.v-main.main {
 	flex: 0 0 auto;
 	padding: 0;
 	position: relative;
