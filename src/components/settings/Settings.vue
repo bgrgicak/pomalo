@@ -51,7 +51,6 @@ const prepareSetting = (setting: Setting) => {
       </v-col>
       <v-spacer />
     </v-row>
-    <SettingsDevelopmentMode v-if="constants.environment.development" />
     <v-row class="mt-12">
       <v-col cols="12">
         <v-btn
@@ -62,13 +61,13 @@ const prepareSetting = (setting: Setting) => {
         </v-btn>
       </v-col>
     </v-row>
+    <SettingsDevelopmentMode v-if="constants.environment.development" />
   </v-container>
 </template>
 <style lang="scss">
 @import '@/styles/variables.scss';
 .settings.v-container {
     overflow-y: auto;
-    max-height: calc(100vh - $header-height);
     max-width: 100%;
 
     .v-list {

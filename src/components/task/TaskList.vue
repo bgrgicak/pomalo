@@ -145,7 +145,7 @@ const toggleFilters = () => {
 <template>
   <v-row
     v-if="!props.compact"
-    class="pa-4 pb-0 pl-1"
+    class="pa-4 pb-0 pl-1 activity-list__header"
   >
     <v-col cols="10">
       <v-btn
@@ -250,6 +250,10 @@ const toggleFilters = () => {
   <style lang="scss">
   $row-height: 2rem;
   $font-size: 0.9rem;
+  .activity-list__header {
+    max-width: 100%;
+    margin: 0;
+  }
   .activity-list {
     padding-bottom: 2rem;
     font-size: $font-size;
