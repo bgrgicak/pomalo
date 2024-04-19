@@ -15,4 +15,6 @@
     // force space before function parenthesis
     "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
     "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
+    "prettier.useTabs": true,
+    "prettier.tabWidth": 4,
 }
