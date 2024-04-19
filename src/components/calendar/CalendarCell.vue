@@ -38,6 +38,14 @@ const addEvent = (activity: Activity) => {
 const addNewEvent = (activity: Activity) => {
 	addEvent(activity);
 };
+
+const subtitle = computed(() => {
+	const parts = [props.event.start];
+	if (props.event.end) {
+		parts.push(props.event.end);
+	}
+	return parts.map((part) => part.formatTime('hh:mm')).join(' - ');
+});
 </script>
 <template>
   <v-card-title
@@ -59,7 +67,7 @@ const addNewEvent = (activity: Activity) => {
     />
   </v-card-title>
   <v-card-subtitle>
-    {{ event.start.formatTime('hh:mm') + ' - ' + event.end.formatTime('hh:mm') }}
+    {{ subtitle }}
   </v-card-subtitle>
   <v-card-text>
     {{ props.event.content }}
@@ -68,30 +76,30 @@ const addNewEvent = (activity: Activity) => {
 <style lang="scss">
 
 .calendar-event__new {
-  overflow: visible !important;
-  min-height: 60px !important;
+	overflow: visible !important;
+	min-height: 60px !important;
 
-  .calendar-cell__title {
-    overflow: visible;
-    .activity-select {
-      width: 100%;
-      .activity-select__form{
-          min-width: auto;
-      }
-    }
-    &.calendar-cell__title--new {
-      overflow: visible;
-    }
-  }
+	.calendar-cell__title {
+		overflow: visible;
+		.activity-select {
+			width: 100%;
+			.activity-select__form{
+					min-width: auto;
+			}
+		}
+		&.calendar-cell__title--new {
+			overflow: visible;
+		}
+	}
 
-  .v-card-subtitle {
-    display: none;
-  }
+	.v-card-subtitle {
+		display: none;
+	}
 }
 .calendar-event__completed {
-  .calendar-cell__title {
-    text-decoration: line-through;
-  }
+	.calendar-cell__title {
+		text-decoration: line-through;
+	}
 }
 .vuecal__event {
 	.v-card-title {
