@@ -23,7 +23,7 @@ export const useCalendarStore = defineStore('calendar', () => {
 	const activityStore = useActivityStore();
 	const timerStore = useTimerStore();
 
-	const maybeAddActivity = (activity: Activity) => {
+	const maybeUpdateActivity = (activity: Activity) => {
 		if (!state.value.startTime || !state.value.endTime) {
 			return;
 		}
@@ -34,6 +34,8 @@ export const useCalendarStore = defineStore('calendar', () => {
 				activity.eventLastEnd >= state.value.startTime)
 		) {
 			addActivityId(activity._id);
+		} else if (state.value.activityIds.includes(activity._id as string)) {
+			removeActivityId(activity._id as string);
 		}
 	};
 
@@ -44,7 +46,7 @@ export const useCalendarStore = defineStore('calendar', () => {
 			include_docs: true,
 		})
 		.on('change', (change) => {
-			maybeAddActivity(
+			maybeUpdateActivity(
 				parseDocumentToActivity(change.doc as ActivityDocument)
 			);
 		})
@@ -107,6 +109,12 @@ export const useCalendarStore = defineStore('calendar', () => {
 		if (!state.value.activityIds.includes(activityId)) {
 			state.value.activityIds.push(activityId);
 		}
+	};
+
+	const removeActivityId = (activityId: string) => {
+		state.value.activityIds = state.value.activityIds.filter(
+			(id) => id !== activityId
+		);
 	};
 
 	const addNewEvent = (event: CalendarEvent) => {
