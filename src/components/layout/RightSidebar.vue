@@ -16,6 +16,16 @@ const firstLoad = ref(true);
 const activityId = computed(() => layoutStore.currentActivityId as string);
 const activity = computed(() => activityStore.activities[activityId.value]);
 const event = computed(() => layoutStore.currentEvent ?? undefined);
+const width = computed(
+	() => {
+		const windowWidth = window.innerWidth / 2;
+		if ( windowWidth < 350 ) {
+			return 350;
+		} else if ( windowWidth > 1000 ) {
+			return 1000;
+		}
+		return windowWidth;
+	});
 
 if (activityId.value) {
 	activityStore.get(activityId.value);
@@ -34,12 +44,13 @@ watch(
 		firstLoad.value = false;
 	}
 );
+
 </script>
 <template>
   <v-navigation-drawer
     v-if="layoutStore.isRightSidebarVisible"
     location="right"
-    :width="350"
+    :width="width"
     :model-value="layoutStore.isRightSidebarVisible"
     class="right-sidebar"
     :temporary="true"

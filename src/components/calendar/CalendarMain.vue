@@ -318,7 +318,7 @@ const eventDragCreate = (event: any) => {
     :time-cell-height="cellHeight"
     :watch-real-time="true"
     @event-click="eventClick"
-	@event-dblclick="eventDblClick"
+    @event-dblclick="eventDblClick"
     @cell-click="cellClick"
     @cell-dblclick="cellDoubleClick"
     @ready="onReady"
