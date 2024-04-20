@@ -139,18 +139,29 @@ const isDayInRepeatCycle = (day: Date, event: ActivityEvent): boolean => {
 	return false;
 };
 
-const defaultCalendarEvent = (activity: Activity, event: ActivityEvent, isCurrentActivity: boolean = false): CalendarEvent => {
+const defaultCalendarEvent = (
+	activity: Activity,
+	event: ActivityEvent,
+	isCurrentActivity: boolean = false,
+	isFocused = false
+): CalendarEvent => {
 	const projectStore = useProjectStore();
 	const isEditable = !isCurrentActivity && true !== activity.readonly;
 
-	const content = activity.parent ? projectStore.getTitle(activity.parent) : '';
+	const content = activity.parent
+		? projectStore.getTitle(activity.parent)
+		: '';
 
-	let className = 'v-card prevent-outside-close calendar-event__' + activity.type;
+	let className =
+		'v-card prevent-outside-close calendar-event__' + activity.type;
 	if (true === activity.readonly) {
 		className += ' calendar-event__readonly';
 	}
 	if (activity.completedDate) {
 		className += ' calendar-event__completed';
+	}
+	if (isFocused) {
+		className += ' vuecal__event--focus';
 	}
 	return {
 		id: activity._id,
@@ -181,22 +192,38 @@ const getRecurrenceEvents = (activity: Activity, startTime: Date, endTime: Date)
 	return recurrenceEvents;
 };
 
-export const parseEventsFromActivities = (activities: Activity[], startTime: Date, endTime: Date, currentActivityId?: string): CalendarEvent[] => {
+export const parseEventsFromActivities = (
+	activities: Activity[],
+	startTime: Date,
+	endTime: Date,
+	currentActivityId?: string,
+	focusedEventIds?: string[]
+): CalendarEvent[] => {
 	const events: CalendarEvent[] = [];
 	const addEvent = (event: CalendarEvent) => {
-		events.push( {
-			...event
-		} );
+		events.push({
+			...event,
+		});
 	};
 	if (activities) {
 		activities.forEach((activity: Activity) => {
-			const recurrenceEvents = getRecurrenceEvents(activity, startTime, endTime);
+			const recurrenceEvents = getRecurrenceEvents(
+				activity,
+				startTime,
+				endTime
+			);
 			activity.events
 				.filter((event: ActivityEvent) => {
-					if (event.status === ActivityEventStatus.Cancelled || event.status === ActivityEventStatus.Declined) {
+					if (
+						event.status === ActivityEventStatus.Cancelled ||
+						event.status === ActivityEventStatus.Declined
+					) {
 						return false;
 					}
-					if (event?.organizer?.status === ActivityEventStatus.Cancelled) {
+					if (
+						event?.organizer?.status ===
+						ActivityEventStatus.Cancelled
+					) {
 						return false;
 					}
 
@@ -216,26 +243,38 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 					return !event.end || event.end >= startTime;
 				})
 				.forEach((event) => {
-					const isCurrentActivity = currentActivityId === activity._id;
+					const isCurrentActivity =
+						currentActivityId === activity._id;
 
 					const endDay = event.end ? event.end : getLocalDate();
-					const eventData = defaultCalendarEvent(activity, event, isCurrentActivity);
+					const isFocused =
+						focusedEventIds && focusedEventIds.includes(event.id);
+					const eventData = defaultCalendarEvent(
+						activity,
+						event,
+						isCurrentActivity,
+						isFocused
+					);
 					if (event.repeat) {
 						const iteratorDay = structuredClone(
 							startTime.getTime() > event.start.getTime()
-								? startTime : event.start
+								? startTime
+								: event.start
 						);
 						let lastDay = event.repeatEnd;
 						if (!lastDay || lastDay > endTime) {
 							lastDay = endTime;
 						}
 						while (iteratorDay <= lastDay) {
-							if ( recurrenceEvents[iteratorDay.toString()] ) {
-								const recurrenceEvent = recurrenceEvents[iteratorDay.toString()];
+							if (recurrenceEvents[iteratorDay.toString()]) {
+								const recurrenceEvent =
+									recurrenceEvents[iteratorDay.toString()];
 								addEvent({
 									...eventData,
 									start: recurrenceEvent.start,
-									end: recurrenceEvent.end ? recurrenceEvent.end : getLocalDate(),
+									end: recurrenceEvent.end
+										? recurrenceEvent.end
+										: getLocalDate(),
 								});
 							} else if (isDayInRepeatCycle(iteratorDay, event)) {
 								const eventStart = copyTimeFromDate(
@@ -248,8 +287,9 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 								);
 
 								const isRepeatIteration = !(
-									event.start.getTime() === eventStart.getTime() &&
-                                    endDay.getTime() === eventEnd.getTime()
+									event.start.getTime() ===
+										eventStart.getTime() &&
+									endDay.getTime() === eventEnd.getTime()
 								);
 
 								addEvent({
@@ -261,7 +301,6 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 							}
 							iteratorDay.setDate(iteratorDay.getDate() + 1);
 						}
-
 					} else {
 						addEvent({
 							...eventData,
@@ -271,7 +310,7 @@ export const parseEventsFromActivities = (activities: Activity[], startTime: Dat
 					}
 				});
 		});
-	};
+	}
 	return events;
 };
 

@@ -14,7 +14,7 @@ import type Activity from '../types/activity';
 export const useCalendarStore = defineStore('calendar', () => {
 	const state: Ref<CalendarState> = ref({
 		activityIds: [],
-		focusedEvent: undefined,
+		focusedEvents: [],
 		focusedCell: undefined,
 		loading: true,
 		clipboard: undefined,
@@ -56,8 +56,8 @@ export const useCalendarStore = defineStore('calendar', () => {
 
 	const isLoading = computed((): boolean => state.value.loading);
 	const hasNewEvent = computed((): boolean => !!state.value.newEvent);
-	const focusedEvent = computed(
-		(): CalendarEvent | undefined => state.value.focusedEvent
+	const focusedEvents = computed(
+		(): CalendarEvent[] => state.value.focusedEvents
 	);
 	const clipboard = computed(
 		(): CalendarClipboard | undefined => state.value.clipboard
@@ -75,7 +75,8 @@ export const useCalendarStore = defineStore('calendar', () => {
 			}),
 			state.value.startTime,
 			state.value.endTime,
-			timerStore.activityId
+			timerStore.activityId,
+			state.value.focusedEvents.map((event) => event.eventId)
 		);
 		if (state.value.newEvent) {
 			events.push(state.value.newEvent);
@@ -129,13 +130,33 @@ export const useCalendarStore = defineStore('calendar', () => {
 	};
 
 	const focusEvent = (eventId: string) => {
-		state.value.focusedEvent = events.value.find(
-			(event) => event.eventId === eventId
+		state.value.focusedEvents = [
+			...state.value.focusedEvents,
+			events.value.find(
+				(event) => event.eventId === eventId
+			) as CalendarEvent,
+		];
+		console.log(state.value.focusedEvents);
+	};
+
+	const unfocusEvent = (eventId: string) => {
+		state.value.focusedEvents = state.value.focusedEvents.filter(
+			(event) => event.eventId !== eventId
 		);
 	};
 
-	const unfocusEvent = () => {
-		state.value.focusedEvent = undefined;
+	const toggleFocusEvent = (eventId: string) => {
+		if (
+			state.value.focusedEvents.find((event) => event.eventId === eventId)
+		) {
+			unfocusEvent(eventId);
+		} else {
+			focusEvent(eventId);
+		}
+	};
+
+	const unfocusAllEvents = () => {
+		state.value.focusedEvents = [];
 	};
 
 	const focusCell = (date: Date) => {
@@ -147,13 +168,11 @@ export const useCalendarStore = defineStore('calendar', () => {
 	};
 
 	const addToClipboard = (
-		activityId: string,
-		eventId: string,
+		events: CalendarEvent[],
 		type: CalendarClipboardType
 	) => {
 		state.value.clipboard = {
-			activityId,
-			eventId,
+			events,
 			type,
 		};
 	};
@@ -166,7 +185,7 @@ export const useCalendarStore = defineStore('calendar', () => {
 		state,
 		isLoading,
 		events,
-		focusedEvent,
+		focusedEvents,
 		focusedCell,
 		clipboard,
 		load,
@@ -176,6 +195,8 @@ export const useCalendarStore = defineStore('calendar', () => {
 		removeNewEvent,
 		focusEvent,
 		unfocusEvent,
+		unfocusAllEvents,
+		toggleFocusEvent,
 		focusCell,
 		unfocusCell,
 		addToClipboard,

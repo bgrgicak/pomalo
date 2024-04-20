@@ -5,6 +5,7 @@ import { ref, type PropType, type Ref } from 'vue';
 import { watch } from 'vue';
 import Squire from 'squire-rte';
 import DOMPurify from 'dompurify';
+import { useKeyboardStore } from '../../stores/keyboard';
 
 (window as any).DOMPurify = DOMPurify;
 
@@ -61,7 +62,7 @@ const focusEditor = () => {
 };
 
 const editorClick = ( event: any ) => {
-	if ( ( event.ctrlKey || event.metaKey ) && event.target.tagName === 'A') {
+	if ( useKeyboardStore().cmdCtrl && event.target.tagName === 'A') {
 		window.open(event.target.href, '_blank');
 	}
 };

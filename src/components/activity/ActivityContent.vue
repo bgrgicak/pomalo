@@ -9,6 +9,7 @@ import type { PropType } from 'vue';
 import TextEditor from '../ui/TextEditor.vue';
 import { useNoticeStore } from '@/stores/notices';
 import { NoticeType } from '@/types/notice';
+import { useKeyboardStore } from '@/stores/keyboard';
 
 const props = defineProps({
 	activity: {
@@ -23,6 +24,7 @@ const state: Ref<ActivityState> = ref({
 });
 
 const activityStore = useActivityStore();
+const keyboardStore = useKeyboardStore();
 
 watch(() => props.activity, (newActivity) => {
 	if (undefined === state.value.activity) {
@@ -42,7 +44,7 @@ watch(() => props.activity, (newActivity) => {
 });
 
 const onKeyup = (event: KeyboardEvent) => {
-	if ('Meta' === event.key) {
+	if (keyboardStore.cmdCtrl) {
 		// Prevent meta enter save from triggering isEditing
 		return;
 	}
@@ -66,7 +68,7 @@ const save = () => {
 };
 
 const updateOnCommandEnter = (event: KeyboardEvent) => {
-	if (event.key === 'Enter' && event.metaKey) {
+	if (event.key === 'Enter' && keyboardStore.cmdCtrl) {
 		save();
 	}
 };

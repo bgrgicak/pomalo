@@ -18,24 +18,22 @@ export interface CalendarEvent {
 }
 
 export interface CalendarState {
-    activityIds: string[];
-    loading: boolean;
-    focusedEvent?: CalendarEvent;
-    focusedCell?: Date;
-    startTime?: Date;
-    endTime?: Date;
-    clipboard?: CalendarClipboard;
-    newEvent?: CalendarEvent;
+	activityIds: string[];
+	loading: boolean;
+	focusedEvents: CalendarEvent[];
+	focusedCell?: Date;
+	startTime?: Date;
+	endTime?: Date;
+	clipboard?: CalendarClipboard;
+	newEvent?: CalendarEvent;
 }
 
 export enum CalendarClipboardType {
-    Copy = 'copy',
-    Cut = 'cut',
+	Copy = 'copy',
+	Cut = 'cut',
 }
 
-
 export interface CalendarClipboard {
-    activityId: string;
-    eventId: string;
-    type: CalendarClipboardType;
+	events: CalendarEvent[];
+	type: CalendarClipboardType;
 }

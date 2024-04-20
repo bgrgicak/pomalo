@@ -18,6 +18,7 @@ import { allViews, defaultView, defaultSmallView } from '@/plugins/vuecal';
 import { watch } from 'vue';
 import { addEventToActivity, newCalendarEvent } from '@/data/events';
 import { settings } from '@/helper/settings';
+import { useKeyboardStore } from '../../stores/keyboard';
 
 const allowedViews = computed(() => {
 	return structuredClone(allViews).filter(
@@ -85,92 +86,97 @@ const onKeyboardEvent = (keyboardEvent: any) => {
 
 const maybeCopyPasteEvent = (keyboardEvent: any) => {
 	if ('Escape' === keyboardEvent.key) {
-		calendarStore.unfocusEvent();
+		calendarStore.unfocusAllEvents();
 		layoutStore.hideRightSidebar();
 		return;
 	}
-	if (!keyboardEvent.ctrlKey && !keyboardEvent.metaKey) {
+	if (!useKeyboardStore().cmdCtrl) {
 		return;
 	}
 	if ('v' === keyboardEvent.key) {
 		if (calendarStore.clipboard && calendarStore.focusedCell && isValidDate(calendarStore.focusedCell)) {
-			activityStore.get(calendarStore.clipboard.activityId).then((activity: Activity | void) => {
-				if (!activity) {
-					return;
+			for (const clipboardEvent of calendarStore.clipboard!.events) {
+				if (!clipboardEvent.id){
+					continue;
 				}
+				activityStore.get(clipboardEvent.id).then((activity: Activity | void) => {
+					if (!activity) {
+						return;
+					}
 
-				const event = getEventFromActivity(activity, calendarStore.clipboard!.eventId);
-				if (!event) {
-					return;
-				}
-				if (!event.start) {
-					return;
-				}
-				if (!event.end) {
-					useNoticeStore().addNotice({
-						type: NoticeType.Info,
-						title: __('Could not paste in progress event.'),
-					});
-					return;
-				}
+					const event = getEventFromActivity(activity, clipboardEvent.eventId);
+					if (!event) {
+						return;
+					}
+					if (!event.start) {
+						return;
+					}
+					if (!event.end) {
+						useNoticeStore().addNotice({
+							type: NoticeType.Info,
+							title: __('Could not paste in progress event.'),
+						});
+						return;
+					}
 
-				const start = calendarStore.focusedCell!;
-				const end = start.addMinutes(
-					minutesBetweenDates(
-						event.end,
-						event.start
-					)
-				);
-
-				let updateActivity = Object.assign({}, activity);
-				if (CalendarClipboardType.Cut === calendarStore.clipboard!.type) {
-					updateActivity = removeEventFromActivity(
-						updateActivity,
-						calendarStore.clipboard!.eventId,
-					);
-				}
-
-				activityStore.update(
-					addEventToActivity(
-						updateActivity,
-						newEvent(
-							start,
-							end,
+					const start = calendarStore.focusedCell!;
+					const end = start.addMinutes(
+						minutesBetweenDates(
+							event.end,
+							event.start
 						)
-					)
-				).then(() => {
-					calendarStore.removeFromClipboard();
+					);
+
+					let updateActivity = Object.assign({}, activity);
+					if (CalendarClipboardType.Cut === calendarStore.clipboard!.type) {
+						updateActivity = removeEventFromActivity(
+							updateActivity,
+							clipboardEvent.eventId,
+						);
+					}
+
+					activityStore.update(
+						addEventToActivity(
+							updateActivity,
+							newEvent(
+								start,
+								end,
+							)
+						)
+					).then(() => {
+						calendarStore.removeFromClipboard();
+					});
 				});
-			});
+			}
 		}
 	}
 
-	if (!calendarStore?.focusedEvent?.eventId) {
-		return;
-	}
-	if (!calendarStore?.focusedEvent?.id) {
-		return;
-	}
+	let clipboardAction;
 	if ('c' === keyboardEvent.key) {
-		calendarStore.addToClipboard(calendarStore.focusedEvent!.id, calendarStore.focusedEvent!.eventId, CalendarClipboardType.Copy);
+		clipboardAction = CalendarClipboardType.Copy;
+	} else if ('x' === keyboardEvent.key) {
+		clipboardAction = CalendarClipboardType.Cut;
 	}
-	if ('x' === keyboardEvent.key) {
-		calendarStore.addToClipboard(calendarStore.focusedEvent!.id, calendarStore.focusedEvent!.eventId, CalendarClipboardType.Cut);
+	if (clipboardAction) {
+		console.log(calendarStore.focusedEvents);
+		calendarStore.addToClipboard(
+			calendarStore.focusedEvents,
+			clipboardAction
+		);
 	}
 };
 
 const maybeDeleteEvent = (keyboardEvent: any) => {
-	if (!calendarStore?.focusedEvent?.eventId) {
-		return;
-	}
-	if (!calendarStore?.focusedEvent?.id) {
-		return;
-	}
-	if ('Backspace' !== keyboardEvent.key) {
+	if (!['Backspace', 'Delete'].includes(keyboardEvent.key)) {
 		return;
 	}
 
-	removeEvent(calendarStore.focusedEvent.id, calendarStore.focusedEvent!.eventId);
+	for (const event of calendarStore.focusedEvents) {
+		if (!event.id || !event.eventId) {
+			continue;
+		}
+		removeEvent(event.id, event!.eventId);
+	}
 };
 
 const removeEvent = (activityId: string, eventId: string) => {
@@ -178,7 +184,7 @@ const removeEvent = (activityId: string, eventId: string) => {
 		if (!activity) {
 			return;
 		}
-		if (activity.readonly && !activity.archived) {
+		if (activity.readonly) {
 			noticeStore.addNotice({
 				type: NoticeType.Warning,
 				title: __('Cannot delete readonly event.'),

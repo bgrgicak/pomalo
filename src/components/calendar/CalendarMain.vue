@@ -17,6 +17,7 @@ import { settings } from '@/helper/settings';
 import { addMilliseconds } from '@/helper/date';
 import CalendarCell from './CalendarCell.vue';
 import { info } from '../../helper/logs';
+import { useKeyboardStore } from '../../stores/keyboard';
 
 const props = defineProps({
 	vuecal: {
@@ -42,6 +43,7 @@ const vuecalRef: Ref<VueCal | null> = ref(null);
 
 const calendarStore = useCalendarStore();
 const layoutStore = useLayoutStore();
+const keyboardStore = useKeyboardStore();
 
 watch(
 	() => layoutStore.isRightSidebarVisible,
@@ -97,29 +99,30 @@ const cellHeight = computed(() => {
 
 const cellClick = (cellDate: Date) => {
 	calendarStore.focusCell(cellDate);
-	eventUnfocus();
 	const eventClick = props.vuecal.mutableEvents.findIndex((event: VueCalEvent) => cellDate >= event.start && event.end && cellDate <= event.end);
 	if (-1 === eventClick) {
 		calendarStore.removeNewEvent();
+		calendarStore.unfocusAllEvents();
 	}
-};
-const eventUnfocus = () => {
-	calendarStore.unfocusEvent();
 	layoutStore.hideRightSidebar();
 };
 
 const eventClick = (event: any) => {
-	info('eventClick', event);
-	// If already focused, it's a double click.
-	if (event.eventId === calendarStore.focusedEvent?.eventId) {
+	if (!keyboardStore.cmdCtrl) {
+		calendarStore.unfocusAllEvents();
+	}
+	calendarStore.toggleFocusEvent(event.eventId);
+	if (event.id) {
+		deleteOlderNewEvents();
+	}
+};
+
+const eventDblClick = (event: any) => {
+	if (!keyboardStore.cmdCtrl) {
 		layoutStore.showRightSidebar(
 			event.id,
 			event.eventId
 		);
-	}
-	calendarStore.focusEvent(event.eventId);
-	if (event.id) {
-		deleteOlderNewEvents();
 	}
 };
 
@@ -226,7 +229,7 @@ const cellDoubleClick = (start: Date) => {
 		return;
 	}
 	// If event is focused, do not create new event
-	if (calendarStore.focusedEvent) {
+	if (calendarStore.focusedEvents) {
 		return false;
 	}
 	const findIndex = calendarStore.events.findIndex((event: CalendarEvent) => {
@@ -315,6 +318,7 @@ const eventDragCreate = (event: any) => {
     :time-cell-height="cellHeight"
     :watch-real-time="true"
     @event-click="eventClick"
+	@event-dblclick="eventDblClick"
     @cell-click="cellClick"
     @cell-dblclick="cellDoubleClick"
     @ready="onReady"
