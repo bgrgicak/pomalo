@@ -10,7 +10,7 @@ import { getEventFromActivity, newEvent, removeEventFromActivity, updateEventInA
 import CalendarHeader from './CalendarHeader.vue';
 import { getLocalDate, getUtcTimestamp, isValidDate, minutesBetweenDates } from '@/helper/date';
 import { computed } from 'vue';
-import { CalendarClipboardType } from '@/types/calendar';
+import { CalendarClipboardType, type CalendarEvent } from '@/types/calendar';
 import { useNoticeStore } from '@/stores/notices';
 import { NoticeType } from '@/types/notice';
 import CalendarMain from './CalendarMain.vue';
@@ -95,54 +95,78 @@ const maybeCopyPasteEvent = (keyboardEvent: any) => {
 	}
 	if ('v' === keyboardEvent.key) {
 		if (calendarStore.clipboard && calendarStore.focusedCell && isValidDate(calendarStore.focusedCell)) {
-			for (const clipboardEvent of calendarStore.clipboard!.events) {
-				if (!clipboardEvent.id){
+			const activityEvents: { [key: string]: string[] } = {};
+			const sortedEvents = calendarStore.clipboard.events.sort((a, b) => {
+				if (!a.start || !b.start) {
+					return 0;
+				}
+				return a.start.getTime() - b.start.getTime();
+			});
+			for (const event of sortedEvents) {
+				if (!event.id) {
 					continue;
 				}
-				activityStore.get(clipboardEvent.id).then((activity: Activity | void) => {
+				if (!activityEvents[event.id]) {
+					activityEvents[event.id] = [];
+				}
+				activityEvents[event.id].push(event.eventId);
+			}
+			const firstEventStart = sortedEvents[0].start;
+			for (const activityId in activityEvents) {
+				activityStore.get(activityId).then((activity: Activity | void) => {
 					if (!activity) {
 						return;
 					}
 
-					const event = getEventFromActivity(activity, clipboardEvent.eventId);
-					if (!event) {
-						return;
-					}
-					if (!event.start) {
-						return;
-					}
-					if (!event.end) {
-						useNoticeStore().addNotice({
-							type: NoticeType.Info,
-							title: __('Could not paste in progress event.'),
-						});
-						return;
-					}
-
-					const start = calendarStore.focusedCell!;
-					const end = start.addMinutes(
-						minutesBetweenDates(
-							event.end,
-							event.start
-						)
-					);
-
 					let updateActivity = Object.assign({}, activity);
-					if (CalendarClipboardType.Cut === calendarStore.clipboard!.type) {
-						updateActivity = removeEventFromActivity(
-							updateActivity,
-							clipboardEvent.eventId,
-						);
-					}
+					for (const eventId of activityEvents[activityId]) {
+						const event = getEventFromActivity(activity, eventId);
+						if (!event) {
+							return;
+						}
+						if (!event.start) {
+							return;
+						}
+						if (!event.end) {
+							useNoticeStore().addNotice({
+								type: NoticeType.Info,
+								title: __('Could not paste in progress event.'),
+							});
+							return;
+						}
 
-					activityStore.update(
-						addEventToActivity(
+						const minutesBetween = minutesBetweenDates(
+							event.start,
+							firstEventStart
+						);
+
+						const start = calendarStore.focusedCell!.addMinutes(
+							minutesBetween
+						);
+						const end = start.addMinutes(
+							minutesBetweenDates(
+								event.end,
+								event.start
+							)
+						);
+
+						if (CalendarClipboardType.Cut === calendarStore.clipboard!.type) {
+							updateActivity = removeEventFromActivity(
+								updateActivity,
+								eventId,
+							);
+						}
+						updateActivity = addEventToActivity(
 							updateActivity,
 							newEvent(
 								start,
 								end,
 							)
-						)
+						);
+					}
+
+					activityStore.update(
+						updateActivity
 					).then(() => {
 						calendarStore.removeFromClipboard();
 					});
@@ -171,33 +195,51 @@ const maybeDeleteEvent = (keyboardEvent: any) => {
 		return;
 	}
 
-	for (const event of calendarStore.focusedEvents) {
-		if (!event.id || !event.eventId) {
-			continue;
-		}
-		removeEvent(event.id, event!.eventId);
+	if (!calendarStore.focusedEvents) {
+		return;
 	}
+	removeEvents(calendarStore.focusedEvents);
 };
 
-const removeEvent = (activityId: string, eventId: string) => {
-	activityStore.get(activityId).then((activity: Activity | void) => {
-		if (!activity) {
-			return;
+const removeEvents = (events: CalendarEvent[]) => {
+	const activityEvents: { [key: string]: string[] } = {};
+	for (const event of events) {
+		if (!event.id) {
+			continue;
 		}
-		if (activity.readonly) {
-			noticeStore.addNotice({
-				type: NoticeType.Warning,
-				title: __('Cannot delete readonly event.'),
-			});
-			return;
+		if (!activityEvents[event.id]) {
+			activityEvents[event.id] = [];
 		}
-		activityStore.update(
-			removeEventFromActivity(
-				activity,
-				eventId,
-			)
-		);
-	});
+		activityEvents[event.id].push(event.eventId);
+	}
+	for (const activityId in activityEvents) {
+		activityStore.get(activityId).then((activity: Activity | void) => {
+			if (!activity) {
+				return;
+			}
+			if (activity.readonly) {
+				noticeStore.addNotice({
+					type: NoticeType.Warning,
+					title: __('Cannot delete readonly event.'),
+				});
+				return;
+			}
+			let updatedActivity = Object.assign({}, activity );
+			if (!updatedActivity) {
+				return;
+			}
+			for (const eventId of activityEvents[activityId]) {
+				updatedActivity = removeEventFromActivity(
+					updatedActivity,
+					eventId
+				);
+			}
+
+			activityStore.update(
+				updatedActivity
+			);
+		});
+	}
 };
 
 const updateEvent = (activityId: string, event: any, repeatIteration: boolean = false) => {

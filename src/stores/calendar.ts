@@ -136,7 +136,6 @@ export const useCalendarStore = defineStore('calendar', () => {
 				(event) => event.eventId === eventId
 			) as CalendarEvent,
 		];
-		console.log(state.value.focusedEvents);
 	};
 
 	const unfocusEvent = (eventId: string) => {
