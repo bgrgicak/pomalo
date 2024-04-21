@@ -18,10 +18,6 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
-	disableUpload: {
-		type: Boolean,
-		default: true,
-	},
 });
 const emit = defineEmits(['update:modelValue']);
 
@@ -29,6 +25,13 @@ const squire: Ref<Squire|undefined> = ref(undefined);
 const focused: Ref<boolean> = ref(false);
 const editor: Ref<any> = ref(null);
 const textEditorRef: Ref<any> = ref(null);
+
+const updateValue = () => {
+	if ( ! squire.value ) {
+		return;
+	}
+	emit('update:modelValue', squire.value.getHTML());
+};
 
 watch(
 	editor,
@@ -40,12 +43,7 @@ watch(
 			editor.value
 		);
 		squire.value.setHTML( props.modelValue ?? '' );
-		squire.value.addEventListener('input', () => {
-			if ( ! squire.value ) {
-				return;
-			}
-			emit('update:modelValue', squire.value.getHTML());
-		});
+		squire.value.addEventListener('input', updateValue);
 		return () => {
 			if ( ! squire.value ) {
 				return;
@@ -66,8 +64,68 @@ const editorClick = ( event: any ) => {
 		window.open(event.target.href, '_blank');
 	}
 };
+
+const format = ( command: string ) => {
+	if ( ! squire.value ) {
+		return;
+	}
+	if (command === 'bold') {
+		if (squire.value.hasFormat('b')) {
+			squire.value.removeBold();
+		} else {
+			squire.value.bold();
+		}
+	} else if (command === 'italic') {
+		if (squire.value.hasFormat('i')) {
+			squire.value.removeItalic();
+		} else {
+			squire.value.italic();
+		}
+	} else if (command === 'underline') {
+		if (squire.value.hasFormat('u')) {
+			squire.value.removeUnderline();
+		} else {
+			squire.value.underline();
+		}
+	} else if (command === 'unordered-list') {
+		if (squire.value.hasFormat('li')) {
+			squire.value.removeList();
+		} else {
+			squire.value.makeUnorderedList();
+		}
+	} else if (command === 'ordered-list') {
+		if (squire.value.hasFormat('li')) {
+			squire.value.removeList();
+		} else {
+			squire.value.makeOrderedList();
+		}
+	} else {
+		return;
+	}
+	updateValue();
+};
 </script>
 <template>
+  <v-btn-toggle
+    multiple
+    class="editor-actions"
+  >
+    <v-btn @click="() => format('bold')">
+      <v-icon>mdi-format-bold</v-icon>
+    </v-btn>
+    <v-btn @click="() => format('italic')">
+      <v-icon>mdi-format-italic</v-icon>
+    </v-btn>
+    <v-btn @click="() => format('underline')">
+      <v-icon>mdi-format-underline</v-icon>
+    </v-btn>
+    <v-btn @click="() => format('unordered-list')">
+      <v-icon>mdi-format-list-bulleted</v-icon>
+    </v-btn>
+    <v-btn @click="() => format('ordered-list')">
+      <v-icon>mdi-format-list-numbered</v-icon>
+    </v-btn>
+  </v-btn-toggle>
   <v-input
     ref="textEditorRef"
     class="text-editor mb-8"
@@ -122,5 +180,18 @@ $text-editor-height: 400px;
 	.v-input__details {
 		display: none;
 	}
+
+	ul{
+		margin-left: 1rem;
+	}
+	ol {
+		margin-left: 1.8rem;
+	}
+}
+.editor-actions {
+	display: flex;
+    border: thin solid rgba(var(--v-border-color), var(--v-disabled-opacity));
+	border-radius: 0;
+	border-bottom: none;
 }
 </style>
