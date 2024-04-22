@@ -278,7 +278,8 @@ const scrollToCurrentTime = () => {
 	if (!props.vuecal) {
 		return;
 	}
-	const calendar = document.querySelector('.calendar .vuecal__body');
+	const calendar = document.querySelector('.calendar .vuecal__body .vuecal__flex');
+
 	if (!calendar) {
 		return;
 	}
