@@ -19,7 +19,9 @@ export default defineConfig({
 			strategies: 'injectManifest',
 			injectManifest: { injectionPoint: undefined },
 			workbox: {
-				globPatterns: ['**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}'],
+				globPatterns: [
+					'**/*.{js,css,html,ico,png,svg,json,vue,txt,woff2}',
+				],
 				clientsClaim: true,
 				skipWaiting: true,
 				cleanupOutdatedCaches: true,
@@ -31,45 +33,46 @@ export default defineConfig({
 			manifest: {
 				icons: [
 					{
-						'src': '/android-chrome-192x192.png',
-						'sizes': '192x192',
-						'type': 'image/png'
+						src: '/android-chrome-192x192.png',
+						sizes: '192x192',
+						type: 'image/png',
 					},
 					{
-						'src': '/android-chrome-512x512.png',
-						'sizes': '512x512',
-						'type': 'image/png'
-					}
+						src: '/android-chrome-512x512.png',
+						sizes: '512x512',
+						type: 'image/png',
+					},
 				],
-				'theme_color': '#ffffff',
-				'background_color': '#ffffff',
-				'display': 'standalone',
-				'name': 'Pomalo'
+				theme_color: '#ffffff',
+				background_color: '#ffffff',
+				display: 'standalone',
+				name: 'Pomalo',
+				scope: '/',
 			},
 			filename: 'sw.ts',
 			srcDir: 'src/service-worker',
-		})
+		}),
 	],
 	resolve: {
 		alias: {
-			'@': fileURLToPath(new URL('./src', import.meta.url))
-		}
+			'@': fileURLToPath(new URL('./src', import.meta.url)),
+		},
 	},
 	optimizeDeps: {
 		esbuildOptions: {
 			// Node.js global to browser globalThis
 			define: {
-				global: 'globalThis'
+				global: 'globalThis',
 			},
 			// Enable esbuild polyfill plugins
 			plugins: [
 				NodeGlobalsPolyfillPlugin({
 					process: true,
-					buffer: true
+					buffer: true,
 				}) as any,
-				NodeModulesPolyfillPlugin()
-			]
-		}
+				NodeModulesPolyfillPlugin(),
+			],
+		},
 	},
 	build: {
 		target: 'esnext',
@@ -79,9 +82,9 @@ export default defineConfig({
 			plugins: [
 				// Enable rollup polyfills plugin
 				// used during production bundling
-				rollupNodePolyFill
-			]
-		}
+				rollupNodePolyFill,
+			],
+		},
 	},
 	publicDir: 'src/public',
 });
