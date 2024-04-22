@@ -72,6 +72,11 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
 		save();
 	}
 };
+
+const updateDescription = (description: string) => {
+	state.value.activity.description = description;
+	state.value.isEditing = true;
+};
 </script>
 <template>
   <div
@@ -94,9 +99,10 @@ const updateOnCommandEnter = (event: KeyboardEvent) => {
         class="pb-0"
       >
         <text-editor
-          v-model="state.activity.description"
+          v-model:model-value="state.activity.description"
           class="activity-description"
           :readonly="state.activity.readonly"
+          @update:model-value="updateDescription"
           @paste="state.isEditing = true"
         />
       </v-col>

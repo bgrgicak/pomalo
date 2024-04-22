@@ -45,19 +45,23 @@ const props = defineProps({
 		default: false,
 	},
 });
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'paste']);
 
 const squire: Ref<Squire|undefined> = ref(undefined);
 const focused: Ref<boolean> = ref(false);
 const editor: Ref<any> = ref(null);
 const textEditorRef: Ref<any> = ref(null);
-const activeFromats: Ref<Format[]> = ref([]);
+const activeFormats: Ref<Format[]> = ref([]);
 
 const updateValue = () => {
 	if ( ! squire.value ) {
 		return;
 	}
-	emit('update:modelValue', squire.value.getHTML());
+	const value = squire.value!.getHTML();
+	if (props.modelValue === value) {
+		return;
+	}
+	emit('update:modelValue', squire.value!.getHTML());
 };
 
 const updateFormat = () => {
@@ -68,7 +72,7 @@ const updateFormat = () => {
 			newFormats.push(formatValue);
 		}
 	}
-	activeFromats.value = newFormats;
+	activeFormats.value = newFormats;
 }
 
 const pathChange = () => {
@@ -90,8 +94,15 @@ watch(
 		squire.value.setHTML( props.modelValue ?? '' );
 		squire.value.addEventListener('input', updateValue);
 		squire.value.addEventListener('pathChange', pathChange);
+		squire.value.addEventListener('willPaste', () => {
+			emit('paste');
+		});
 		squire.value.setKeyHandler('Ctrl-Shift-X', null as any);
+		squire.value.setKeyHandler('Meta-Shift-X', null as any);
 		squire.value.setKeyHandler('Ctrl-Shift-X', () => {
+			format(Format.strikethrough);
+		});
+		squire.value.setKeyHandler('Meta-Shift-X', () => {
 			format(Format.strikethrough);
 		});
 		return () => {
@@ -158,7 +169,7 @@ const format = ( format: Format ) => {
 <template>
   <v-btn-toggle
     v-if="!readonly"
-    v-model:model-value="activeFromats"
+    v-model:model-value="activeFormats"
     multiple
     class="editor-actions"
   >
@@ -166,7 +177,7 @@ const format = ( format: Format ) => {
       v-for="(option, key) in formatOptions"
       :key="key"
       :icon="option.icon"
-      :class="{'v-btn--active': activeFromats.includes(key as Format)}"
+      :class="{'v-btn--active': activeFormats.includes(key as Format)}"
       @click="format(key as Format)"
     />
   </v-btn-toggle>
@@ -230,6 +241,9 @@ $text-editor-height: 400px;
 	}
 	ol {
 		margin-left: 1.8rem;
+	}
+	li {
+		direction: ltr;
 	}
 }
 .editor-actions {
