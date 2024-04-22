@@ -187,8 +187,7 @@ const toggleFilters = () => {
             />
             <th />
           </tr>
-          <tr>
-            <th>{{ __('Title') }}</th>
+          <tr v-if="props.headerItems.length">
             <th
               v-for="(headerItem, headerIndex) in props.headerItems"
               :key="headerIndex"
