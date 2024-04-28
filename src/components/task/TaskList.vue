@@ -168,8 +168,8 @@ const toggleFilters = () => {
   <v-table class="activity-list">
     <tbody>
       <v-table
-        v-for="group in groupList"
-        :key="group.name"
+        v-for="(group, groupIndex) in groupList"
+        :key="group.name + groupIndex"
         class="activity-list__group"
       >
         <thead v-if="!props.compact">
@@ -183,7 +183,7 @@ const toggleFilters = () => {
             </th>
             <th
               v-for="(headerItem, headerIndex) in props.headerItems"
-              :key="headerIndex"
+              :key="headerIndex + 'header'"
             />
             <th />
           </tr>
