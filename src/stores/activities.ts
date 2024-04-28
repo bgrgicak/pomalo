@@ -207,7 +207,6 @@ export const useActivityStore = defineStore(
 				}
 				const updatedDocument = Object.assign({}, document);
 				updatedDocument.archived = getLocalDate();
-				updatedDocument.readonly = true;
 				return put({
 					...updatedDocument,
 					_rev: document._rev,

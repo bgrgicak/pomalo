@@ -3,14 +3,17 @@ import { type Ref, computed, ref } from 'vue';
 
 interface KeyboardState {
 	cmdCtrl: boolean;
+	isTouch: boolean;
 }
 
 export const useKeyboardStore = defineStore('keyboard', () => {
 	const state: Ref<KeyboardState> = ref({
 		cmdCtrl: false,
+		isTouch: false,
 	});
 
 	const cmdCtrl = computed(() => state.value.cmdCtrl);
+	const isTouch = computed(() => state.value.isTouch);
 
 	const isCmdCtrl = (event: KeyboardEvent) => {
 		return ['Meta', 'Control'].includes(event.key);
@@ -27,7 +30,12 @@ export const useKeyboardStore = defineStore('keyboard', () => {
 		}
 	});
 
+	window.addEventListener('touchstart', () => {
+		state.value.isTouch = true;
+	});
+
 	return {
 		cmdCtrl,
+		isTouch,
 	};
 });

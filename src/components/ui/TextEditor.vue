@@ -1,7 +1,7 @@
 <!-- eslint-disable semi -->
 <script setup lang="ts">
 import __ from '@/helper/translations';
-import { ref, type PropType, type Ref, nextTick } from 'vue';
+import { ref, type PropType, type Ref } from 'vue';
 import { watch } from 'vue';
 import Squire from 'squire-rte';
 import DOMPurify from 'dompurify';
@@ -53,6 +53,8 @@ const editor: Ref<any> = ref(null);
 const textEditorRef: Ref<any> = ref(null);
 const activeFormats: Ref<Format[]> = ref([]);
 
+const keyboardStore = useKeyboardStore();
+
 const updateValue = () => {
 	if ( ! squire.value ) {
 		return;
@@ -85,6 +87,10 @@ watch(
 		if (!editor.value) {
 			return;
 		}
+		if (props.readonly) {
+			editor.value.innerHTML = DOMPurify.sanitize(props.modelValue ?? '');
+			return;
+		}
 		squire.value = new Squire(
 			editor.value,
 			{
@@ -114,14 +120,23 @@ watch(
 	},
 );
 
-const focusEditor = () => {
+const focusEditor = (event: any) => {
+	if ( props.readonly ) {
+		event.preventDefault();
+		return;
+	}
 	if (editor.value) {
 		editor.value.focus();
 	}
 };
 
 const editorClick = ( event: any ) => {
-	if ( useKeyboardStore().cmdCtrl && event.target.tagName === 'A') {
+	if (
+		(
+			keyboardStore.isTouch ||
+			keyboardStore.cmdCtrl
+		) && event.target.tagName === 'A'
+	) {
 		window.open(event.target.href, '_blank');
 	}
 };
@@ -186,6 +201,7 @@ const format = ( format: Format ) => {
     class="text-editor mb-8"
     :class="{'text-editor--focused': focused}"
     :focused="focused"
+    :readonly="readonly"
     @click="focusEditor"
   >
     <pre

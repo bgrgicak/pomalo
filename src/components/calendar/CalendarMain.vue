@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import VueCal, { type VueCalEvent } from 'vue-cal';
-import { getLocalDate } from '@/helper/date';
+import { getLocalDate, minuteInMilliseconds } from '@/helper/date';
 import { useCalendarStore } from '@/stores/calendar';
 import { useLayoutStore } from '@/stores/layout';
 import { display } from '@/plugins/vuetify';
@@ -127,19 +127,28 @@ const eventDblClick = (event: any) => {
 };
 
 const snapEvent = (event: CalendarEvent) => {
+	const differences: {[difference: number]: CalendarEvent} = {};
 	const snapDifference = settings.calendar.snapDifference;
+	const eventDuration = event.end ? getTimeDifference(event.start, event.end) : undefined;
+	const tempEvent = structuredClone(event);
 
 	const nowStartDifference = getTimeDifference(getLocalDate(), event.start);
 	if (nowStartDifference < snapDifference && nowStartDifference > -snapDifference) {
-		event.start = getLocalDate();
-		return event;
+		tempEvent.start = getLocalDate();
+		if (eventDuration) {
+			tempEvent.end = addMilliseconds(tempEvent.start, eventDuration);
+		}
+		differences[nowStartDifference] = tempEvent;
 	}
 
 	if (event.end) {
 		const nowEndDifference = getTimeDifference(getLocalDate(), event.end);
 		if (nowEndDifference < snapDifference && nowEndDifference > -snapDifference) {
-			event.end = getLocalDate();
-			return event;
+			tempEvent.end = getLocalDate();
+			if (eventDuration) {
+				tempEvent.start = addMilliseconds(tempEvent.end, -eventDuration);
+			}
+			differences[nowStartDifference] = tempEvent;
 		}
 	}
 
@@ -149,9 +158,13 @@ const snapEvent = (event: CalendarEvent) => {
 	if (overlapEnd && event.end) {
 		const difference = getTimeDifference(overlapEnd.start, event.end);
 		if (difference < snapDifference && difference > -snapDifference) {
-			event.start = addMilliseconds(event.start, -difference);
-			event.end = overlapEnd.start;
-			return event;
+			tempEvent.end = overlapEnd.start;
+			if (eventDuration && tempEvent.end) {
+				tempEvent.start = addMilliseconds(tempEvent.end, -eventDuration);
+			} else {
+				tempEvent.start = addMilliseconds(tempEvent.start, -difference);
+			}
+			differences[nowStartDifference] = tempEvent;
 		}
 	}
 
@@ -163,13 +176,43 @@ const snapEvent = (event: CalendarEvent) => {
 	if (overlapStart && event.end) {
 		const difference = getTimeDifference(overlapStart.end, event.start);
 		if (difference < snapDifference && difference > -snapDifference) {
-			event.end = addMilliseconds(event.end, difference);
-			event.start = overlapStart.end;
-			return event;
+			tempEvent.start = overlapStart.end;
+			if (eventDuration) {
+				tempEvent.end = addMilliseconds(tempEvent.start, eventDuration);
+			} else {
+				tempEvent.end = addMilliseconds(tempEvent.start, difference);
+			}
+			differences[nowStartDifference] = tempEvent;
 		}
 	}
 
-	return event;
+	const snapTimes: number[] = [0, 15,30, 45, 60];
+	for (const snapTime of snapTimes) {
+		const difference = (snapTime - event.start.getMinutes()) * minuteInMilliseconds;
+		if (difference < snapDifference && difference > -snapDifference) {
+			tempEvent.start = addMilliseconds(event.start, difference);
+			if (eventDuration) {
+				tempEvent.end = addMilliseconds(tempEvent.start, eventDuration);
+			}
+			differences[difference] = tempEvent;
+		}
+		if (event.end) {
+			const endDifference = (snapTime - event.end.getMinutes()) * minuteInMilliseconds;
+			if (endDifference < snapDifference && endDifference > -snapDifference) {
+				tempEvent.end = addMilliseconds(event.end, endDifference);
+				if (eventDuration) {
+					tempEvent.start = addMilliseconds(tempEvent.end, -eventDuration);
+				}
+				differences[endDifference] = tempEvent;
+			}
+		}
+	}
+
+	if (Object.keys(differences).length === 0) {
+		return event;
+	}
+	const smallestDifference = Math.min(...Object.keys(differences).map(Number));
+	return differences[smallestDifference];
 };
 
 const eventOnDrop = (event: any) => {

@@ -264,6 +264,11 @@ const toggleFilters = () => {
       .v-btn {
         height: $row-height !important;
       }
+      td,
+      th {
+        line-height: 1rem;
+        padding: 4px 16px !important;
+      }
     }
   }
   .activity-list__title {

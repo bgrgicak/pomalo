@@ -100,7 +100,6 @@ const updateDescription = (description: string) => {
       >
         <text-editor
           v-model:model-value="state.activity.description"
-          class="activity-description"
           :readonly="state.activity.readonly"
           @update:model-value="updateDescription"
           @paste="state.isEditing = true"
