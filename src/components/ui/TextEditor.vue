@@ -204,7 +204,7 @@ const format = ( format: Format ) => {
     :readonly="readonly"
     @click="focusEditor"
   >
-    <pre
+    <div
       ref="editor"
       class="text-editor__inner"
       @click="editorClick"

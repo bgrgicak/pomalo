@@ -54,13 +54,6 @@ watch(
 	}
 );
 
-watch(
-	() => props.selectedDate,
-	() => {
-		scrollToCurrentTime();
-	}
-);
-
 const editingOptions = computed(() => {
 	return {
 		title: false,

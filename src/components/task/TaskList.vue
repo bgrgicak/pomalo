@@ -268,7 +268,11 @@ const toggleFilters = () => {
       th {
         line-height: 1rem;
         padding: 4px 16px !important;
+        &.activity-list__item--actions {
+          padding: 0 16px !important;
+        }
       }
+
     }
   }
   .activity-list__title {
