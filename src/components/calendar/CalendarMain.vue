@@ -16,7 +16,6 @@ import { getTimeDifference } from '@/helper/date';
 import { settings } from '@/helper/settings';
 import { addMilliseconds } from '@/helper/date';
 import CalendarCell from './CalendarCell.vue';
-import { info } from '../../helper/logs';
 import { useKeyboardStore } from '../../stores/keyboard';
 
 const props = defineProps({
@@ -116,6 +115,13 @@ const cellClick = (cellDate: Date) => {
 };
 
 const eventClick = (event: any) => {
+	if (keyboardStore.isTouch) {
+		layoutStore.showRightSidebar(
+			event.id,
+			event.eventId
+		);
+		return;
+	}
 	if (!keyboardStore.cmdCtrl) {
 		calendarStore.unfocusAllEvents();
 	}
