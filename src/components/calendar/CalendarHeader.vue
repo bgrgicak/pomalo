@@ -137,4 +137,7 @@ const today = () => {
     padding: 0 0.5rem;
   }
 }
+.v-toolbar__content {
+  overflow: visible;
+}
 </style>

@@ -1,3 +1,5 @@
+import { fromZonedTime } from 'date-fns-tz';
+
 export const secondInMilliseconds = 1000;
 export const minuteInMilliseconds = secondInMilliseconds * 60;
 export const hourInMilliseconds = minuteInMilliseconds * 60;
@@ -39,7 +41,7 @@ export const toLocaleDateString = (date?: Date | string | number) => {
 
 export const toTimeString = (date?: Date | string | number) => {
 	date = prepareDate(date);
-	return new Date(date).toISOString().slice(11,19);
+	return new Date(date).toISOString().slice(11, 19);
 };
 
 export const toInputDateString = (date?: Date | string | number) => {
@@ -74,7 +76,10 @@ export const getTimeDifference = (start: Date, end: Date) => {
 	return end.getTime() - start.getTime();
 };
 
-export const getTimePassed = (start: Date | string | number, end?: Date | string | number) => {
+export const getTimePassed = (
+	start: Date | string | number,
+	end?: Date | string | number
+) => {
 	start = prepareDate(start);
 	end = end ? prepareDate(end) : new Date();
 	const diff = getTimeDifference(start, end);
@@ -97,9 +102,7 @@ export const getWeekStartAndEnd = (date?: Date | string | number) => {
 	const start = setTime(currentDate);
 	start.setDate(currentDate.getDate() - day + (day === 0 ? -6 : 1));
 
-	const end = setTime(
-		structuredClone(start),
-	);
+	const end = setTime(structuredClone(start));
 	end.setDate(start.getDate() + 6);
 	return {
 		start,
@@ -116,7 +119,9 @@ export const daysBetweenDates = (start: Date, end: Date) => {
 };
 
 export const weeksBetweenDates = (start: Date, end: Date) => {
-	return Math.round((start.getTime() - end.getTime()) / (dayInMilliseconds * 7));
+	return Math.round(
+		(start.getTime() - end.getTime()) / (dayInMilliseconds * 7)
+	);
 };
 
 export const isValidDate = (date: any) => {
@@ -131,7 +136,13 @@ export const addDays = (date: Date, days: number) => {
 	return addMilliseconds(date, days * dayInMilliseconds);
 };
 
-export const setTime = (date: Date, hours: number = 0, minutes: number = 0, seconds: number = 0, milliseconds: number = 0) => {
+export const setTime = (
+	date: Date,
+	hours: number = 0,
+	minutes: number = 0,
+	seconds: number = 0,
+	milliseconds: number = 0
+) => {
 	date.setHours(hours);
 	date.setMinutes(minutes);
 	date.setSeconds(seconds);
@@ -150,7 +161,7 @@ export const copyTimeFromDate = (newDate: Date, dateWithNewTime: Date) => {
 	const charactersInDate = 15;
 	return new Date(
 		newDate.toString().substring(0, charactersInDate) +
-		dateWithNewTime.toString().substring(charactersInDate)
+			dateWithNewTime.toString().substring(charactersInDate)
 	);
 };
 
@@ -158,12 +169,16 @@ export const copyTimezoneDate = (newDate: Date, dateWithNewTimezone: Date) => {
 	const charactersInDate = 25;
 	return new Date(
 		newDate.toString().substring(0, charactersInDate) +
-		dateWithNewTimezone.toString().substring(charactersInDate)
+			dateWithNewTimezone.toString().substring(charactersInDate)
 	);
 };
 
+export const setTimezone = (date: Date, timezone: string) => {
+	return fromZonedTime(date, timezone);
+};
+
 export const setToEndOfHour = (date: Date) => {
-	if ( !date ) {
+	if (!date) {
 		return date;
 	}
 	if (date.getMinutes() === 0) {
