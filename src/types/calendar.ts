@@ -1,20 +1,21 @@
 import type { ActivityType } from './activity';
 
 export interface CalendarEvent {
-    id?: string;
-    eventId: string;
-    title?: string;
-    start: Date;
-    end: Date | undefined;
-    type?: ActivityType;
-    repeatIteration?: boolean;
-    allDay?: boolean;
-    content?: string;
-    class?: string;
-    deletable?: boolean;
-    resizable?: boolean;
-    background?: boolean;
-    recurrenceId?: Date;
+	id?: string;
+	eventId: string;
+	title?: string;
+	start: Date;
+	end: Date | undefined;
+	type?: ActivityType;
+	repeatIteration?: boolean;
+	allDay?: boolean;
+	content?: string;
+	class?: string;
+	deletable?: boolean;
+	resizable?: boolean;
+	background?: boolean;
+	recurrenceId?: Date;
+	new?: boolean;
 }
 
 export interface CalendarState {

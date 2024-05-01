@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import VueCal, { type VueCalEvent } from 'vue-cal';
-import { getLocalDate, minuteInMilliseconds } from '@/helper/date';
+import { getLocalDate, minuteInMilliseconds, setTime } from '@/helper/date';
 import { useCalendarStore } from '@/stores/calendar';
 import { useLayoutStore } from '@/stores/layout';
 import { display } from '@/plugins/vuetify';
@@ -54,13 +54,26 @@ watch(
 	}
 );
 
+watch(
+	() => [
+		props.selectedDate,
+		props.activeView,
+		calendarStore.events,
+	],
+	() => {
+		nextTick(() => {
+			addLongPressEvent();
+		});
+	}
+);
+
 const editingOptions = computed(() => {
 	return {
 		title: false,
 		drag: true,
 		resize: true,
 		delete: false,
-		create: !display.value.mobile.value
+		create: !display.value.smAndDown.value,
 	};
 });
 
@@ -92,8 +105,10 @@ const cellHeight = computed(() => {
 
 const cellClick = (cellDate: Date) => {
 	calendarStore.focusCell(cellDate);
-	const eventClick = props.vuecal.mutableEvents.findIndex((event: VueCalEvent) => cellDate >= event.start && event.end && cellDate <= event.end);
-	if (-1 === eventClick) {
+	const eventClick = props.vuecal.mutableEvents
+		.filter((event: VueCalEvent) => !event.allDay)
+		.find((event: VueCalEvent) => cellDate >= event.start && event.end && cellDate <= event.end);
+	if (!eventClick) {
 		calendarStore.removeNewEvent();
 		calendarStore.unfocusAllEvents();
 	}
@@ -107,6 +122,9 @@ const eventClick = (event: any) => {
 	calendarStore.toggleFocusEvent(event.eventId);
 	if (event.id) {
 		deleteOlderNewEvents();
+	}
+	if (!event.new) {
+		calendarStore.removeNewEvent();
 	}
 };
 
@@ -261,18 +279,19 @@ const fetchEvents = (options: any) => {
 };
 
 const cellDoubleClick = (start: Date) => {
-	if (display.value.mobile.value) {
+	if (display.value.smAndDown.value) {
 		return;
 	}
 	// If event is focused, do not create new event
-	if (calendarStore.focusedEvents) {
+	if (calendarStore.focusedEvents.length > 0) {
 		return false;
 	}
-	const findIndex = calendarStore.events.findIndex((event: CalendarEvent) => {
+	start = setTime(start, start.getHours());
+	const eventClicked = calendarStore.events.find((event: CalendarEvent) => {
 		return event.start <= start && (!event.end || event.end >= start);
 	});
 	// If clicked cell is already occupied by an event, do not create new event
-	if (-1 < findIndex) {
+	if (!eventClicked) {
 		return false;
 	}
 	emit('addEvent', start);
@@ -290,23 +309,30 @@ const addLongPressEvent = () => {
 	if (!cells) {
 		return;
 	}
+
 	cells.forEach((cell: any, index: number) => {
 		const currentCell = structuredClone(props.vuecal.viewCells[index]);
-		cell.addEventListener('touchstart', (event: any) => {
+		if (!currentCell) {
+			return;
+		}
+		const cellTouchStart = (event: any) => {
 			const scrollTop = background?.scrollTop;
 			const timeout = setTimeout(() => {
 				if (scrollTop !== background?.scrollTop) {
 					return;
 				}
-				const start = currentCell.startDate.addMinutes(
+				let start = currentCell.startDate.addMinutes(
 					props.vuecal.utils.cell.minutesAtCursor(event).minutes
 				);
+				start = setTime(start, start.getHours());
 				emit('addEvent', start);
 			}, 800);
 			cell.addEventListener('touchend', () => {
 				clearTimeout(timeout);
 			});
-		});
+		};
+		cell.removeEventListener('touchstart', cellTouchStart);
+		cell.addEventListener('touchstart', cellTouchStart);
 	});
 };
 
@@ -331,8 +357,7 @@ const onReady = (options: any) => {
 };
 
 const eventDragCreate = (event: any) => {
-	const activityEvent = snapEvent(event);
-	emit('addEvent', activityEvent.start, activityEvent.end);
+	emit('addEvent', event.start, event.end);
 };
 </script>
 <template>

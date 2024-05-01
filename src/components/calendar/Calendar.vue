@@ -272,6 +272,7 @@ const addEvent = (start?: Date, end?: Date) => {
 				end,
 			),
 			class: 'v-card calendar-event__new',
+			new: true,
 		}
 	);
 };
