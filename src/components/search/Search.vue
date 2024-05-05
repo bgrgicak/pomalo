@@ -96,9 +96,9 @@ const openActivity = (activity: Activity) => {
     :variant="props.variant"
     :label="props.label"
     :clearable="props.clearable"
+    :overlay="true"
     @new-click="addActivity"
     @option-click="openActivity"
-	:overlay="true"
   />
 </template>
 <style lang="scss">
