@@ -118,7 +118,7 @@ const cellClick = (cellDate: Date) => {
 };
 
 const eventClick = (event: any) => {
-	if (keyboardStore.isTouch) {
+	if (keyboardStore.isTouch && event.id) {
 		layoutStore.showRightSidebar(
 			event.id,
 			event.eventId
@@ -138,12 +138,17 @@ const eventClick = (event: any) => {
 };
 
 const eventDblClick = (event: any) => {
-	if (!keyboardStore.cmdCtrl) {
-		layoutStore.showRightSidebar(
-			event.id,
-			event.eventId
-		);
+	console.log('eventDblClick', event);
+	if (keyboardStore.cmdCtrl) {
+		return;
 	}
+	if (!event.id) {
+		return;
+	}
+	layoutStore.showRightSidebar(
+		event.id,
+		event.eventId
+	);
 };
 
 const snapEvent = (event: CalendarEvent, type?: 'start' | 'end') => {
@@ -360,7 +365,7 @@ const scrollToCurrentTime = () => {
 	if (!props.vuecal) {
 		return;
 	}
-	const calendar = document.querySelector('.calendar .vuecal__body .vuecal__flex');
+	const calendar = document.querySelector('.calendar .vuecal__body .vuecal__flex .vuecal__bg');
 
 	if (!calendar) {
 		return;
@@ -457,11 +462,8 @@ $calendar-default-font-size: 0.75rem;
 .vuecal__body {
 	overflow: auto;
 	font-size: $calendar-default-font-size;
-	.vuecal__bg {
-		overflow: visible;
-	}
 	> .vuecal__flex {
-		overflow-x: hidden;
+		overflow: hidden;
 		position: relative;
 	}
 }
@@ -509,11 +511,7 @@ $calendar-default-font-size: 0.75rem;
 			padding-right: 0;
 			top: 0;
 			background: rgb(var(--v-theme-background));
-			z-index: 2;
 			border: 1px solid rgba(196,196,196,.25);
-		}
-		.vuecal__all-day {
-			position: sticky;
 		}
 	}
 

@@ -62,6 +62,7 @@ const addActivity = (activity: Activity) => {
     :is-input-focused="props.focused"
     :placeholder="placeholder"
     :search="false"
+    :overlay="true"
     @new-click="addActivity"
   />
 </template>

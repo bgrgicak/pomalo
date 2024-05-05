@@ -6,29 +6,3 @@
 		background-color: rgba($background, var(--v-high-emphasis-opacity));
 	}
 }
-
-@mixin hover-search-form() {
-	$spacing: 40px;
-	position: fixed;
-	width: 100%;
-	max-width: 480px;
-	background-color: rgb(var(--v-theme-background));
-	top: #{$spacing * 2};
-	left: 50%;
-	transform: translate(-50%);
-	z-index: 10;
-	box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
-	&:after {
-		content: '';
-        position: fixed;
-		top: -#{$spacing * 2};
-		left: 50%;
-		width: 100vw;
-		height: 100vh;
-        transform: translate(-50%);
-		background: black;
-		opacity: 0.2;
-		transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		z-index: 9;
-	}
-}

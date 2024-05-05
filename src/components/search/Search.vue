@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { useLayoutStore } from '@/stores/layout';
-import { computed, nextTick, ref, watch } from 'vue';
-import { openActivityPage, emptyActivity } from '@/data/activities';
+import { openActivityPage } from '@/data/activities';
 import { useActivityStore } from '@/stores/activities';
-import { useSearchStore } from '@/stores/search';
 import type Activity from '@/types/activity';
 import { ActivityType, type ActivityEvent } from '@/types/activity';
 import __ from '@/helper/translations';
-import TimerToggle from '../timer/TimerToggle.vue';
-import { addEventToActivity } from '@/data/events';
 import type { PropType } from 'vue';
 import ActivitySelect from '../activity/ActivitySelect.vue';
 
@@ -102,11 +98,11 @@ const openActivity = (activity: Activity) => {
     :clearable="props.clearable"
     @new-click="addActivity"
     @option-click="openActivity"
+	:overlay="true"
   />
 </template>
 <style lang="scss">
 @import '@/styles/variables.scss';
-@import '@/styles/mixins.scss';
 
 .search {
 	.v-input {
@@ -117,7 +113,6 @@ const openActivity = (activity: Activity) => {
 	}
 
 	&.activity-select--focused {
-		@include hover-search-form();
 		.v-input {
 			border-bottom: none;
 		}

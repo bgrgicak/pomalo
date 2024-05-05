@@ -78,6 +78,10 @@ const props = defineProps({
 		type: Boolean,
 		default: false,
 	},
+	overlay: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const emit = defineEmits(['optionClick', 'newClick', 'onEscape']);
@@ -162,7 +166,7 @@ const onArrowKey = (direction: number) => {
 		let newSelectedValue = selectedOption.value === undefined
 			? optionCount.value - 1
 			: selectedOption.value - 1;
-		if (newSelectedValue < 0) { 
+		if (newSelectedValue < 0) {
 			newSelectedValue = optionCount.value - 1;
 		}
 		selectedOption.value = newSelectedValue;
@@ -178,6 +182,11 @@ const onArrowKey = (direction: number) => {
 	nextTick(() => {
 		scrollSelectedOptionIntoView();
 	});
+};
+
+const close = (event: any) => {
+	event.stopPropagation();
+	emit('onEscape');
 };
 
 
@@ -235,9 +244,15 @@ const onNewClick = (type: ActivityType) => {
   <div
     class="activity-select"
     :class="{
-      'activity-select--focused': isInputFocused
+      'activity-select--focused': isInputFocused,
+      'activity-select--overlay': props.overlay
     }"
   >
+    <div
+      v-if="$props.overlay"
+      class="activity-select__overlay-background"
+      @click="close"
+    />
     <v-btn
       v-if="!isInputVisible"
       icon
@@ -319,21 +334,22 @@ const onNewClick = (type: ActivityType) => {
 </template>
 <style lang="scss">
 .activity-select {
-    .v-btn {
-        width: 44px;
-        height: 44px;
-        padding-right: 4px;
-    }
-    .v-input__details {
-        display: none;
-    }
+	.v-btn {
+		width: 44px;
+		height: 44px;
+		padding-right: 4px;
+	}
+	.v-input__details {
+		display: none;
+	}
 }
 .activity-select__form {
   min-width: 200px;
   z-index: 10;
   position: relative;
+  background-color: rgb(var(--v-theme-background));
   .v-field__input {
-    height: 44px;
+	height: 44px;
   }
 }
 .autocomplete__options.v-card {
@@ -353,59 +369,85 @@ const onNewClick = (type: ActivityType) => {
   border-bottom-right-radius: 0.25rem;
 
   &:before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: #ffffff;
-    display: block;
-    z-index: 1;
+	content: '';
+	position: absolute;
+	top: -2px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+  	background-color: rgb(var(--v-theme-background));
+	display: block;
+	z-index: 1;
   }
 
   .v-list {
-    overflow: auto;
-    max-height: 300px;
+	overflow: auto;
+	max-height: 300px;
   }
 }
 .autocomplete__option.v-list-item {
-    width: 100%;
-    padding: 0 !important;
-    .v-btn {
-      width: 100%;
-      text-align: left;
-      justify-content: start;
-      .v-btn__content {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        justify-content: left;
-        display: block;
-      }
-    }
-    &.autocomplete__option--selected {
-        background-color: rgb(var(--v-theme-primary));
-        color: rgb(var(--v-theme-on-primary));
-        .timer-toggle {
-          .v-icon {
-            color: rgb(var(--v-theme-on-primary-darken-1))
-          }
-        }
-    }
-    
-    .v-list-item__append {
-      padding-right: 1rem;
-      .v-btn {
-        padding: 0;
-      }
-    }
+	width: 100%;
+	padding: 0 !important;
+	.v-btn {
+	  width: 100%;
+	  text-align: left;
+	  justify-content: start;
+	  .v-btn__content {
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		justify-content: left;
+		display: block;
+	  }
+	}
+	&.autocomplete__option--selected {
+		background-color: rgb(var(--v-theme-primary));
+		color: rgb(var(--v-theme-on-primary));
+		.timer-toggle {
+		  .v-icon {
+			color: rgb(var(--v-theme-on-primary-darken-1))
+		  }
+		}
+	}
+
+	.v-list-item__append {
+	  padding-right: 1rem;
+	  .v-btn {
+		padding: 0;
+	  }
+	}
 }
 .activity-select--focused {
   overflow: visible;
   .autocomplete__options.v-list {
-    border: 2px solid rgba(var(--v-border-color), var(--v-high-emphasis-opacity));
-    border-top: none;
+	border: 2px solid rgba(var(--v-border-color), var(--v-high-emphasis-opacity));
+	border-top: none;
   }
+}
+
+.activity-select--focused.activity-select--overlay {
+	$spacing: 40px;
+	position: fixed;
+	width: 100%;
+	max-width: 480px;
+	background-color: rgb(var(--v-theme-background));
+	top: #{$spacing * 2};
+	left: 50%;
+	transform: translate(-50%);
+	z-index: 10;
+	box-shadow: 1px 1px 6px rgba(var(--v-border-color), 0.3);
+	.activity-select__overlay-background {
+		position: fixed;
+		top: -#{$spacing * 2};
+		left: 50%;
+		width: 100vw;
+		height: 100vh;
+		transform: translate(-50%);
+		background: black;
+		opacity: 0.2;
+		transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		z-index: 9;
+		pointer-events: none
+	}
 }
 </style>

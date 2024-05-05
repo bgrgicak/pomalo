@@ -66,6 +66,7 @@ const subtitle = computed(() => {
         :event="event"
         :focused="true"
         :search-options="{archived: undefined}"
+        :overlay="display.smAndDown.value"
         @newClick="addNewEvent"
         @optionClick="addEvent"
         @onEscape="calendarStore.removeNewEvent"
@@ -133,10 +134,6 @@ const subtitle = computed(() => {
 
 	.v-card-subtitle {
 		display: none;
-	}
-
-	.calendar-cell.sm {
-		@include hover-search-form();
 	}
 }
 .calendar-event__completed {
