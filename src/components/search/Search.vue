@@ -84,7 +84,7 @@ const addActivity = (activity: Activity) => {
 const openActivity = (activity: Activity) => {
 	if (ActivityType.Event === activity.type) {
 		openActivityPage(activity);
-		return;	
+		return;
 	}
 	layoutStore.showRightSidebar(activity._id, props.event?.id);
 };
@@ -106,12 +106,9 @@ const openActivity = (activity: Activity) => {
 </template>
 <style lang="scss">
 @import '@/styles/variables.scss';
-$form-width: 300px;
+@import '@/styles/mixins.scss';
 
 .search {
-	justify-content: end;
-	display: flex;
-	
 	.v-input {
 		border: none;
 	}
@@ -120,12 +117,12 @@ $form-width: 300px;
 	}
 
 	&.activity-select--focused {
-		max-width: $form-width;
+		@include hover-search-form();
 		.v-input {
-		border-bottom: none;
+			border-bottom: none;
+		}
 	}
-	}
-	
+
 	.v-list.autocomplete__options {
 		border: none;
 		border-bottom-left-radius: 0.25rem;

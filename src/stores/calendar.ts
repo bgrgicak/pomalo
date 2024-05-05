@@ -55,6 +55,9 @@ export const useCalendarStore = defineStore('calendar', () => {
 		});
 
 	const isLoading = computed((): boolean => state.value.loading);
+	const newEvent = computed(
+		(): CalendarEvent | undefined => state.value.newEvent
+	);
 	const hasNewEvent = computed((): boolean => !!state.value.newEvent);
 	const focusedEvents = computed(
 		(): CalendarEvent[] => state.value.focusedEvents
@@ -188,6 +191,7 @@ export const useCalendarStore = defineStore('calendar', () => {
 		focusedCell,
 		clipboard,
 		load,
+		newEvent,
 		hasNewEvent,
 		addActivityId,
 		addNewEvent,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import VueCal, { type VueCalEvent } from 'vue-cal';
-import { getLocalDate, minuteInMilliseconds, setTime } from '@/helper/date';
+import { getLocalDate, getUtcTimestamp, minuteInMilliseconds, setTime } from '@/helper/date';
 import { useCalendarStore } from '@/stores/calendar';
 import { useLayoutStore } from '@/stores/layout';
 import { display } from '@/plugins/vuetify';
@@ -97,7 +97,10 @@ const disabledViews = computed(() => {
 
 const cellHeight = computed(() => {
 	if (['week', 'day'].includes(props.activeView)) {
-		return 80;
+		if (display.value.lgAndUp.value) {
+			return 80;
+		}
+		return 60;
 	}
 	return 40;
 });
@@ -143,16 +146,20 @@ const eventDblClick = (event: any) => {
 	}
 };
 
-const snapEvent = (event: CalendarEvent) => {
+const snapEvent = (event: CalendarEvent, type?: 'start' | 'end') => {
+	// TODO refactor this and move to another file
 	const differences: {[difference: number]: CalendarEvent} = {};
 	const snapDifference = settings.calendar.snapDifference;
 	const eventDuration = event.end ? getTimeDifference(event.start, event.end) : undefined;
 	const tempEvent = structuredClone(event);
 
+	const snapStart = !type || type === 'start';
+	const snapEnd = !type || type === 'end';
+
 	const nowStartDifference = getTimeDifference(getLocalDate(), event.start);
 	if (nowStartDifference < snapDifference && nowStartDifference > -snapDifference) {
 		tempEvent.start = getLocalDate();
-		if (eventDuration) {
+		if (eventDuration && snapEnd) {
 			tempEvent.end = addMilliseconds(tempEvent.start, eventDuration);
 		}
 		differences[nowStartDifference] = tempEvent;
@@ -162,7 +169,7 @@ const snapEvent = (event: CalendarEvent) => {
 		const nowEndDifference = getTimeDifference(getLocalDate(), event.end);
 		if (nowEndDifference < snapDifference && nowEndDifference > -snapDifference) {
 			tempEvent.end = getLocalDate();
-			if (eventDuration) {
+			if (eventDuration && snapStart) {
 				tempEvent.start = addMilliseconds(tempEvent.end, -eventDuration);
 			}
 			differences[nowStartDifference] = tempEvent;
@@ -176,9 +183,9 @@ const snapEvent = (event: CalendarEvent) => {
 		const difference = getTimeDifference(overlapEnd.start, event.end);
 		if (difference < snapDifference && difference > -snapDifference) {
 			tempEvent.end = overlapEnd.start;
-			if (eventDuration && tempEvent.end) {
+			if (eventDuration && tempEvent.end && snapStart) {
 				tempEvent.start = addMilliseconds(tempEvent.end, -eventDuration);
-			} else {
+			} else if( snapStart ) {
 				tempEvent.start = addMilliseconds(tempEvent.start, -difference);
 			}
 			differences[nowStartDifference] = tempEvent;
@@ -194,9 +201,9 @@ const snapEvent = (event: CalendarEvent) => {
 		const difference = getTimeDifference(overlapStart.end, event.start);
 		if (difference < snapDifference && difference > -snapDifference) {
 			tempEvent.start = overlapStart.end;
-			if (eventDuration) {
+			if (eventDuration && snapEnd) {
 				tempEvent.end = addMilliseconds(tempEvent.start, eventDuration);
-			} else {
+			} else if(snapEnd) {
 				tempEvent.end = addMilliseconds(tempEvent.start, difference);
 			}
 			differences[nowStartDifference] = tempEvent;
@@ -208,7 +215,7 @@ const snapEvent = (event: CalendarEvent) => {
 		const difference = (snapTime - event.start.getMinutes()) * minuteInMilliseconds;
 		if (difference < snapDifference && difference > -snapDifference) {
 			tempEvent.start = addMilliseconds(event.start, difference);
-			if (eventDuration) {
+			if (eventDuration && snapEnd) {
 				tempEvent.end = addMilliseconds(tempEvent.start, eventDuration);
 			}
 			differences[difference] = tempEvent;
@@ -217,7 +224,7 @@ const snapEvent = (event: CalendarEvent) => {
 			const endDifference = (snapTime - event.end.getMinutes()) * minuteInMilliseconds;
 			if (endDifference < snapDifference && endDifference > -snapDifference) {
 				tempEvent.end = addMilliseconds(event.end, endDifference);
-				if (eventDuration) {
+				if (eventDuration && snapStart) {
 					tempEvent.start = addMilliseconds(tempEvent.end, -eventDuration);
 				}
 				differences[endDifference] = tempEvent;
@@ -241,8 +248,12 @@ const eventDurationChange = (event: any) => {
 		return;
 	}
 
-	const activityEvent = snapEvent(event.event);
-
+	let activityEvent = snapEvent(
+		event.event,
+		getUtcTimestamp(event.event.start) === getUtcTimestamp(event.originalEvent.start)
+			? 'end'
+			: undefined
+	);
 	emit(
 		'updateEvent',
 		activityEvent.id,
@@ -285,8 +296,8 @@ const fetchEvents = (options: any) => {
 };
 
 const cellDoubleClick = (start: Date) => {
-	if (display.value.smAndDown.value) {
-		return;
+	if (display.value.smAndDown.value && keyboardStore.isTouch) {
+		return false;
 	}
 	// If event is focused, do not create new event
 	if (calendarStore.focusedEvents.length > 0) {
@@ -294,10 +305,10 @@ const cellDoubleClick = (start: Date) => {
 	}
 	start = setTime(start, start.getHours());
 	const eventClicked = calendarStore.events.find((event: CalendarEvent) => {
-		return event.start <= start && (!event.end || event.end >= start);
+		return event.start <= start && (!event.end || event.end >= start) && !event.allDay;
 	});
 	// If clicked cell is already occupied by an event, do not create new event
-	if (!eventClicked) {
+	if (!!eventClicked) {
 		return false;
 	}
 	emit('addEvent', start);
@@ -308,6 +319,9 @@ const addLongPressEvent = () => {
 		return;
 	}
 	if (!props.vuecal) {
+		return;
+	}
+	if (!keyboardStore.isTouch) {
 		return;
 	}
 	const background = document.querySelector('.calendar .vuecal__bg');
@@ -332,7 +346,7 @@ const addLongPressEvent = () => {
 				);
 				start = setTime(start, start.getHours());
 				emit('addEvent', start);
-			}, 800);
+			}, 600);
 			cell.addEventListener('touchend', () => {
 				clearTimeout(timeout);
 			});
@@ -448,6 +462,7 @@ $calendar-default-font-size: 0.75rem;
 	}
 	> .vuecal__flex {
 		overflow-x: hidden;
+		position: relative;
 	}
 }
 
@@ -492,10 +507,17 @@ $calendar-default-font-size: 0.75rem;
 		.vuecal__weekdays-headings,
 		.vuecal__all-day {
 			padding-right: 0;
+			top: 0;
+			background: rgb(var(--v-theme-background));
+			z-index: 2;
+			border: 1px solid rgba(196,196,196,.25);
+		}
+		.vuecal__all-day {
+			position: sticky;
 		}
 	}
 
-	$time-column-width: 2.4rem;
+	$time-column-width: 2rem;
 	.vuecal--week-view .vuecal__weekdays-headings {
 		padding-left: $time-column-width;
 		font-size: $calendar-default-font-size;
@@ -505,6 +527,7 @@ $calendar-default-font-size: 0.75rem;
 	.vuecal__all-day-text {
 		width: $time-column-width !important;
 		padding: 0;
+		font-size: 0.75rem;
 	}
 
 	.vuecal__all-day .vuecal__flex.vuecal__cells.week-view {

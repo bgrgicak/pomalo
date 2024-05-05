@@ -6,6 +6,7 @@ import type Activity from '@/types/activity';
 import { useCalendarStore } from '@/stores/calendar';
 import ActivitySelect from '../activity/ActivitySelect.vue';
 import { useActivityStore } from '@/stores/activities';
+import { display } from '@/plugins/vuetify';
 
 const props = defineProps({
 	vuecal: {
@@ -48,39 +49,77 @@ const subtitle = computed(() => {
 });
 </script>
 <template>
-  <v-card-title
-    class="calendar-cell__title"
-    :class="{'calendar-cell__title--new': !props.event.title}"
+  <div
+    class="calendar-cell"
+    :class="{ 'sm': display.smAndDown.value }"
   >
-    <span v-if="props.event.title">
-      {{ props.event.title }}
-    </span>
-    <ActivitySelect
-      v-else
-      class="mb-1"
-      :event="event"
-      :focused="true"
-      :search-options="{archived: undefined}"
-      @newClick="addNewEvent"
-      @optionClick="addEvent"
-      @onEscape="calendarStore.removeNewEvent"
-    />
-  </v-card-title>
-  <v-card-subtitle>
-    {{ subtitle }}
-  </v-card-subtitle>
-  <v-card-text>
-    {{ props.event.content }}
-  </v-card-text>
+    <v-card-title
+      class="calendar-cell__title"
+      :class="{'calendar-cell__title--new': !props.event.title}"
+    >
+      <span v-if="props.event.title">
+        {{ props.event.title }}
+      </span>
+      <ActivitySelect
+        v-else
+        class="mb-1"
+        :event="event"
+        :focused="true"
+        :search-options="{archived: undefined}"
+        @newClick="addNewEvent"
+        @optionClick="addEvent"
+        @onEscape="calendarStore.removeNewEvent"
+      />
+    </v-card-title>
+    <v-card-subtitle>
+      {{ subtitle }}
+    </v-card-subtitle>
+    <v-card-text>
+      {{ props.event.content }}
+    </v-card-text>
+  </div>
 </template>
 <style lang="scss">
+@import '@/styles/mixins.scss';
+.vuecal__event {
+	.v-card-title {
+		text-align: left;
+		font-size: 1rem;
+		margin: 0.5rem 0.5rem 0 0.5rem;
+		padding: 0;
+		line-height: 1rem;
+	}
+	.v-card-title,
+	.v-card-subtitle {
+		text-overflow: clip !important;
+	}
+	.v-card-subtitle,
+	.v-card-text {
+		text-align: left;
+		font-size: 0.75rem;
+		padding: 0 0.5rem;
+		line-height: 1rem;
+	}
 
+	.calendar-cell.sm {
+		.v-card-title {
+			font-size: 0.75rem;
+		}
+		.v-card-subtitle {
+			font-size: 0.7rem;
+		}
+		.v-card-text {
+			display: none;
+		}
+	}
+}
 .calendar-event__new {
 	overflow: visible !important;
 	min-height: 60px !important;
 
 	.calendar-cell__title {
 		overflow: visible;
+		margin-bottom: 0.5rem;
 		.activity-select {
 			width: 100%;
 			.activity-select__form{
@@ -95,26 +134,14 @@ const subtitle = computed(() => {
 	.v-card-subtitle {
 		display: none;
 	}
+
+	.calendar-cell.sm {
+		@include hover-search-form();
+	}
 }
 .calendar-event__completed {
 	.calendar-cell__title {
 		text-decoration: line-through;
-	}
-}
-.vuecal__event {
-	.v-card-title {
-		text-align: left;
-		text-transform: capitalize;
-		font-size: 1rem;
-		padding: 0.5rem 0.5rem 0 0.5rem;
-		line-height: 1rem;
-	}
-	.v-card-subtitle,
-	.v-card-text {
-		text-align: left;
-		font-size: 0.75rem;
-		padding: 0 0.5rem;
-		line-height: 1rem;
 	}
 }
 </style>
