@@ -2,7 +2,7 @@ import { parseEventsFromActivities } from '@/data/events';
 import { getUtcTimestamp } from '@/helper/date';
 import type { CalendarClipboard, CalendarClipboardType, CalendarEvent, CalendarState } from '@/types/calendar';
 import { defineStore } from 'pinia';
-import { computed, ref, type Ref } from 'vue';
+import { computed, ref, watch, type Ref } from 'vue';
 import { useActivityStore } from './activities';
 import { useTimerStore } from './timer';
 import database from '@/data/pouchdb';
@@ -39,20 +39,17 @@ export const useCalendarStore = defineStore('calendar', () => {
 		}
 	};
 
-	database
-		.changes({
-			since: 'now',
-			live: true,
-			include_docs: true,
-		})
-		.on('change', (change) => {
-			maybeUpdateActivity(
-				parseDocumentToActivity(change.doc as ActivityDocument)
-			);
-		})
-		.catch((error) => {
-			log(error);
-		});
+	watch(
+		() => activityStore.list,
+		() => {
+			if (!state.value.startTime || !state.value.endTime) {
+				return;
+			}
+			activityStore.list.forEach((activity) => {
+				maybeUpdateActivity(activity);
+			});
+		}
+	);
 
 	const isLoading = computed((): boolean => state.value.loading);
 	const newEvent = computed(
