@@ -5,10 +5,6 @@ import { defineStore } from 'pinia';
 import { computed, ref, watch, type Ref } from 'vue';
 import { useActivityStore } from './activities';
 import { useTimerStore } from './timer';
-import database from '@/data/pouchdb';
-import log from '@/helper/logs';
-import type { ActivityDocument } from '@/types/activity-document';
-import { parseDocumentToActivity } from '@/data/activities';
 import type Activity from '../types/activity';
 
 export const useCalendarStore = defineStore('calendar', () => {

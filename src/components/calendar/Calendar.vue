@@ -182,7 +182,6 @@ const maybeCopyPasteEvent = (keyboardEvent: any) => {
 		clipboardAction = CalendarClipboardType.Cut;
 	}
 	if (clipboardAction) {
-		console.log(calendarStore.focusedEvents);
 		calendarStore.addToClipboard(
 			calendarStore.focusedEvents,
 			clipboardAction

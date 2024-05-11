@@ -18,7 +18,7 @@ const dismiss = (notice: Notice) => {
   <v-snackbar
     v-for="notice in noticeStore.notices"
     :key="notice._id"
-    :timeout="constants.notice.dismissDelay"
+    :timeout="notice.autoDismiss ? constants.notice.dismissDelay : -1"
     :model-value="true"
     class="notice"
   >

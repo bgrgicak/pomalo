@@ -6,10 +6,12 @@ export enum NoticeType {
 };
 
 interface Notice {
-    _id?: string,
-    title: string,
-    description?: string,
-    type?: NoticeType,
+	_id?: string;
+	title: string;
+	type?: NoticeType;
+	autoDismiss?: boolean;
+	dismissCallback?: (notice: Notice) => void;
+	options?: any;
 };
 
 export default Notice;

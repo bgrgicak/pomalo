@@ -101,7 +101,6 @@ const getNewValue = (newValue: any) => {
 };
 
 const onSave = (value: Date|undefined) => {
-	console.log('onSave', value);
 	if ('' !== timeError.value) {
 		return false;
 	}

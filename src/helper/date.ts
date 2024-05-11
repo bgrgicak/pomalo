@@ -136,6 +136,10 @@ export const addDays = (date: Date, days: number) => {
 	return addMilliseconds(date, days * dayInMilliseconds);
 };
 
+export const addWeeks = (date: Date, weeks: number) => {
+	return addMilliseconds(date, weeks * weekInMilliseconds);
+};
+
 export const setTime = (
 	date: Date,
 	hours: number = 0,

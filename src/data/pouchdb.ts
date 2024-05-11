@@ -71,9 +71,14 @@ const createIndexes = (database: PouchDB.Database) => {
 	});
 	database.createIndex({
 		index: {
-			fields: ['eventFirstStart', 'eventLastEnd', 'timerRunning'],
+			fields: [
+				'eventFirstStart',
+				'eventLastEnd',
+				'timerRunning',
+				'alarms',
+			],
 			name: 'event-index',
-		}
+		},
 	});
 };
 

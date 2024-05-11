@@ -87,26 +87,27 @@ export enum ActivityEventClass {
 };
 
 export interface ActivityEvent {
-    id: string,
-    start: Date,
-    end?: Date,
-    allDay?: boolean,
-    repeat?: RepeatInterval,
-    repeatEnd?: Date,
-    repeatDays?: number[],
-    repeatInterval?: number,
+	id: string;
+	start: Date;
+	end?: Date;
+	allDay?: boolean;
+	repeat?: RepeatInterval;
+	repeatEnd?: Date;
+	repeatDays?: number[];
+	repeatInterval?: number;
 
-    recurrenceId?: Date,
-    status?: ActivityEventStatus,
-    attendees?: ActivityEventAttendee[],
-    transparency?: ActivityEventTransparency,
-    organizer?: ActivityEventAttendee,
-    url?: string,
-    attachment?: string,
-    class?: ActivityEventClass,
-    location?: string,
-    exceptionDates?: Date[],
-    sequence?: number,
+	recurrenceId?: Date;
+	status?: ActivityEventStatus;
+	attendees?: ActivityEventAttendee[];
+	transparency?: ActivityEventTransparency;
+	organizer?: ActivityEventAttendee;
+	url?: string;
+	attachment?: string;
+	class?: ActivityEventClass;
+	location?: string;
+	exceptionDates?: Date[];
+	sequence?: number;
+	alarmDismissed?: Date[];
 };
 
 export interface ActivityMembers {
@@ -155,9 +156,6 @@ interface Activity {
     startDate?: Date,
     dueDate?: Date,
     estimatedHours?: number,
-
-    aboveActivities: string[],
-    belowActivities: string[],
 
     // Calculated values
 

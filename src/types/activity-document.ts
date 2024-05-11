@@ -1,12 +1,22 @@
 import type { ActivityEvent } from './activity';
 import type Activity from './activity';
 
-export interface ActivityDocumentEvent extends Omit<ActivityEvent, 'start' | 'end' | 'repeatEnd' | 'recurrenceId' | 'exceptionDates'> {
-    start: number;
-    end?: number;
-    repeatEnd?: number;
-    recurrenceId?: number;
-    exceptionDates?: number[];
+export interface ActivityDocumentEvent
+	extends Omit<
+		ActivityEvent,
+		| 'start'
+		| 'end'
+		| 'repeatEnd'
+		| 'recurrenceId'
+		| 'exceptionDates'
+		| 'alarmDismissed'
+	> {
+	start: number;
+	end?: number;
+	repeatEnd?: number;
+	recurrenceId?: number;
+	exceptionDates?: number[];
+	alarmDismissed?: number[];
 }
 export interface ActivityDocument extends Omit<Activity, 'created' | 'updated' | 'events' | 'completedDate' | 'startDate' | 'dueDate' | 'eventFirstStart' | 'eventLastEnd' | 'archived'> {
     created: number;

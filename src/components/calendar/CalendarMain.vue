@@ -138,7 +138,6 @@ const eventClick = (event: any) => {
 };
 
 const eventDblClick = (event: any) => {
-	console.log('eventDblClick', event);
 	if (keyboardStore.cmdCtrl) {
 		return;
 	}

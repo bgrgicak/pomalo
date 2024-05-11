@@ -92,8 +92,6 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 					members: [],
 					events: [],
 					alarms: [],
-					aboveActivities: [],
-					belowActivities: [],
 				};
 			} else {
 				activities[id].title = event.summary;
@@ -101,7 +99,6 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 			}
 
 			const start = parseDate(event.startDate);
-			console.log(start);
 			const end = parseDate(event.endDate);
 			const activityEventId = 'activityEvent' + id + start + end;
 			const activityEvent: ActivityEvent = {
