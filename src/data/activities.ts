@@ -197,27 +197,27 @@ export const parseDocumentToActivity = (doc: ActivityDocument): Activity => {
 		archived: doc.archived ? getLocalDate(doc.archived) : undefined,
 		events: doc.events
 			? doc.events.map((event) => {
-					return {
-						...event,
-						start: getLocalDate(event.start),
-						end: event.end ? getLocalDate(event.end) : undefined,
-						repeatEnd: event.repeatEnd
-							? getLocalDate(event.repeatEnd)
-							: undefined,
-						recurrenceId: event.recurrenceId
-							? getLocalDate(event.recurrenceId)
-							: undefined,
-						exceptionDates: event.exceptionDates
-							? event.exceptionDates.map((date) => {
-									return getLocalDate(date);
+				return {
+					...event,
+					start: getLocalDate(event.start),
+					end: event.end ? getLocalDate(event.end) : undefined,
+					repeatEnd: event.repeatEnd
+						? getLocalDate(event.repeatEnd)
+						: undefined,
+					recurrenceId: event.recurrenceId
+						? getLocalDate(event.recurrenceId)
+						: undefined,
+					exceptionDates: event.exceptionDates
+						? event.exceptionDates.map((date) => {
+							return getLocalDate(date);
 							  })
-							: [],
-						alarmDismissed: event.alarmDismissed
-							? event.alarmDismissed.map((date) => {
-									return getLocalDate(date);
+						: [],
+					alarmDismissed: event.alarmDismissed
+						? event.alarmDismissed.map((date) => {
+							return getLocalDate(date);
 							  })
-							: [],
-					};
+						: [],
+				};
 			  })
 			: [],
 	};
@@ -252,27 +252,27 @@ export const parseActivityToDocument = (
 			: undefined,
 		events: activity.events
 			? activity.events.map((event) => {
-					return {
-						...event,
-						start: getUtcTimestamp(event.start),
-						end: event.end ? getUtcTimestamp(event.end) : undefined,
-						repeatEnd: event.repeatEnd
-							? getUtcTimestamp(event.repeatEnd)
-							: undefined,
-						recurrenceId: event.recurrenceId
-							? getUtcTimestamp(event.recurrenceId)
-							: undefined,
-						exceptionDates: event.exceptionDates
-							? event.exceptionDates.map((date) => {
-									return getUtcTimestamp(date);
+				return {
+					...event,
+					start: getUtcTimestamp(event.start),
+					end: event.end ? getUtcTimestamp(event.end) : undefined,
+					repeatEnd: event.repeatEnd
+						? getUtcTimestamp(event.repeatEnd)
+						: undefined,
+					recurrenceId: event.recurrenceId
+						? getUtcTimestamp(event.recurrenceId)
+						: undefined,
+					exceptionDates: event.exceptionDates
+						? event.exceptionDates.map((date) => {
+							return getUtcTimestamp(date);
 							  })
-							: [],
-						alarmDismissed: event.alarmDismissed
-							? event.alarmDismissed.map((date) => {
-									return getUtcTimestamp(date);
+						: [],
+					alarmDismissed: event.alarmDismissed
+						? event.alarmDismissed.map((date) => {
+							return getUtcTimestamp(date);
 							  })
-							: [],
-					};
+						: [],
+				};
 			  })
 			: [],
 	};
