@@ -100,7 +100,10 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 
 			const start = parseDate(event.startDate);
 			const end = parseDate(event.endDate);
-			const activityEventId = 'activityEvent' + id + start + end;
+			const recurrenceId =
+				event.component.getFirstPropertyValue('recurrence-id') ??
+				undefined;
+			const activityEventId = 'activityEvent' + id + recurrenceId;
 			const activityEvent: ActivityEvent = {
 				id: activityEventId,
 				start,
@@ -181,8 +184,6 @@ const syncCalendar = async (calendarUrl: string, lastCalendarSync?: Date) => {
 					);
 				}
 			}
-			const recurrenceId =
-				event.component.getFirstPropertyValue('recurrence-id');
 			if (recurrenceId) {
 				activityEvent.recurrenceId = parseDate(recurrenceId);
 			}

@@ -218,7 +218,7 @@ export const parseEventsFromActivities = (
 						event.id ===
 						'activityEventeventCalendar-199D1613-E57C-4E38-915A-33784A39D17D'
 					) {
-						console.log(event);
+						console.log(event, startTime, endTime);
 					}
 					if (
 						event.status === ActivityEventStatus.Cancelled ||
@@ -237,7 +237,10 @@ export const parseEventsFromActivities = (
 						return false;
 					}
 					if (event.recurrenceId) {
-						return false;
+						return (
+							event.recurrenceId >= startTime &&
+							event.recurrenceId <= endTime
+						);
 					}
 					if (activity.archived && startTime > activity.archived) {
 						return false;
