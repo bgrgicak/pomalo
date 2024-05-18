@@ -37,7 +37,6 @@ export const useNoticeStore = defineStore('notices', () => {
 		}
 
 		if (Notification.permission === 'granted') {
-			console.log(notice.title);
 			// Move to web workers to make it persistent https://developer.chrome.com/blog/notification-requireInteraction/
 			const notification = new Notification(notice.title, {
 				requireInteraction: true,
