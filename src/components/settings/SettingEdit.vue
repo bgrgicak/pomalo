@@ -20,7 +20,7 @@ const onChange = (value: unknown) => {
     <v-list-item-action>
       <v-switch
         v-if="SettingType.Boolean === props.setting.type"
-        :model-value="props.setting.value"
+        :model-value="props.setting.value === undefined ? props.setting.defaultValue : props.setting.value"
         @update:model-value="onChange"
       />
       <v-btn

@@ -68,7 +68,9 @@ export const useActivityStore = defineStore(
 		const find = (request?: PouchDB.Find.FindRequest<{}> | undefined): Promise<Activity[] | void> => {
 			if (constants.environment.development) {
 				(database as any).explain(request).then((result: any) => {
-					log(result, LogType.Debug);
+					if (result?.index.name === '_all_docs') {
+						log(result, LogType.Error);
+					}
 				});
 			}
 			return database.find(request).then((result) => {

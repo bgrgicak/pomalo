@@ -10,7 +10,8 @@ interface Notice {
 	title: string;
 	type?: NoticeType;
 	autoDismiss?: boolean;
-	dismissCallback?: (notice: Notice) => void;
+	onDismiss?: (notice: Notice) => void;
+	onClick?: (notice: Notice) => void;
 	options?: any;
 };
 

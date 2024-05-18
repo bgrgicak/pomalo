@@ -197,3 +197,7 @@ export const setToEndOfHour = (date: Date) => {
 	}
 	return date;
 };
+
+export const includesDate = (date: Date, dates: Date[]) => {
+	return dates.some((d) => d.getTime() === date.getTime());
+};

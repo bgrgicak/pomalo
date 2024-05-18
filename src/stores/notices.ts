@@ -8,12 +8,15 @@ import type Activity from '../types/activity';
 import {
 	getLocalDate,
 	getUtcTimestamp,
+	includesDate,
 	minuteInMilliseconds,
 } from '../helper/date';
-import { add, addHours, addWeeks, formatDistance, set } from 'date-fns';
+import { add, addHours, formatDistance } from 'date-fns';
 import { calculateAlarmDate } from '../data/activities';
 import { updateEventFieldInActivity } from '../data/events';
 import type { ActivityEvent } from '../types/activity';
+import { useLayoutStore } from './layout';
+import { useSettingsStore } from './settings';
 
 interface NoticeState {
 	notices: Notice[];
@@ -25,13 +28,31 @@ export const useNoticeStore = defineStore('notices', () => {
 	});
 
 	const activityStore = useActivityStore();
+	const layoutStore = useLayoutStore();
+	const settingsStore = useSettingsStore();
+
+	const maybeAddNativeNotice = (notice: Notice) => {
+		if (!('Notification' in window)) {
+			return;
+		}
+
+		if (Notification.permission === 'granted') {
+			const notification = new Notification(notice.title, {
+				requireInteraction: true,
+			});
+			notification.onclick = () => {
+				if (notice.onClick) {
+					notice.onClick(notice);
+				}
+			};
+		}
+	};
+
 	const maybeAddNotice = (activity: Activity) => {
 		if (!activity.alarms || activity.alarms.length === 0) {
 			return;
 		}
-
 		const now = getLocalDate();
-
 		const futureEvents = activity.events.filter(
 			(event) => event.start >= now
 		);
@@ -48,51 +69,79 @@ export const useNoticeStore = defineStore('notices', () => {
 		if (nextAlarm > now) {
 			return;
 		}
-
 		if (
 			nextEvent.alarmDismissed &&
-			nextEvent.alarmDismissed.includes(nextAlarm)
+			includesDate(nextAlarm, nextEvent.alarmDismissed)
 		) {
 			return;
 		}
 
+		const dismissNotice = async (notice: Notice) => {
+			if (
+				!notice.options.activityId ||
+				!notice.options.eventId ||
+				!notice.options.alarm ||
+				!notice._id
+			) {
+				return;
+			}
+			const activity = await activityStore.get(notice.options.activityId);
+			if (!activity || !activity.events) {
+				return;
+			}
+			const event = activity.events.find(
+				(event: ActivityEvent) => event.id === notice.options.eventId
+			);
+			if (!event) {
+				return;
+			}
+
+			const dismissedAlarms = nextEvent.alarmDismissed || [];
+			dismissedAlarms.push(notice.options.alarm);
+
+			activityStore
+				.update(
+					updateEventFieldInActivity(
+						activity,
+						event,
+						'alarmDismissed',
+						dismissedAlarms
+					)
+				)
+				.then(() => {
+					removeNotice(notice._id!);
+				});
+		};
+
 		const startsIn = formatDistance(nextEvent.start, now);
-		addNotice({
+
+		const newNotice = {
 			title: `${activity.title} starts in ${startsIn}`,
 			type: NoticeType.Info,
-			dismissCallback: async (notice) => {
-				if (!notice.options.activityId || !notice.options.eventId) {
+			onDismiss: dismissNotice,
+			onClick: async (notice: Notice) => {
+				if (
+					!notice.options.activityId ||
+					!notice.options.eventId ||
+					!notice._id
+				) {
 					return;
 				}
-				const activity = await activityStore.get(
-					notice.options.activityId
+				layoutStore.showRightSidebar(
+					notice.options.activityId,
+					notice.options.eventId
 				);
-				if (!activity || !activity.events) {
-					return;
-				}
-				const event = activity.events.find(
-					(event: ActivityEvent) =>
-						event.id === notice.options.eventId
-				);
-				if (!event) {
-					return;
-				}
 
-				const dismissedAlarms = nextEvent.alarmDismissed || [];
-				dismissedAlarms.push(nextAlarm);
-
-				updateEventFieldInActivity(
-					activity,
-					event,
-					'alarmDismissed',
-					dismissedAlarms
-				);
+				dismissNotice(notice);
 			},
 			options: {
 				activityId: activity._id,
 				eventId: nextEvent.id,
+				alarm: nextAlarm,
 			},
-		});
+		};
+		addNotice(newNotice);
+		maybeAddNativeNotice(newNotice);
 	};
 
 	watch(
@@ -104,16 +153,48 @@ export const useNoticeStore = defineStore('notices', () => {
 		}
 	);
 
+	const checkPermissions = (force: boolean = false) => {
+		if (!('Notification' in window)) {
+			return;
+		}
+
+		if (Notification.permission === 'granted') {
+			return;
+		}
+
+		if (!force && settingsStore.get('nativeNoticesEnabled') === false) {
+			return;
+		}
+
+		addNotice({
+			title: 'Would you like to enable notifications?',
+			type: NoticeType.Warning,
+			onDismiss: (notice) => {
+				removeNotice(notice._id!);
+			},
+			onClick: () => {
+				if (Notification.permission !== 'denied') {
+					Notification.requestPermission().then((permission) => {
+						if (permission === 'denied') {
+							settingsStore.update('nativeNoticesEnabled', false);
+							settingsStore.save();
+						}
+					});
+				}
+			},
+		});
+	};
+
 	const load = () => {
 		const now = getLocalDate();
 		return activityStore
 			.find({
 				selector: {
 					eventFirstStart: {
-						$lte: getUtcTimestamp(now),
+						$lte: getUtcTimestamp(addHours(now, 12)),
 					},
 					eventLastEnd: {
-						$gte: getUtcTimestamp(addWeeks(now, 3)),
+						$gte: getUtcTimestamp(now),
 					},
 					timerRunning: {
 						$eq: false,
@@ -151,9 +232,6 @@ export const useNoticeStore = defineStore('notices', () => {
 		if (!notice) {
 			return;
 		}
-		if (notice.dismissCallback) {
-			notice.dismissCallback(notice);
-		}
 		state.value.notices = state.value.notices.filter(
 			(notice) => notice._id !== noticeId
 		);
@@ -163,5 +241,6 @@ export const useNoticeStore = defineStore('notices', () => {
 		notices,
 		addNotice,
 		removeNotice,
+		checkPermissions,
 	};
 });

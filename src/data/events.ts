@@ -215,12 +215,6 @@ export const parseEventsFromActivities = (
 			activity.events
 				.filter((event: ActivityEvent) => {
 					if (
-						event.id ===
-						'activityEventeventCalendar-199D1613-E57C-4E38-915A-33784A39D17D'
-					) {
-						console.log(event, startTime, endTime);
-					}
-					if (
 						event.status === ActivityEventStatus.Cancelled ||
 						event.status === ActivityEventStatus.Declined
 					) {
