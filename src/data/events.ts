@@ -231,10 +231,7 @@ export const parseEventsFromActivities = (
 						return false;
 					}
 					if (event.recurrenceId) {
-						return (
-							event.recurrenceId >= startTime &&
-							event.recurrenceId <= endTime
-						);
+						return false;
 					}
 					if (activity.archived && startTime > activity.archived) {
 						return false;
@@ -341,5 +338,11 @@ export const removeAllCalendarEvents = () => {
 				title: 'All calendar events were removed',
 			}
 		);
+	});
+};
+
+export const forceCalendarSync = () => {
+	getCalendarUrls().forEach(async (calendarUrl) => {
+		resetLastCalendarSync(calendarUrl);
 	});
 };

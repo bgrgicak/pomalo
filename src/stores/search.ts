@@ -44,10 +44,10 @@ export const useSearchStore = defineStore(
 					$exists: true,
 				};
 			}
-			return activityStore.find(
-				searchOptions
-			).then((response) => {
-				state.value.activityIds = (response ? response : []).map((activity) => activity._id);
+			return activityStore.find(searchOptions).then((response) => {
+				state.value.activityIds = (response ? response : []).map(
+					(activity) => activity._id
+				);
 			});
 		};
 

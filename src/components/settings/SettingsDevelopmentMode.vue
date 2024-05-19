@@ -5,7 +5,7 @@ import __ from '@/helper/translations';
 import { removeAllIndexes } from '@/data/pouchdb';
 import database from '@/data/pouchdb';
 import { reParseAllDocuments } from '@/data/activities';
-import { removeAllCalendarEvents } from '@/data/events';
+import { forceCalendarSync, removeAllCalendarEvents } from '@/data/events';
 
 const removeAllIndexesFromDatabase = () => removeAllIndexes(database);
 
@@ -31,6 +31,13 @@ const actions: Setting[] = [
 		action: removeAllCalendarEvents,
 		type: SettingType.Button,
 	},
+	{
+		id: 'forceCalendarSync',
+		label: __('Force calendar sync'),
+		name: __('Force sync'),
+		action: forceCalendarSync,
+		type: SettingType.Button,
+	}
 ];
 </script>
 <template>

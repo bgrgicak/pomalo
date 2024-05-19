@@ -50,7 +50,10 @@ export default defineConfig({
 				scope: '/',
 			},
 			filename: 'sw.ts',
-			srcDir: 'src/service-worker',
+			srcDir:
+				process.env.NODE_ENV === 'production'
+					? 'public/'
+					: 'src/service-worker',
 		}),
 	],
 	resolve: {
