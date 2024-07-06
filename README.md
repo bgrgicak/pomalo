@@ -1,6 +1,27 @@
 # Pomalo
 
-Time management app.
+Time management app based around a calendar interface.
+
+[A demo is available here.](https://pomalo.bluebanana.hr/)
+
+The app lives in the browser and is designed to be used as a PWA. There is no cloud storage, all data is stored locally in the browser and stays private.
+You can connect it to a CouchDB server for syncing between devices.
+
+## Features
+
+This is a work in progress, but the following features are planned:
+
+- [x] Calendar view
+- [x] Task list
+- [x] Project list
+- [x] Timer
+- [x] Ical import
+- [x] CouchDB sync
+- [] Metrics
+- [] Offline support
+- [] All event fields
+- [] WSYWIG editor
+- [] Automated task scheduling
 
 ## Recommended IDE Setup
 
@@ -61,7 +82,7 @@ Install by following the [PouchDB Server](https://pouchdb.com/guides/setup-couch
 Run with:
 
 ```pouchdb-server --port 5984```
- 
+
 ## Run production build with Docker
 
 ```sh
