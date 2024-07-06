@@ -7,6 +7,8 @@ Time management app based around a calendar interface.
 The app lives in the browser and is designed to be used as a PWA. There is no cloud storage, all data is stored locally in the browser and stays private.
 You can connect it to a CouchDB server for syncing between devices.
 
+If you like the project, please consider contributing. The project is in early stages and there is a lot of work to be done.
+
 ## Features
 
 This is a work in progress, but the following features are planned:
@@ -17,11 +19,11 @@ This is a work in progress, but the following features are planned:
 - [x] Timer
 - [x] Ical import
 - [x] CouchDB sync
-- [] Metrics
-- [] Offline support
-- [] All event fields
-- [] WSYWIG editor
-- [] Automated task scheduling
+- [ ] Metrics
+- [ ] Offline support
+- [ ] All event fields
+- [ ] WSYWIG editor
+- [ ] Automated task scheduling
 
 ## Recommended IDE Setup
 
